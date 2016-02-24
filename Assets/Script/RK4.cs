@@ -9,12 +9,14 @@ public class RK4 {
 		int amount = points.Count;
 		Point point;
 		for (int i = 0; i < amount; ++i) {
-			point = points [i];
-			point.CalculateForces ();
-			point.velocity += timestep * point.force / point.mass;
-			point.transform.position += timestep * point.velocity;
-
+			points[i].CalculateForces ();
 
 		}
+		for (int i = 0; i < amount; ++i) {
+			point = points [i];
+			point.velocity += timestep * point.force / point.mass;
+			point.position += timestep * point.velocity;
+		}
+
 	}
 }

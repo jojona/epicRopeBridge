@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class RK4 {
-	public float timestep = 0.05;
+	public float timestep = 0.05f;
 
 	public void Euler(List<Point> points) {
 		int amount = points.Count;
@@ -12,7 +12,7 @@ public class RK4 {
 			point = points [i];
 			point.CalculateForces ();
 			point.velocity += timestep * point.force / point.mass;
-			point.position += timestep * point.velocity;
+			point.transform.position += timestep * point.velocity;
 
 
 		}

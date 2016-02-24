@@ -2,15 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Point {
+public class Point : MonoBehaviour {
 
-	public Vector3 position;
 	public Vector3 velocity;
 	public Vector3 force;
 
 	public int mass;
 
-	List<Point> neighbours;
+	public List<Point> neighbours;
 
 
 	private int segLength = 2;
@@ -18,7 +17,7 @@ public class Point {
 	private float ropeDamp = 7;
 
 	public Point(Vector3 pos, int m) {
-		position = pos;
+		transform.position = pos;
 		mass = m;
 
 		neighbours = new List<Point>();
@@ -35,7 +34,7 @@ public class Point {
 		for (int i = 0; i < neighbours.Count; ++i) {
 			Point n = neighbours [i];
 			Vector3 localforce = Vector3.zero;
-			Vector3 distance = n.position - position;
+			Vector3 distance = n.transform.position - transform.position;
 
 			localforce = ropeStiff * (distance.magnitude - segLength) * (distance / distance.magnitude);
 			localforce -= ropeDamp * (velocity - n.velocity);

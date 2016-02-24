@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 public class Rope : MonoBehaviour {
 
+	public Point pointPrefab;
+
 	public Transform anchorPointStart;
 	public Transform anchorPointEnd;
 
@@ -12,6 +14,7 @@ public class Rope : MonoBehaviour {
 	private List<Point> points;
 	private RK4 rk4;
 
+	public MeshFilter filter;
 	public Mesh mesh;
 
 	// Use this for initialization
@@ -51,7 +54,7 @@ public class Rope : MonoBehaviour {
 
 		// Update simulation
 
-		rk4.Update (points);
+		rk4.Euler (points);
 
 		// Generate mesh
 		generateMesh();

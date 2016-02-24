@@ -12,17 +12,19 @@ public class Rope : MonoBehaviour {
 	private List<Point> points;
 	private RK4 rk4;
 
+	public Mesh mesh;
+
 	// Use this for initialization
 	void Start () {
 
 		points = new List<Point> ();
 		rk4 = new RK4 ();
 
-		Vector3 length = anchorPointStart - anchorPointEnd;
+		Vector3 length = anchorPointStart.position - anchorPointEnd.position;
 
 		// Create ropepoints
 		for (int i = 0; i < amount; ++i) {
-			Point p = new Point (anchorPointStart + i * length / amount);
+			Point p = new Point (anchorPointStart.position + i * length / amount, 1);
 
 			points.Add (p);
 		}
@@ -40,6 +42,12 @@ public class Rope : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 	
+		// Clear forces
+
+		for (int i = 0; i < amount; ++i) {
+			points [i].ResetForce ();
+		}
+
 
 		// Update simulation
 
@@ -51,6 +59,9 @@ public class Rope : MonoBehaviour {
 
 
 	public void generateMesh() {
+
+
+
 
 	}
 }

@@ -36,10 +36,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 127444}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 416630d31a6cac24fb1bebf5b14e7949, type: 3}
+  m_Script: {fileID: 11500000, guid: 0866c7a050739804d9d76255127af3e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pointPrefab: {fileID: 11417710, guid: 8ba12e5cc5578bf4495e2fcfa50c5acd, type: 2}
+  pointPrefab: {fileID: 11417710, guid: fa576286656fe364f98ad95cf9afd3a7, type: 2}
   anchorPointStart: {x: 0, y: 0, z: 0}
   anchorPointEnd: {x: 10, y: 0, z: 0}
   amountOfPointsPerRope: 10

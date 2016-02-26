@@ -147,7 +147,7 @@ public class RK4 {
 		points [(amountOfPointsPerRope * 2) - 1].force = Vector3.zero;
 	}
 
-	private void euler() {
+	public void euler() {
 		// Euler
 		evaluate (1f);
 		for (int i = 0; i < points.Count; ++i) {

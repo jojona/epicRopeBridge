@@ -33,3 +33,7 @@ sysinfo.txt
 .Trashes Icon? 
 ehthumbs.db 
 Thumbs.db
+
+# Version control stuff
+ProjectSettings/ProjectVersion.txt
+ProjectSettings/ProjectSetting.txt

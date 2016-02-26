@@ -11,9 +11,12 @@ public class Point : MonoBehaviour {
 	public Vector3 force = Vector3.zero;
 	public float mass = 1.0f;
 
-	public Vector3 RK4force = Vector3.zero;
-	public Vector3 savedPos = Vector3.zero;
-	public Vector3 savedVel = Vector3.zero;
+	public Vector3 RK4PosAcc = Vector3.zero;
+	public Vector3 RK4VelAcc = Vector3.zero;
+	public Vector3 dPos = Vector3.zero;
+	public Vector3 dVel = Vector3.zero;
+	public Vector3 statePos = Vector3.zero;
+	public Vector3 stateVel = Vector3.zero;
 
 
 	private List<Point> neighbour = new List<Point>();

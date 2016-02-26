@@ -94,6 +94,16 @@ public class Spawner : MonoBehaviour {
 		clearForces ();
 		gravity ();
 		springForces ();
+
+		endPoints ();
+	}
+
+	private void endPoints() {
+		points [0].force = Vector3.zero;
+		points [amountOfPointsPerRope].force = Vector3.zero;
+
+		points [amountOfPointsPerRope - 1].force = Vector3.zero;
+		points [(amountOfPointsPerRope * 2) - 1].force = Vector3.zero;
 	}
 
 	private void clearForces() {
@@ -104,7 +114,7 @@ public class Spawner : MonoBehaviour {
 
 	private void gravity() {
 		for (int i = 0; i < totalPoints; ++i) {
-			//points [i].force += Vector3.down * 9.82f * points[i].mass;
+			points [i].force += Vector3.down * 9.82f * points[i].mass;
 		}
 
 		// Rope 1 endpoints

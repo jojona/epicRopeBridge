@@ -11,10 +11,11 @@ public class Rope : PointController {
 	private List<Point> anchors;
 
 	public void Start() {
-		points = new List<Point> ();
+		
 	}
 
 	public void init(Vector3 start, Vector3 end, bool anchor, int amountOfPoints, string name) {
+		points = new List<Point> ();
 		Vector3 position = start;
 		Vector3 ropeDirection = (end - start) / amountOfPoints;
 

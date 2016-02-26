@@ -32,17 +32,16 @@ public class Plank : MonoBehaviour {
 		point3 = p3;
 		point4 = p4;
 
-
-		length = (point1.position - point2.position).magnitude + 2;
+		length = (point1.position - point2.position).magnitude + 1;
 		width = (point3.position - point4.position).magnitude + 1;
 		transform.localScale = new Vector3(length, 0.3f, width);
-		transform.position = point1.position + (point2.position - point1.position) / 2;
+		transform.position = position;
 
 		// TODO rotate
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		transform.position = point1.position + (point2.position - point1.position) / 2;
+		// TODO
 	}
 }

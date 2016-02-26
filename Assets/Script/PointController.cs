@@ -11,7 +11,7 @@ public abstract class PointController : MonoBehaviour {
 	protected Point createPoint(Vector3 position) {
 		Point p = (Point)Instantiate (pointPrefab, position, Quaternion.identity);
 		p.position = position;
-		//p.transform.parent = transform;
+		p.transform.parent = transform;
 		return p;
 	}
 

@@ -11,28 +11,32 @@ public class MiddleRope : PointController {
 
 	// Use this for initialization
 	void Start () {
-		points = new List<Point> ();
+		
 	}
 
-	public void init(bool withPlank, int amount, int segmentLength, Point p1, Point p2, Point p3, Point p4) {
+	public void init(bool withPlank, int amount, float segmentLength, Point p1, Point p2, Point p3, Point p4) {
+		points = new List<Point> ();
 
-		Vector3 position1 = (p2.position - p1.position) / 2;
-		Vector3 position2 = (p4.position - p3.position) / 2;
-		Vector3 position = (position2 - position1) / 2 + Vector3.down * segmentLength * amount;
+		p1.name = "P1";
+		p2.name = "P2";
+		p3.name = "P3";
+		p4.name = "P4";
 
-		plank = (Plank)Instantiate (plankPrefab, position, Quaternion.identity);
+
+		Vector3 position = p1.position + (p3.position - p1.position) / 2 + (p2.position - p1.position) / 2 + Vector3.down * segmentLength * amount;
 
 		for (int i = 0; i < amount; ++i) {
-
-			Point pnew1 = createPoint ((position - p1.position) * i / amount);
+			Point pnew1 = createPoint (position + (p1.position - position) * i / (amount) , "A"+i);
 			points.Add (pnew1);
-			Point pnew2 = createPoint ((position - p2.position) * i / amount);
+			Point pnew2 = createPoint (position + (p2.position - position) * i / (amount) , "B"+i);
 			points.Add (pnew2);
-			Point pnew3 = createPoint ((position - p3.position) * i / amount);
+			Point pnew3 = createPoint (position + (p3.position - position) * i / (amount) , "C"+i);
 			points.Add (pnew3);
-			Point pnew4 = createPoint ((position - p4.position) * i / amount);
+			Point pnew4 = createPoint (position + (p4.position - position) * i / (amount) , "D"+i);
 			points.Add (pnew4);
 		}
+			
+		Debug.DrawRay (position, p1.position - position , Color.green, 10000f, true);
 
 		for (int i = 0; i < amount - 1; ++i) {
 			points [i].AddNeigbour (points[i+1]);
@@ -41,9 +45,17 @@ public class MiddleRope : PointController {
 			points [amount * 3 + i].AddNeigbour (points[amount * 3 + i +1]);
 		}
 
-			
-		plank.init (points[0], points[amount], points[amount * 2], points[amount * 3]);
+		Vector3 plankposition = p1.position + (p3.position - p1.position) / 2 + (p2.position - p1.position) / 2 + Vector3.down * segmentLength * amount;
+		plank = (Plank)Instantiate (plankPrefab, plankposition, Quaternion.identity);
+		plank.position = plankposition;
+		plank.transform.parent = transform;
+		plank.init (points[0], points[1], points[2], points[3]);
+		points [0].name = "Corner1";
+		points [1].name = "Corner2";
+		points [2].name = "Corner3";
+		points [3].name = "Corner4";
 
+		// TODO check below if right
 		p1.AddNeigbour (points[amount - 1]);
 		p2.AddNeigbour (points[amount  * 2 - 1]);
 		p3.AddNeigbour (points[amount * 3 - 1]);

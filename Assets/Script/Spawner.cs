@@ -7,6 +7,9 @@ public class Spawner : MonoBehaviour {
 
 	public Point pointPrefab;
 	public Plank plankPrefab;
+	public Rope ropePrefab;
+	public MiddleRope middleRopePrefab;
+
 
 	public Vector3 anchorPointStart = Vector3.zero;
 	public Vector3 anchorPointEnd = Vector3.zero + Vector3.right * 10;
@@ -16,6 +19,8 @@ public class Spawner : MonoBehaviour {
 
 	private List<Point> points;
 	private List<Plank> planks;
+
+	private List<PointController> ropes;
 
 	public float timestep = 1.0f / 60.0f;
 
@@ -29,10 +34,44 @@ public class Spawner : MonoBehaviour {
 	void Start () {
 		points = new List<Point> ();
 		planks = new List<Plank> ();
+		ropes = new List<PointController> ();
+
+		//simpleSpawn ();
+		spawn();
+
+
+		rk4 = new RK4 (points, amountOfPointsPerRope, totalPoints, ropeStiffnes, ropeDampening, segmentLength);
+	}
+
+	void spawn() {
 		Vector3 position = anchorPointStart;
 		Vector3 ropeDirection = (anchorPointEnd - anchorPointStart) / amountOfPointsPerRope;
+		segmentLength = ropeDirection.magnitude;
+
+		Rope r1 = (Rope)Instantiate (ropePrefab, Vector3.zero, Quaternion.identity);
+		r1.init (anchorPointStart, anchorPointEnd, true, amountOfPointsPerRope, "rope1");
+		Rope r2 = (Rope)Instantiate (ropePrefab, Vector3.zero, Quaternion.identity);
+		r2.init (anchorPointStart + Vector3.back * segmentLength * 3, anchorPointEnd + Vector3.back * segmentLength * 3, true, amountOfPointsPerRope, "rope2");
+
+		ropes.Add (r1);
+		ropes.Add (r2);
+
+		for (int i = 0; i < 1/*amountOfPointsPerRope / 3*/; ++i) {
+			MiddleRope r = (MiddleRope)Instantiate (middleRopePrefab, Vector3.zero, Quaternion.identity);
+			r.init (true, 3, segmentLength, r1.getPoint (i * 2 + 2), r1.getPoint (i * 2 + 3), r2.getPoint (i * 2 + 2), r2.getPoint (i * 2 + 3));
+			ropes.Add (r);
+
+		}
 
 
+		totalPoints = 0;
+
+	}
+
+	void simpleSpawn() {
+
+		Vector3 position = anchorPointStart;
+		Vector3 ropeDirection = (anchorPointEnd - anchorPointStart) / amountOfPointsPerRope;
 		segmentLength = ropeDirection.magnitude;
 
 		// Rep 1
@@ -81,7 +120,6 @@ public class Spawner : MonoBehaviour {
 		}
 
 		totalPoints = amountOfPointsPerRope * 3;
-		rk4 = new RK4 (points, amountOfPointsPerRope, totalPoints, ropeStiffnes, ropeDampening, segmentLength);
 	}
 
 	// Update is called once per frame
@@ -91,7 +129,7 @@ public class Spawner : MonoBehaviour {
 			// Debug.Log ("");
 		}
 
-		rk4.euler ();
+		//rk4.euler ();
 
 	}
 
@@ -155,7 +193,7 @@ public class Spawner : MonoBehaviour {
 	private Point createPoint(Vector3 position) {
 		Point p = (Point)Instantiate (pointPrefab, position, Quaternion.identity);
 		p.position = position;
-		//p.transform.parent = transform;
+		p.transform.parent = transform;
 		return p;
 	}
 

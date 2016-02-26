@@ -6,6 +6,7 @@ using System.Linq;
 public class Spawner : MonoBehaviour {
 
 	public Point pointPrefab;
+	public Plank plankPrefab;
 
 	public Vector3 anchorPointStart = Vector3.zero;
 	public Vector3 anchorPointEnd = Vector3.zero + Vector3.right * 10;
@@ -14,17 +15,18 @@ public class Spawner : MonoBehaviour {
 	private int totalPoints;
 
 	private List<Point> points;
-	private float segmentLength;
+	private List<Plank> planks;
 
 	public float timestep = 1.0f / 60.0f;
 
+	private float segmentLength;
 	public float ropeStiffnes = 800f;
 	public float ropeDampening = 1f;
 
 	// Use this for initialization
 	void Start () {
 		points = new List<Point> ();
-
+		planks = new List<Plank> ();
 		Vector3 position = anchorPointStart;
 		Vector3 ropeDirection = (anchorPointEnd - anchorPointStart) / amountOfPointsPerRope;
 
@@ -63,8 +65,15 @@ public class Spawner : MonoBehaviour {
 			points.Add (createPoint ((anchorPointStart + ropeDirection * (2 * i)) + Vector3.forward * segmentLength, "Middle1 " + i));
 			points.Add (createPoint ((anchorPointStart + ropeDirection * (2 * i)) + Vector3.forward * segmentLength * 2, "Middle2 " + i));
 
-			points[amountOfPointsPerRope*2 + 2*i].AddNeigbour(points[2 * i]);
-			points [amountOfPointsPerRope * 2 + 2 * i].AddNeigbour (points [amountOfPointsPerRope * 2 + 1 + 2 * i	]);
+
+			if (i % 2 == 0) {
+				points [amountOfPointsPerRope * 2 + 2 * i].AddNeigbour (points [amountOfPointsPerRope * 2 + 1 + 2 * i]);
+			} else {
+				Plank p = (Plank)Instantiate (plankPrefab, position, Quaternion.identity);
+				p.init (points [amountOfPointsPerRope * 2 + 2 * i], points [amountOfPointsPerRope * 2 + 1 + 2 * i], points[0], points[0]);
+				planks.Add (p);
+			}
+			points [amountOfPointsPerRope * 2 + 2 * i].AddNeigbour (points [2 * i]);
 			points [amountOfPointsPerRope * 2 + 1 + 2*i].AddNeigbour (points[amountOfPointsPerRope + 2 * i]);
 		}
 
@@ -80,8 +89,6 @@ public class Spawner : MonoBehaviour {
 
 		euler ();
 
-
-
 	}
 
 	private void euler() {
@@ -92,8 +99,17 @@ public class Spawner : MonoBehaviour {
 			p.velocity += (timestep / p.mass) * p.force;
 			p.position += timestep * p.velocity;
 		}
-	}
 
+		for (int i = 0; i < planks.Count; ++i) {
+			Plank p = planks [i];
+
+			Vector3 distance = p.point2.position - p.point1.position;
+
+			p.point1.position += distance.normalized * (distance.magnitude - p.length)/2;
+			p.point2.position -= distance.normalized * (distance.magnitude - p.length)/2;
+		}
+
+	}
 
 	void simulationStep() {
 		clearForces ();

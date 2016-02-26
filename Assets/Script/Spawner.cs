@@ -23,12 +23,15 @@ public class Spawner : MonoBehaviour {
 	public float ropeStiffnes = 800f;
 	public float ropeDampening = 1f;
 
+	private RK4 rk4;
+
 	// Use this for initialization
 	void Start () {
 		points = new List<Point> ();
 		planks = new List<Plank> ();
 		Vector3 position = anchorPointStart;
 		Vector3 ropeDirection = (anchorPointEnd - anchorPointStart) / amountOfPointsPerRope;
+
 
 		segmentLength = ropeDirection.magnitude;
 
@@ -78,6 +81,7 @@ public class Spawner : MonoBehaviour {
 		}
 
 		totalPoints = amountOfPointsPerRope * 3;
+		rk4 = new RK4 (points, amountOfPointsPerRope, totalPoints, ropeStiffnes, ropeDampening, segmentLength);
 	}
 
 	// Update is called once per frame
@@ -87,27 +91,7 @@ public class Spawner : MonoBehaviour {
 			// Debug.Log ("");
 		}
 
-		euler ();
-
-	}
-
-	private void euler() {
-		// Euler
-		simulationStep ();
-		for (int i = 0; i < points.Count; ++i) {
-			Point p = points [i];
-			p.velocity += (timestep / p.mass) * p.force;
-			p.position += timestep * p.velocity;
-		}
-
-		for (int i = 0; i < planks.Count; ++i) {
-			Plank p = planks [i];
-
-			Vector3 distance = p.point2.position - p.point1.position;
-
-			p.point1.position += distance.normalized * (distance.magnitude - p.length)/2;
-			p.point2.position -= distance.normalized * (distance.magnitude - p.length)/2;
-		}
+		rk4.RungeKutta4 ();
 
 	}
 

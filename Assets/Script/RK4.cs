@@ -19,4 +19,8 @@ public class RK4 {
 		}
 
 	}
+
+	public void RungeKutta4(List<Point> points){
+		int amount = points.Count;
+	}
 }

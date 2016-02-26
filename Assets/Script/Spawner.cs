@@ -9,12 +9,14 @@ public class Spawner : MonoBehaviour {
 
 	public Vector3 anchorPointStart = Vector3.zero;
 	public Vector3 anchorPointEnd = Vector3.zero + Vector3.right * 10;
+
 	public int amountOfPointsPerRope = 10;
-	public int totalPoints;
+	private int totalPoints;
 
 	private List<Point> points;
 	private float segmentLength;
 
+	public float timestep = 1.0f / 60.0f;
 
 	public float ropeStiffnes = 800f;
 	public float ropeDampening = 1f;
@@ -58,16 +60,13 @@ public class Spawner : MonoBehaviour {
 
 		for (int i = 0; i < amountOfPointsPerRope / 2; ++i) {
 
-			points.Add (createPoint ((anchorPointStart + ropeDirection * (2 * i)) + Vector3.forward * segmentLength, "Middle 1"));
-			points.Add (createPoint ((anchorPointStart + ropeDirection * (2 * i)) + Vector3.forward * segmentLength * 2, "Middle 2"));
-			
+			points.Add (createPoint ((anchorPointStart + ropeDirection * (2 * i)) + Vector3.forward * segmentLength, "Middle1 " + i));
+			points.Add (createPoint ((anchorPointStart + ropeDirection * (2 * i)) + Vector3.forward * segmentLength * 2, "Middle2 " + i));
+
 			points[amountOfPointsPerRope*2 + 2*i].AddNeigbour(points[2 * i]);
 			points [amountOfPointsPerRope * 2 + 2 * i].AddNeigbour (points [amountOfPointsPerRope * 2 + 1 + 2 * i	]);
 			points [amountOfPointsPerRope * 2 + 1 + 2*i].AddNeigbour (points[amountOfPointsPerRope + 2 * i]);
 		}
-
-
-
 
 		totalPoints = amountOfPointsPerRope * 3;
 	}
@@ -79,14 +78,20 @@ public class Spawner : MonoBehaviour {
 			// Debug.Log ("");
 		}
 
-		simulationStep ();
+		euler ();
 
+
+
+	}
+
+	private void euler() {
+		// Euler
+		simulationStep ();
 		for (int i = 0; i < points.Count; ++i) {
 			Point p = points [i];
-			p.velocity += (Time.fixedDeltaTime / p.mass) * p.force;
-			p.position += Time.fixedDeltaTime * p.velocity;
+			p.velocity += (timestep / p.mass) * p.force;
+			p.position += timestep * p.velocity;
 		}
-
 	}
 
 
@@ -114,17 +119,16 @@ public class Spawner : MonoBehaviour {
 
 	private void gravity() {
 		for (int i = 0; i < totalPoints; ++i) {
-			points [i].force += Vector3.down * 9.82f * points[i].mass;
+			points [i].force += Vector3.down * 9.81f * points[i].mass;
 		}
 
 		// Rope 1 endpoints
-		points [0].force += (Random.onUnitSphere * points [0].mass + Vector3.left * 0.5f).normalized;
-		points [amountOfPointsPerRope - 1].force += (Random.onUnitSphere * points [amountOfPointsPerRope - 1].mass + Vector3.right * 0.5f).normalized;
-
+		//points [0].force += (Random.onUnitSphere * points [0].mass + Vector3.left * 0.5f).normalized;
+		//points [amountOfPointsPerRope - 1].force += (Random.onUnitSphere * points [amountOfPointsPerRope - 1].mass + Vector3.right * 0.5f).normalized;
 
 		// Rope 2 endpoints
-		points[amountOfPointsPerRope].force += (Random.onUnitSphere * points [amountOfPointsPerRope - 1].mass + Vector3.left * 0.5f).normalized;
-		points [amountOfPointsPerRope * 2 - 1].force += (Random.onUnitSphere * points [amountOfPointsPerRope - 1].mass + Vector3.right * 0.5f).normalized;
+		//points[amountOfPointsPerRope].force += (Random.onUnitSphere * points [amountOfPointsPerRope - 1].mass + Vector3.left * 0.5f).normalized;
+		//points [amountOfPointsPerRope * 2 - 1].force += (Random.onUnitSphere * points [amountOfPointsPerRope - 1].mass + Vector3.right * 0.5f).normalized;
 	}
 
 	private void springForces() {
@@ -144,10 +148,6 @@ public class Spawner : MonoBehaviour {
 				p.force += force;
 				n.force -= force;
 
-
-
-
-				//Debug.Log ("Force " + i + " " + force);
 			}
 		}
 	}
@@ -155,7 +155,7 @@ public class Spawner : MonoBehaviour {
 	private Point createPoint(Vector3 position) {
 		Point p = (Point)Instantiate (pointPrefab, position, Quaternion.identity);
 		p.position = position;
-		p.transform.parent = transform;
+		//p.transform.parent = transform;
 		return p;
 	}
 

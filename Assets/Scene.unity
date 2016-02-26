@@ -141,7 +141,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 44615998}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.16, y: 0, z: 5.98}
+  m_LocalPosition: {x: 3.16, y: 5.13, z: 5.98}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -246,6 +246,48 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
+--- !u!1001 &1556415439
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 426490, guid: e04cc0841e4c6034fbb14c198eaffb6d, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 426490, guid: e04cc0841e4c6034fbb14c198eaffb6d, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 426490, guid: e04cc0841e4c6034fbb14c198eaffb6d, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 426490, guid: e04cc0841e4c6034fbb14c198eaffb6d, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 426490, guid: e04cc0841e4c6034fbb14c198eaffb6d, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 426490, guid: e04cc0841e4c6034fbb14c198eaffb6d, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 426490, guid: e04cc0841e4c6034fbb14c198eaffb6d, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 426490, guid: e04cc0841e4c6034fbb14c198eaffb6d, type: 2}
+      propertyPath: m_RootOrder
+      value: 7
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: e04cc0841e4c6034fbb14c198eaffb6d, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &1677257270
 GameObject:
   m_ObjectHideFlags: 0
@@ -362,11 +404,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pointPrefab: {fileID: 11417710, guid: fa576286656fe364f98ad95cf9afd3a7, type: 2}
   anchorPointStart: {x: 0, y: 0, z: 0}
-  anchorPointEnd: {x: 10, y: 0, z: 0}
-  amountOfPointsPerRope: 10
-  totalPoints: 0
+  anchorPointEnd: {x: 30, y: 0, z: 0}
+  amountOfPointsPerRope: 20
+  timestep: 0.016666668
   ropeStiffnes: 800
-  ropeDampening: 1
+  ropeDampening: 5
 --- !u!4 &1906836836
 Transform:
   m_ObjectHideFlags: 0
@@ -435,7 +477,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2073486871}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.16, y: 0, z: -4.45}
+  m_LocalPosition: {x: 3.16, y: -2.59, z: -4.45}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

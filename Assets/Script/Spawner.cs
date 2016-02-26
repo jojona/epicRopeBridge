@@ -91,7 +91,7 @@ public class Spawner : MonoBehaviour {
 			// Debug.Log ("");
 		}
 
-		rk4.RungeKutta4 ();
+		rk4.euler ();
 
 	}
 

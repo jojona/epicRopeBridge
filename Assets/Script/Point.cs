@@ -1,54 +1,33 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+
 
 public class Point : MonoBehaviour {
 
-	public Vector3 position;
-	public Vector3 velocity;
-	public Vector3 force;
+	public Vector3 position = Vector3.zero;
+	public Vector3 velocity = Vector3.zero;
+	public Vector3 force = Vector3.zero;
+	public float mass = 1.0f;
 
-	public int mass;
+	private List<Point> neighbour = new List<Point>();
 
-	public List<Point> neighbours;
-
-
-	private int segLength = 2;
-	private int ropeStiff = 800;
-	private float ropeDamp = 7;
-
-	public Point(Vector3 pos, int m) {
-		position = pos;
-		mass = m;
-
-		neighbours = new List<Point>();
+	// Use this for initialization
+	void Start () {
+		
 	}
 
-
-	public void addNeighbour(Point p) {
-		neighbours.Add(p);
+	// Update is called once per frame
+	void LateUpdate () {
+		transform.position = position;
 	}
 
-	public void CalculateForces() {
-
-		// Spring force
-		for (int i = 0; i < neighbours.Count; ++i) {
-			Point n = neighbours [i];
-			Vector3 localforce = Vector3.zero;
-			Vector3 distance = n.position - position;
-
-			localforce = ropeStiff * (distance.magnitude - segLength) * (distance / distance.magnitude);
-			localforce -= ropeDamp * (velocity - n.velocity);
-
-			force += localforce;
-			n.force -= localforce;
-		}
-
-
+	public void AddNeigbour(Point p) {
+		neighbour.Add (p);
 	}
 
-	public void ResetForce() {
-		force = Vector3.zero;
+	public List<Point> GetNeighours() {
+		return neighbour;
 	}
-
 }

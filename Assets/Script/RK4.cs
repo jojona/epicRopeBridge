@@ -9,7 +9,7 @@ public class RK4 {
 		int amount = points.Count;
 		Point point;
 		for (int i = 0; i < amount; ++i) {
-			points[i].CalculateForces ();
+			//points[i].CalculateForces ();
 
 		}
 		for (int i = 0; i < amount; ++i) {

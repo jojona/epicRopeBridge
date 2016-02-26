@@ -14,8 +14,8 @@ public class RK4 {
 
 	private float segmentLength;
 
-	public RK4(List<Point> p, int appr, int tp, float rS, float rD, float sL){
-		points = p;
+	public RK4(List<Point> points, int appr, int tp, float rS, float rD, float sL){
+		this.points = points;
 
 		amountOfPointsPerRope = appr;
 		totalPoints = tp;
@@ -23,6 +23,13 @@ public class RK4 {
 		ropeStiffnes = rS;
 		ropeDampening = rD;
 		segmentLength = sL;
+
+		Point p;
+		for (int i = 0; i < points.Count; ++i) {
+			p = points [i];
+			p.dx = Vector3.zero;
+			p.dv = Vector3.zero;
+		}
 	}
 
 
@@ -30,70 +37,73 @@ public class RK4 {
 		int amount = points.Count;
 		Point p;
 
-		for (int i = 0; i < amount; ++i) {
-			p = points [i];
-			p.dPos = p.velocity;
-			p.dVel = Vector3.zero;
-		}
+//		// Initialize derivative
+//		for (int i = 0; i < amount; ++i) {
+//			p = points [i];
+//			p.dx = Vector3.zero;
+//			p.dv = Vector3.zero;
+//		}
 
 		//K1
-		evaluate(timestep*0f);
+		evaluate(timestep*0f, true);
 		for (int i = 0; i < amount; ++i) {
 			p = points [i];
 
-			// Initialize accumulators
-			p.RK4PosAcc = p.position;
-			p.RK4VelAcc = p.velocity;
-
 			//Calculating RK4
-			p.RK4PosAcc += p.dPos/6f;
-			p.RK4VelAcc += p.dVel/6f;
+			p.aPos = p.dx;
+			p.aVel = p.dv;
 		}
 
 		//K2
-		evaluate(timestep*0.5f);
+		evaluate(timestep*0.5f, true);
 		for (int i = 0; i < amount; ++i) {
 			p = points [i];
-			p.RK4PosAcc += 2f*p.dPos/6f;
-			p.RK4VelAcc += 2f*p.dVel/6f;
+			p.bPos = p.dx;
+			p.bVel = p.dv;
 		}
 
 		//K3
-		evaluate(timestep*0.5f);
+		evaluate(timestep*0.5f, true);
 		for (int i = 0; i < amount; ++i) {
 			p = points [i];
-			p.RK4PosAcc += 2f*p.dPos/6f;
-			p.RK4VelAcc += 2f*p.dVel/6f;
+			p.cPos = p.dx;
+			p.cVel = p.dv;
 		}
 
 		//K4
-		evaluate(timestep*1f);
+		evaluate(timestep*1f, true);
 		for (int i = 0; i < amount; ++i) {
 			p = points [i];
-			p.RK4PosAcc += p.dPos/6f;
-			p.RK4VelAcc += p.dVel/6f;
+			p.dPos = p.dx;
+			p.dVel = p.dv;
 
-			// Update final pos & vel    
-			p.position += p.RK4PosAcc;
-			p.velocity += p.RK4VelAcc;
+			// Update final pos & vel
+			p.dx = (1f/6f)*(p.aPos + 2f*(p.bPos + p.cPos) + p.dPos);
+			p.dv = (1f/6f)*(p.aVel + 2f*(p.bVel + p.cVel) + p.dVel);
+			p.position += p.dx;
+			p.velocity += p.dv;
 		}
 
 	}
 
-	void evaluate(float dt) {
+	void evaluate(float dt, bool isRK4) {
 		clearForces ();
 		gravity ();
-		springForces ();
-		endPoints ();
-		Point p;
-		for (int i = 0; i < points.Count; ++i) {
-			p = points [i];
-			// TODO initialize dPos & dVel
-			p.statePos = p.position + p.dPos * dt; 
-			p.stateVel = p.velocity + p.dVel * dt;
 
-			p.dPos = p.statePos;
-			p.dVel = p.force / p.mass;
+		Point p;
+		for (int i = 0; i < points.Count && isRK4; ++i) {
+			p = points [i];
+			p.statePos = p.position + p.dx * dt;
+			p.stateVel = p.velocity + p.dv * dt;
+		}
+
+
+		springForces (isRK4);
+		endPoints ();
+		for (int i = 0; i < points.Count && isRK4; ++i) {
+			p = points [i];
+			p.dx = p.stateVel;
+			p.dv = p.stateForce / p.mass; //TODO fixa p.force + p.stateForce
 		}
 
 	}
@@ -101,12 +111,14 @@ public class RK4 {
 	private void clearForces() {
 		for (int i = 0; i < totalPoints; ++i) {
 			points [i].force = Vector3.zero;
+			points [i].stateForce = Vector3.zero;
 		}
 	}
 
 	private void gravity() {
 		for (int i = 0; i < totalPoints; ++i) {
 			points [i].force += Vector3.down * 9.81f * points[i].mass;
+			points [i].stateForce += Vector3.down * 9.81f * points[i].mass;
 		}
 
 		// Rope 1 endpoints
@@ -118,7 +130,7 @@ public class RK4 {
 		//points [amountOfPointsPerRope * 2 - 1].force += (Random.onUnitSphere * points [amountOfPointsPerRope - 1].mass + Vector3.right * 0.5f).normalized;
 	}
 
-	private void springForces() {
+	private void springForces(bool isRK4) {
 		for (int i = 0; i < totalPoints; ++i) {
 
 			Point p = points [i];
@@ -127,13 +139,29 @@ public class RK4 {
 				Point n = p.GetNeighours() [j];
 
 				Vector3 force = Vector3.zero;
-				Vector3 distance = n.position - p.position;
+				Vector3 distance;
+				if (isRK4) {
+					distance = n.statePos - p.statePos;
+				} else {
+					distance = n.position - p.position;
+				}
+
 
 				force = ropeStiffnes * (distance.magnitude - segmentLength) * (distance / distance.magnitude);
-				force -= ropeDampening * (p.velocity - n.velocity);
+				if (isRK4) {
+					force -= ropeDampening * (p.stateVel - n.stateVel);
+				} else {
+					force -= ropeDampening * (p.velocity - n.velocity);
+				}
 
-				p.force += force;
-				n.force -= force;
+				if (isRK4) {
+					p.stateForce += force;
+					n.stateForce -= force;
+				} else {
+					p.force += force;
+					n.force -= force;
+				}
+
 
 			}
 		}
@@ -145,11 +173,17 @@ public class RK4 {
 
 		points [amountOfPointsPerRope - 1].force = Vector3.zero;
 		points [(amountOfPointsPerRope * 2) - 1].force = Vector3.zero;
+
+		points [0].stateForce = Vector3.zero;
+		points [amountOfPointsPerRope].stateForce = Vector3.zero;
+
+		points [amountOfPointsPerRope - 1].stateForce = Vector3.zero;
+		points [(amountOfPointsPerRope * 2) - 1].stateForce = Vector3.zero;
 	}
 
 	public void euler() {
 		// Euler
-		evaluate (1f);
+		evaluate (1f, false);
 		for (int i = 0; i < points.Count; ++i) {
 			Point p = points [i];
 			p.velocity += (timestep / p.mass) * p.force;

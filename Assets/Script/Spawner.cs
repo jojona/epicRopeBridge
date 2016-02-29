@@ -72,21 +72,49 @@ public class Spawner : MonoBehaviour {
 		// Copies the ropePrefab and creates to rope start points
 		Rope r1 = (Rope) Instantiate(ropePrefab, Vector3.zero, Quaternion.identity);
 		Rope r2 = (Rope) Instantiate(ropePrefab, Vector3.zero, Quaternion.identity);
-		r1.init(anchorPointStart, anchorPointEnd, true, amountOfPointsPerRope, "rope1");
-		r2.init(anchorPointStart + Vector3.back * segmentLength * 3, anchorPointEnd + Vector3.back * segmentLength * 3, true, amountOfPointsPerRope, "rope2");
+		r1.init(anchorPointStart, anchorPointEnd, true, amountOfPointsPerRope, "rope1", ropeStiffnes, ropeDampening);
+		r2.init(anchorPointStart + Vector3.back * segmentLength * 3, anchorPointEnd + Vector3.back * segmentLength * 3, true, amountOfPointsPerRope, "rope2", ropeStiffnes, ropeDampening);
 
 		// Adds newly created points to rope
 		ropes.Add(r1);
 		ropes.Add(r2);
 
 		// Creates middle rope points and adds them to list
-		for (int i = 0; i < 1/*amountOfPointsPerRope / 3*/; ++i) {
+		for (int i = 0; i * 2 + 3 < amountOfPointsPerRope - 1; ++i) {
 			MiddleRope r = (MiddleRope) Instantiate(middleRopePrefab, Vector3.zero, Quaternion.identity);
-			r.init(true, 3, segmentLength, r1.getPoint (i * 2 + 2), r1.getPoint (i * 2 + 3), r2.getPoint (i * 2 + 2), r2.getPoint (i * 2 + 3), ropeDirection);
+			r.init(true, 3, segmentLength, r1.getPoint (i * 2 + 2), r1.getPoint (i * 2 + 3), r2.getPoint (i * 2 + 2), r2.getPoint (i * 2 + 3), ropeDirection, ropeStiffnes, ropeDampening);
 			ropes.Add(r);
 		}
 		totalPoints = 0;
 	}
+
+
+	/** 
+	 * Update that is called once per frame.
+	 */
+	void FixedUpdate () {
+		for (int i = 0; i < amountOfPointsPerRope; ++i) {
+			// Debug.Log (""); // Paus before decommenting this
+		}
+		rk4.euler();
+	}
+
+	/**
+	 * Simulate one step in the simulation.
+	 */
+	void simulationStep() {
+		foreach (PointController pc in ropes) {
+			pc.simulationStep ();
+		}
+	}
+
+	/*
+	 *  ###################################################################
+	 * 
+	 * Simple simulation spawner below
+	 * 
+	 *  ###################################################################
+	 */
 
 	/**
 	 * Spawns a simple simulation.
@@ -158,76 +186,6 @@ public class Spawner : MonoBehaviour {
 		return position;
 	}
 
-	/** 
-	 * Update that is called once per frame.
-	 */
-	void FixedUpdate () {
-		for (int i = 0; i < amountOfPointsPerRope; ++i) {
-			// Debug.Log (""); // Paus before decommenting this
-		}
-		//rk4.euler();
-	}
-
-	/**
-	 * Simulate one step in the simulation.
-	 */
-	void simulationStep() {
-		clearForces();
-		applyGravity();
-		applySpringForces();
-		endPoints(); // Make end points fixed
-	}
-
-	/**
-	 * Sets force for endpoints to zero to make them fixed. 
-	 * Should be called after calculating forces for all points.
-	 */
-	private void endPoints() {
-		points [0].force 								= Vector3.zero;
-		points [amountOfPointsPerRope].force 			= Vector3.zero;
-		points [amountOfPointsPerRope - 1].force 		= Vector3.zero;
-		points [(amountOfPointsPerRope * 2) - 1].force 	= Vector3.zero;
-	}
-
-	/** 
-	 * Clears old forces and sets all to zero.
-	 */
-	private void clearForces() {
-		for (int i = 0; i < totalPoints; ++i) {
-			points [i].force = Vector3.zero;
-		}
-	}
-
-	/**
-	 * Applies gravity to all points.
-	 */
-	private void applyGravity() {
-		for (int i = 0; i < totalPoints; ++i) {
-			points [i].force += Vector3.down * 9.81f * points[i].mass;
-		}
-	}
-
-	/**
-	 * Applies spring forces to all points by walking through all points and making them affect their neighbours.
-	 */
-	private void applySpringForces() {
-		for (int i = 0; i < totalPoints; ++i) {
-			Point p = points[i];
-
-			for (int j = 0; j < p.GetNeighours().Count; ++j) {
-				Point n = p.GetNeighours() [j];
-
-				Vector3 force = Vector3.zero;
-				Vector3 distance = n.position - p.position;
-
-				force = ropeStiffnes * (distance.magnitude - segmentLength) * (distance / distance.magnitude);
-				force -= ropeDampening * (p.velocity - n.velocity);
-
-				p.force += force;
-				n.force -= force;
-			}
-		}
-	}
 
 	/**
 	 * Creates a point at given position.

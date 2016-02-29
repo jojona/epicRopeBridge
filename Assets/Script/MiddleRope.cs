@@ -14,7 +14,9 @@ public class MiddleRope : PointController {
 		
 	}
 
-	public void init(bool withPlank, int amount, float segmentLength, Point p1, Point p2, Point p3, Point p4, Vector3 direction) {
+	public void init(bool withPlank, int amount, float segmentLength, Point p1, Point p2, Point p3, Point p4, Vector3 direction, float stiffness, float dampening) {
+		init (stiffness, dampening, segmentLength);
+
 		points = new List<Point> ();
 
 		p1.name = "P1";
@@ -74,6 +76,14 @@ public class MiddleRope : PointController {
 		p3.AddNeigbour (points[amount * 3 - 1]);
 		p4.AddNeigbour (points[amount * 4 - 1]);
 
+	}
+
+	override public void simulationStep() {
+		clearForces ();
+		gravity ();
+		springForces ();
+
+		// TODO Plankforce();
 	}
 
 	public Point getEdge1() {

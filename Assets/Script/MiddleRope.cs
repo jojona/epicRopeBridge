@@ -26,16 +26,18 @@ public class MiddleRope : PointController {
 
 		for (int i = 0; i < amount; ++i) {
 
-			Vector3 corner1 = position - (p3.position - p1.position) / 2 - (p2.position - p1.position) / 2;
-			Vector3 corner2 = position - (p3.position - p1.position) / 2 + (p2.position - p1.position) / 2;
-			Vector3 corner3 = position + (p3.position - p1.position) / 2 - (p2.position - p1.position) / 2;
-			Vector3 corner4 = position + (p3.position - p1.position) / 2 + (p2.position - p1.position) / 2; 
+			Vector3 corner1 = position - (p3.position - p1.position) / 5 - (p2.position - p1.position) / 5;
+			Vector3 corner2 = position - (p3.position - p1.position) / 5 + (p2.position - p1.position) / 5;
+			Vector3 corner3 = position + (p3.position - p1.position) / 5 - (p2.position - p1.position) / 5;
+			Vector3 corner4 = position + (p3.position - p1.position) / 5 + (p2.position - p1.position) / 5; 
 
 
 			Debug.DrawRay (corner1, Vector3.up, Color.green, 1000f, true);
 			Debug.DrawRay (corner2, Vector3.up, Color.yellow, 1000f, true);
 			Debug.DrawRay (corner3, Vector3.up, Color.black, 1000f, true);
 			Debug.DrawRay (corner4, Vector3.up, Color.red, 1000f, true);
+
+			Debug.Log (corner1 + " " + (corner1 + (p1.position - corner1) * i / (amount)));
 
 			Point pnew1 = createPoint (corner1 + (p1.position - corner1) * i / (amount) , "A"+i);
 			points.Add (pnew1);
@@ -55,10 +57,9 @@ public class MiddleRope : PointController {
 			points [amount * 2 + i].AddNeigbour (points[amount * 2 + i +1]);
 			points [amount * 3 + i].AddNeigbour (points[amount * 3 + i +1]);
 		}
-
-		Vector3 plankposition = p1.position + (p3.position - p1.position) / 2 + (p2.position - p1.position) / 2 + Vector3.down * segmentLength * amount;
-		plank = (Plank)Instantiate (plankPrefab, plankposition, Quaternion.identity);
-		plank.position = plankposition;
+			
+		plank = (Plank)Instantiate (plankPrefab, position, Quaternion.identity);
+		plank.position = position;
 		plank.transform.parent = transform;
 		plank.transform.forward = direction;
 		plank.init (points[0], points[1], points[2], points[3]);

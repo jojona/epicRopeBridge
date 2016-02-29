@@ -82,7 +82,7 @@ public class Spawner : MonoBehaviour {
 		// Creates middle rope points and adds them to list
 		for (int i = 0; i < 1/*amountOfPointsPerRope / 3*/; ++i) {
 			MiddleRope r = (MiddleRope) Instantiate(middleRopePrefab, Vector3.zero, Quaternion.identity);
-			r.init(true, 3, segmentLength, r1.getPoint (i * 2 + 2), r1.getPoint (i * 2 + 3), r2.getPoint (i * 2 + 2), r2.getPoint (i * 2 + 3));
+			r.init(true, 3, segmentLength, r1.getPoint (i * 2 + 2), r1.getPoint (i * 2 + 3), r2.getPoint (i * 2 + 2), r2.getPoint (i * 2 + 3), ropeDirection);
 			ropes.Add(r);
 		}
 		totalPoints = 0;

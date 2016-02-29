@@ -32,8 +32,8 @@ public class Plank : MonoBehaviour {
 		point3 = p3;
 		point4 = p4;
 
-		length = (point1.position - point2.position).magnitude + 1;
-		width = (point3.position - point4.position).magnitude + 1;
+		length = (point1.position - point2.position).magnitude;
+		width = (point3.position - point4.position).magnitude;
 		transform.localScale = new Vector3(length, 0.3f, width);
 		transform.position = position;
 

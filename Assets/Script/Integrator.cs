@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Integrator {
-	public class Derivative{
+	private class Derivative{
 		public Vector3 deltaVelocity;
 		public Vector3 deltaPosition;
 		public Derivative (){
@@ -18,7 +18,7 @@ public class Integrator {
 		}
 	}
 
-	public class IntegrateData{
+	private class IntegrateData{
 		public Derivative evalResult;
 		public Derivative a;
 		public Derivative b;
@@ -44,9 +44,9 @@ public class Integrator {
 	private float timestep;
 
 
-	public Integrator(List<PointController> pcl){
+	public Integrator(List<PointController> pcl, float timestep){
 		m_calcData = new List<IntegrateData> ();
-		timestep = 1f / 60f;
+		this.timestep = timestep;
 		this.pcl = pcl;
 		numPoints = 0;
 		prevNumPoints = 0;
@@ -61,7 +61,7 @@ public class Integrator {
 
 		// a
 
-		evaluate(forceFunc, timestep*0f); //TODO timestep?
+		evaluate(forceFunc, timestep*0f);
 		for (int i = 0, tot = 0; i < pcl.Count; ++i) {
 			pc = pcl [i];
 			for (int j = 0; j < pc.getPoints().Count; ++j, ++tot) {
@@ -71,7 +71,7 @@ public class Integrator {
 
 		// b
 
-		evaluate(forceFunc, timestep*0.5f); //TODO timestep?
+		evaluate(forceFunc, timestep*0.5f);
 		for (int i = 0, tot = 0; i < pcl.Count; ++i) {
 			pc = pcl [i];
 			for (int j = 0; j < pc.getPoints().Count; ++j, ++tot) {
@@ -81,7 +81,7 @@ public class Integrator {
 
 		// c
 
-		evaluate(forceFunc, timestep*0.5f); //TODO timestep?
+		evaluate(forceFunc, timestep*0.5f);
 		for (int i = 0, tot = 0; i < pcl.Count; ++i) {
 			pc = pcl [i];
 			for (int j = 0; j < pc.getPoints().Count; ++j, ++tot) {
@@ -91,7 +91,7 @@ public class Integrator {
 
 		// d
 
-		evaluate(forceFunc, timestep*1f); //TODO timestep?
+		evaluate(forceFunc, timestep*1f);
 		for (int i = 0, tot = 0; i < pcl.Count; ++i) {
 			pc = pcl [i];
 			for (int j = 0; j < pc.getPoints().Count; ++j, ++tot) {
@@ -112,13 +112,13 @@ public class Integrator {
 				deltaVel = (1f / 6f) * (iData.a.deltaVelocity + 2 * (iData.b.deltaVelocity + iData.c.deltaVelocity) + iData.d.deltaVelocity);
 				p = pc.getPoints () [j];
 				p.position += deltaPos*timestep;
-				p.velocity += deltaVel*timestep; // TODO multiply with timestep?
+				p.velocity += deltaVel*timestep;
 			}
 		}
 
 	}
 
-	private void evaluate(Action updateForcesFunc, float timestep){
+	private void evaluate(Action updateForcesFunc, float dt){
 		PointController pc;
 		Point p;
 
@@ -130,8 +130,8 @@ public class Integrator {
 			for (int j = 0; j < pc.getPoints().Count; ++j, ++tot) {
 				p = pc.getPoints () [j];
 				derivative = m_calcData [tot].evalResult;
-				p.position += derivative.deltaPosition * timestep;
-				p.velocity += derivative.deltaVelocity * timestep;
+				p.position += derivative.deltaPosition * dt;
+				p.velocity += derivative.deltaVelocity * dt;
 			}
 		}
 		updateForcesFunc ();

@@ -61,7 +61,7 @@ public class Spawner : MonoBehaviour {
 
 		// Creates RK4 object for further calculations of movement
 		rk4 = new RK4 (points, amountOfPointsPerRope, totalPoints, ropeStiffness, ropeDampening, segmentLength);
-		integrator = new Integrator (ropes);
+		integrator = new Integrator (ropes, timestep);
 	}
 
 	/**

@@ -368,7 +368,7 @@ MonoBehaviour:
   anchorPointEnd: {x: 10, y: 0, z: 0}
   amountOfPointsPerRope: 6
   timestep: 0.016666668
-  ropeStiffnes: 800
+  ropeStiffnes: 2000
   ropeDampening: 10
 --- !u!4 &1906836836
 Transform:

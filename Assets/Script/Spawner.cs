@@ -109,6 +109,9 @@ public class Spawner : MonoBehaviour {
 	 */
 	void simulationStep() {
 		foreach (PointController pc in ropes) {
+			pc.clearForces ();
+		}
+		foreach (PointController pc in ropes) {
 			pc.simulationStep ();
 		}
 	}

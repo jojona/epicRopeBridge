@@ -17,10 +17,10 @@ public class MiddleRope : PointController {
 	public void init(bool withPlank, int amount, float segmentLength, Point p1, Point p2, Point p3, Point p4, Vector3 direction, float stiffness, float dampening) {
 		init (stiffness, dampening, segmentLength);
 
-		p1.name = "P1";
-		p2.name = "P2";
-		p3.name = "P3";
-		p4.name = "P4";
+		p1.name += " P1";
+		p2.name += " P2";
+		p3.name += " P3";
+		p4.name += " P4";
 
 		Vector3 position = p1.position + (p3.position - p1.position) / 2 + (p2.position - p1.position) / 2 + Vector3.down * segmentLength * amount;
 
@@ -36,8 +36,6 @@ public class MiddleRope : PointController {
 			//Debug.DrawRay (corner3, Vector3.up, Color.black, 1000f, true);
 			//Debug.DrawRay (corner4, Vector3.up, Color.red, 1000f, true);
 
-			Debug.Log (corner1 + " " + (corner1 + (p1.position - corner1) * i / (amount)));
-
 			Point pnew1 = createPoint (corner1 + (p1.position - corner1) * i / (amount) , "A"+i);
 			points.Add (pnew1);
 			Point pnew2 = createPoint (corner2 + (p2.position - corner2) * i / (amount) , "B"+i);
@@ -51,10 +49,10 @@ public class MiddleRope : PointController {
 		//Debug.DrawRay (position, p1.position - position , Color.green, 10000f, true);
 
 		for (int i = 0; i < amount - 1; ++i) {
-			points [amount * i + 0].AddNeigbour (points[amount * (i + 1) + 0]);
-			points [amount * i + 1].AddNeigbour (points[amount * (i + 1) + 1]);
-			points [amount * i + 2].AddNeigbour (points[amount * (i + 1) + 2]);
-			points [amount * i + 3].AddNeigbour (points[amount * (i + 1) + 3]);
+			points [4 * i + 0].AddNeigbour (points[4 * (i + 1) + 0]);
+			points [4 * i + 1].AddNeigbour (points[4 * (i + 1) + 1]);
+			points [4 * i + 2].AddNeigbour (points[4 * (i + 1) + 2]);
+			points [4 * i + 3].AddNeigbour (points[4 * (i + 1) + 3]);
 		}
 			
 		plank = (Plank)Instantiate (plankPrefab, position, Quaternion.identity);
@@ -80,7 +78,6 @@ public class MiddleRope : PointController {
 	}
 
 	override public void simulationStep() {
-		clearForces ();
 		gravity ();
 		springForces ();
 

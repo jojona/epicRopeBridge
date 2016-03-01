@@ -42,6 +42,8 @@ public class Point : MonoBehaviour {
 
 	public void AddNeigbour(Point p) {
 		neighbour.Add (p);
+
+		//Debug.Log (name + " Neighbour with " + p.name); 
 	}
 
 	public List<Point> GetNeighours() {

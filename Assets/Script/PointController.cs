@@ -28,9 +28,6 @@ public abstract class PointController : MonoBehaviour {
 	 * Creates a point at given position with a name.
 	 */
 	protected Point createPoint(Vector3 position, string name) {
-
-		Debug.Log (position + " " + name);
-
 		Point p = createPoint (position);
 		p.name = name;
 		return p;
@@ -46,7 +43,7 @@ public abstract class PointController : MonoBehaviour {
 	/** 
 	 * Clears old forces and sets all to zero.
 	 */
-	protected void clearForces() {
+	public void clearForces() {
 		for (int i = 0; i < points.Count; ++i) {
 			points [i].force = Vector3.zero;
 		}
@@ -57,7 +54,7 @@ public abstract class PointController : MonoBehaviour {
 	 */
 	protected void gravity() {
 		for (int i = 0; i < points.Count; ++i) {
-			//points[i].force += Vector3.down * 1f * points[i].mass;
+			points[i].force += Vector3.down * 1f * points[i].mass;
 		}
 	}
 

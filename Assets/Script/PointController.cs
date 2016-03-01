@@ -45,10 +45,7 @@ public abstract class PointController : MonoBehaviour {
 	 */
 	protected void endPoints() {
 		points [0].force = Vector3.zero;
-		points [points.Count].force = Vector3.zero;
-
 		points [points.Count - 1].force = Vector3.zero;
-		points [(points.Count * 2) - 1].force = Vector3.zero;
 	}
 
 	/** 
@@ -96,5 +93,9 @@ public abstract class PointController : MonoBehaviour {
 
 		point.force += force;
 		neighbour.force -= force;
+	}
+
+	public List<Point> getPoints() {
+		return points;
 	}
 }

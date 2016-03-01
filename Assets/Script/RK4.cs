@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -203,6 +204,20 @@ public class RK4 {
 			point.velocity += timestep * point.force / point.mass;
 			point.position += timestep * point.velocity;
 		}
+
+	}
+
+	public void newEuler(Action simulationStep, List<PointController> pcl) {
+
+		simulationStep ();
+
+		foreach (PointController pc in pcl) {
+			foreach (Point point in pc.getPoints ()) {
+				point.velocity += timestep * point.force / point.mass;
+				point.position += timestep * point.velocity;
+			}
+		}
+
 
 	}
 }

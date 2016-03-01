@@ -54,8 +54,8 @@ public class Spawner : MonoBehaviour {
 		ropes = new List<PointController> ();
 
 		// Spawn all points and planks
-		//spawn();
-		simpleSpawn ();
+		spawn();
+		//simpleSpawn ();
 
 		// Creates RK4 object for further calculations of movement
 		rk4 = new RK4 (points, amountOfPointsPerRope, totalPoints, ropeStiffnes, ropeDampening, segmentLength);
@@ -96,7 +96,7 @@ public class Spawner : MonoBehaviour {
 		for (int i = 0; i < amountOfPointsPerRope; ++i) {
 			// Debug.Log (""); // Paus before decommenting this
 		}
-		rk4.euler();
+		rk4.newEuler(simulationStep, ropes);
 	}
 
 	/**

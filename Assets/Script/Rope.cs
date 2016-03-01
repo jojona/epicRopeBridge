@@ -51,7 +51,7 @@ public class Rope : PointController {
 
 	override public void simulationStep() {
 		clearForces ();
-		gravity ();
+		//gravity ();
 		springForces ();
 		endPoints ();
 	}

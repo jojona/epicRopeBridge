@@ -24,7 +24,7 @@ public class Spawner : MonoBehaviour {
 	public float timestep = 1.0f / 60.0f;
 
 	// Rope properties (stiffness and dampening)
-	public float ropeStiffnes = 800f;
+	public float ropeStiffness = 800f;
 	public float ropeDampening = 1f;
 
 	private bool first = true;
@@ -59,7 +59,7 @@ public class Spawner : MonoBehaviour {
 		//simpleSpawn ();
 
 		// Creates RK4 object for further calculations of movement
-		rk4 = new RK4 (points, amountOfPointsPerRope, totalPoints, ropeStiffnes, ropeDampening, segmentLength);
+		rk4 = new RK4 (points, amountOfPointsPerRope, totalPoints, ropeStiffness, ropeDampening, segmentLength);
 	}
 
 	/**
@@ -73,8 +73,8 @@ public class Spawner : MonoBehaviour {
 		// Copies the ropePrefab and creates to rope start points
 		Rope r1 = (Rope) Instantiate(ropePrefab, Vector3.zero, Quaternion.identity);
 		Rope r2 = (Rope) Instantiate(ropePrefab, Vector3.zero, Quaternion.identity);
-		r1.init(anchorPointStart, anchorPointEnd, true, amountOfPointsPerRope, "rope1", ropeStiffnes, ropeDampening);
-		r2.init(anchorPointStart + Vector3.back * segmentLength * 3, anchorPointEnd + Vector3.back * segmentLength * 3, true, amountOfPointsPerRope, "rope2", ropeStiffnes, ropeDampening);
+		r1.init(anchorPointStart, anchorPointEnd, true, amountOfPointsPerRope, "rope1", ropeStiffness, ropeDampening);
+		r2.init(anchorPointStart + Vector3.back * segmentLength * 3, anchorPointEnd + Vector3.back * segmentLength * 3, true, amountOfPointsPerRope, "rope2", ropeStiffness, ropeDampening);
 
 		// Adds newly created points to rope
 		ropes.Add(r1);
@@ -83,7 +83,7 @@ public class Spawner : MonoBehaviour {
 		// Creates middle rope points and adds them to list
 		for (int i = 0; i < 1/*i * 2 + 3 < amountOfPointsPerRope - 1*/; ++i) {
 			MiddleRope r = (MiddleRope) Instantiate(middleRopePrefab, Vector3.zero, Quaternion.identity);
-			r.init(true, 2, segmentLength, r1.getPoint (i * 2 + 2), r1.getPoint (i * 2 + 3), r2.getPoint (i * 2 + 2), r2.getPoint (i * 2 + 3), ropeDirection, ropeStiffnes, ropeDampening);
+			r.init(true, 2, segmentLength, r1.getPoint (i * 2 + 2), r1.getPoint (i * 2 + 3), r2.getPoint (i * 2 + 2), r2.getPoint (i * 2 + 3), ropeDirection, ropeStiffness, ropeDampening);
 			ropes.Add(r);
 		}
 		totalPoints = 0;

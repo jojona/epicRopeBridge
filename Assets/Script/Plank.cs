@@ -9,17 +9,16 @@ public class Plank : MonoBehaviour {
 	public Vector3 velocity = Vector3.zero;
 	public Vector3 force = Vector3.zero;
 
-	public Point point1;
-	public Point point2;
-	public Point point3;
-	public Point point4;
-
+	private Point point1;
+	private Point point2;
+	private Point point3;
+	private Point point4;
 
 	public float mass = 1;
 
-	public float length;
-	public float width;
-	public float height;
+	private float length;
+	private float width;
+	private float height = 0.3f;
 
 	// Use this for initialization
 	void Start () {
@@ -34,10 +33,25 @@ public class Plank : MonoBehaviour {
 
 		length = (point1.position - point2.position).magnitude * 2;
 		width = (point3.position - point4.position).magnitude * 2;
-		transform.localScale = new Vector3(length, 0.3f, width);
+		transform.localScale = new Vector3(length, height, width);
 		transform.position = position;
 
+		// Diagonal = (position - point1.position).magnitude
+
 		// TODO rotate
+	}
+
+	public void simulation() {
+		Vector3 force = point1.force + point2.force + point3.force + point4.force;
+
+		Vector3 r = Vector3.Cross(point1.force, (point1.position - position));
+
+		Debug.DrawRay (position, r, Color.green, 1f, true);
+		Debug.DrawRay (point1.position, point1.force, Color.red, 1f, true);
+		Debug.DrawRay (position, point1.force, Color.red, 1f, true);
+		Debug.DrawRay (position, point1.position - position, Color.yellow, 1f, true);
+
+		// Clear forces on points
 	}
 	
 	// Update is called once per frame

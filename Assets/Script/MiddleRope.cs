@@ -82,6 +82,8 @@ public class MiddleRope : PointController {
 		springForces ();
 
 		// TODO Plankforce();
+
+		plank.simulation ();
 	}
 	
 	// Update is called once per frame

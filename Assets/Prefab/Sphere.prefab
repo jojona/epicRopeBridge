@@ -78,9 +78,19 @@ MonoBehaviour:
   velocity: {x: 0, y: 0, z: 0}
   force: {x: 0, y: 0, z: 0}
   mass: 1
-  RK4force: {x: 0, y: 0, z: 0}
-  savedPos: {x: 0, y: 0, z: 0}
-  savedVel: {x: 0, y: 0, z: 0}
+  dx: {x: 0, y: 0, z: 0}
+  dv: {x: 0, y: 0, z: 0}
+  statePos: {x: 0, y: 0, z: 0}
+  stateVel: {x: 0, y: 0, z: 0}
+  stateForce: {x: 0, y: 0, z: 0}
+  aPos: {x: 0, y: 0, z: 0}
+  aVel: {x: 0, y: 0, z: 0}
+  bPos: {x: 0, y: 0, z: 0}
+  bVel: {x: 0, y: 0, z: 0}
+  cPos: {x: 0, y: 0, z: 0}
+  cVel: {x: 0, y: 0, z: 0}
+  dPos: {x: 0, y: 0, z: 0}
+  dVel: {x: 0, y: 0, z: 0}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

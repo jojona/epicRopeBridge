@@ -44,6 +44,7 @@ public class Spawner : MonoBehaviour {
 
 	// Runge-Kutta RK4 object
 	private RK4 rk4;
+	private Integrator integrator;
 
 	/**
 	 * Initializes the ropes and planks.
@@ -60,6 +61,7 @@ public class Spawner : MonoBehaviour {
 
 		// Creates RK4 object for further calculations of movement
 		rk4 = new RK4 (points, amountOfPointsPerRope, totalPoints, ropeStiffness, ropeDampening, segmentLength);
+		integrator = new Integrator (ropes);
 	}
 
 	/**
@@ -101,7 +103,8 @@ public class Spawner : MonoBehaviour {
 		for (int i = 0; i < amountOfPointsPerRope; ++i) {
 			// Debug.Log (""); // Paus before decommenting this
 		}
-		rk4.newEuler(simulationStep, ropes);
+		//rk4.newEuler(simulationStep, ropes);
+		integrator.integrate(ropes, simulationStep);
 	}
 
 	/**

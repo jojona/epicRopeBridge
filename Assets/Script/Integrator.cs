@@ -39,11 +39,11 @@ public class Integrator {
 	/////////////////////////
 
 	private List<IntegrateData> m_calcData = new List<IntegrateData>();
-	private Action <float> forceFunc;
+	private Action forceFunc;
 	private int numPoints, prevNumPoints;
 
 
-	public Integrator(List<PointController> pcl, Action<float> updateForcesFunc){
+	public Integrator(List<PointController> pcl, Action updateForcesFunc){
 		m_calcData = new List<IntegrateData> ();
 
 		numPoints = 0;

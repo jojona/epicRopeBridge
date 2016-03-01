@@ -62,40 +62,40 @@ public class Integrator {
 		// a
 
 		evaluate(forceFunc, timestep*0f); //TODO timestep?
-		for (int i = 0; i < pcl.Count; ++i) {
+		for (int i = 0, tot = 0; i < pcl.Count; ++i) {
 			pc = pcl [i];
-			for (int j = 0; j < pc.getPoints().Count; ++j) {
-				m_calcData [i + j].a = m_calcData [i + j].evalResult;
+			for (int j = 0; j < pc.getPoints().Count; ++j, ++tot) {
+				m_calcData [tot].a = m_calcData [tot].evalResult;
 			}
 		}
 
 		// b
 
 		evaluate(forceFunc, timestep*0.5f); //TODO timestep?
-		for (int i = 0; i < pcl.Count; ++i) {
+		for (int i = 0, tot = 0; i < pcl.Count; ++i) {
 			pc = pcl [i];
-			for (int j = 0; j < pc.getPoints().Count; ++j) {
-				m_calcData [i + j].b = m_calcData [i + j].evalResult;
+			for (int j = 0; j < pc.getPoints().Count; ++j, ++tot) {
+				m_calcData [tot].b = m_calcData [tot].evalResult;
 			}
 		}
 
 		// c
 
 		evaluate(forceFunc, timestep*0.5f); //TODO timestep?
-		for (int i = 0; i < pcl.Count; ++i) {
+		for (int i = 0, tot = 0; i < pcl.Count; ++i) {
 			pc = pcl [i];
-			for (int j = 0; j < pc.getPoints().Count; ++j) {
-				m_calcData [i + j].c = m_calcData [i + j].evalResult;
+			for (int j = 0; j < pc.getPoints().Count; ++j, ++tot) {
+				m_calcData [tot].c = m_calcData [tot].evalResult;
 			}
 		}
 
 		// d
 
 		evaluate(forceFunc, timestep*1f); //TODO timestep?
-		for (int i = 0; i < pcl.Count; ++i) {
+		for (int i = 0, tot = 0; i < pcl.Count; ++i) {
 			pc = pcl [i];
-			for (int j = 0; j < pc.getPoints().Count; ++j) {
-				m_calcData [i + j].d = m_calcData [i + j].evalResult;
+			for (int j = 0; j < pc.getPoints().Count; ++j, ++tot) {
+				m_calcData [tot].d = m_calcData [tot].evalResult;
 			}
 		}
 
@@ -104,10 +104,10 @@ public class Integrator {
 		Point p;
 
 		// Weighted sum
-		for (int i = 0; i < pcl.Count; ++i) {
+		for (int i = 0, tot = 0; i < pcl.Count; ++i) {
 			pc = pcl [i];
-			for (int j = 0; j < pc.getPoints().Count; ++j) {
-				iData = m_calcData [i + j];
+			for (int j = 0; j < pc.getPoints().Count; ++j, ++tot) {
+				iData = m_calcData [tot];
 				deltaPos = (1f / 6f) * (iData.a.deltaPosition + 2 * (iData.b.deltaPosition + iData.c.deltaPosition) + iData.d.deltaPosition);
 				deltaVel = (1f / 6f) * (iData.a.deltaVelocity + 2 * (iData.b.deltaVelocity + iData.c.deltaVelocity) + iData.d.deltaVelocity);
 				p = pc.getPoints () [j];
@@ -125,21 +125,21 @@ public class Integrator {
 		Derivative derivative;
 
 		saveState ();
-		for (int i = 0; i < pcl.Count; ++i) {
+		for (int i = 0, tot = 0; i < pcl.Count; ++i) {
 			pc = pcl [i];
-			for (int j = 0; j < pc.getPoints().Count; ++j) {
+			for (int j = 0; j < pc.getPoints().Count; ++j, ++tot) {
 				p = pc.getPoints () [j];
-				derivative = m_calcData [i + j].evalResult;
+				derivative = m_calcData [tot].evalResult;
 				p.position += derivative.deltaPosition * timestep;
 				p.velocity += derivative.deltaVelocity * timestep;
 			}
 		}
 		updateForcesFunc ();
-		for (int i = 0; i < pcl.Count; ++i) {
+		for (int i = 0, tot = 0; i < pcl.Count; ++i) {
 			pc = pcl [i];
-			for (int j = 0; j < pc.getPoints().Count; ++j) {
+			for (int j = 0; j < pc.getPoints().Count; ++j, ++tot) {
 				p = pc.getPoints () [j];
-				derivative = m_calcData [i + j].evalResult;
+				derivative = m_calcData [tot].evalResult;
 				derivative.deltaPosition = p.velocity;
 				derivative.deltaVelocity = p.force / p.mass;
 			}

@@ -28,6 +28,9 @@ public abstract class PointController : MonoBehaviour {
 	 * Creates a point at given position with a name.
 	 */
 	protected Point createPoint(Vector3 position, string name) {
+
+		Debug.Log (position + " " + name);
+
 		Point p = createPoint (position);
 		p.name = name;
 		return p;
@@ -37,15 +40,7 @@ public abstract class PointController : MonoBehaviour {
 		ropeStiffness = stiffness;
 		ropeDampening = dampening;
 		this.segmentLength = segmentLength;
-	}
-
-	/**
-	 * Sets force for endpoints to zero to make them fixed. 
-	 * Should be called after calculating forces for all points.
-	 */
-	protected void endPoints() {
-		points [0].force = Vector3.zero;
-		points [points.Count - 1].force = Vector3.zero;
+		points = new List<Point> ();
 	}
 
 	/** 
@@ -62,7 +57,7 @@ public abstract class PointController : MonoBehaviour {
 	 */
 	protected void gravity() {
 		for (int i = 0; i < points.Count; ++i) {
-			points[i].force += Vector3.down * 9.81f * points[i].mass;
+			//points[i].force += Vector3.down * 1f * points[i].mass;
 		}
 	}
 
@@ -84,7 +79,6 @@ public abstract class PointController : MonoBehaviour {
 	 * Applies spring forces to two points p and n.
 	 */
 	protected void springforce(Point point, Point neighbour) {
-
 		Vector3 force = Vector3.zero;
 		Vector3 distance = neighbour.position - point.position;
 

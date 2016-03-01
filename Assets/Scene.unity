@@ -365,11 +365,11 @@ MonoBehaviour:
   ropePrefab: {fileID: 11498972, guid: 1f24c9d6719c8a04fb34132c23ab139c, type: 2}
   middleRopePrefab: {fileID: 11416536, guid: 2ffaae99f52be954a9bd2057177c2b19, type: 2}
   anchorPointStart: {x: 0, y: 0, z: 0}
-  anchorPointEnd: {x: 30, y: 0, z: 0}
-  amountOfPointsPerRope: 20
+  anchorPointEnd: {x: 10, y: 0, z: 0}
+  amountOfPointsPerRope: 6
   timestep: 0.016666668
   ropeStiffnes: 800
-  ropeDampening: 5
+  ropeDampening: 10
 --- !u!4 &1906836836
 Transform:
   m_ObjectHideFlags: 0

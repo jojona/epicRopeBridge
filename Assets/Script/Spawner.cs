@@ -27,6 +27,7 @@ public class Spawner : MonoBehaviour {
 	public float ropeStiffnes = 800f;
 	public float ropeDampening = 1f;
 
+	private bool first = true;
 	/**
 	 * Private fields.
 	 */
@@ -80,9 +81,9 @@ public class Spawner : MonoBehaviour {
 		ropes.Add(r2);
 
 		// Creates middle rope points and adds them to list
-		for (int i = 0; i * 2 + 3 < amountOfPointsPerRope - 1; ++i) {
+		for (int i = 0; i < 1/*i * 2 + 3 < amountOfPointsPerRope - 1*/; ++i) {
 			MiddleRope r = (MiddleRope) Instantiate(middleRopePrefab, Vector3.zero, Quaternion.identity);
-			r.init(true, 3, segmentLength, r1.getPoint (i * 2 + 2), r1.getPoint (i * 2 + 3), r2.getPoint (i * 2 + 2), r2.getPoint (i * 2 + 3), ropeDirection, ropeStiffnes, ropeDampening);
+			r.init(true, 2, segmentLength, r1.getPoint (i * 2 + 2), r1.getPoint (i * 2 + 3), r2.getPoint (i * 2 + 2), r2.getPoint (i * 2 + 3), ropeDirection, ropeStiffnes, ropeDampening);
 			ropes.Add(r);
 		}
 		totalPoints = 0;
@@ -92,7 +93,11 @@ public class Spawner : MonoBehaviour {
 	/** 
 	 * Update that is called once per frame.
 	 */
-	void FixedUpdate () {
+	void Update () {
+		if (!first) {
+			first = !first;
+		}
+
 		for (int i = 0; i < amountOfPointsPerRope; ++i) {
 			// Debug.Log (""); // Paus before decommenting this
 		}

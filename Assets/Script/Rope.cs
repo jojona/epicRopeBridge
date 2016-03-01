@@ -22,11 +22,9 @@ public class Rope : PointController {
 	 * Inits this rope.
 	 */
 	public void init(Vector3 start, Vector3 end, bool anchor, int amountOfPoints, string name, float stiffness, float dampening) {
-		init(stiffness, dampening, (start-end/amountOfPoints).magnitude);
-
+		init(stiffness, dampening, ((start-end)/amountOfPoints).magnitude);
 
 		// Inits points list, sets posiiton and direction
-		points = new List<Point>();
 		Vector3 position = start;
 		Vector3 ropeDirection = (end - start) / amountOfPoints;
 
@@ -51,7 +49,7 @@ public class Rope : PointController {
 
 	override public void simulationStep() {
 		clearForces ();
-		//gravity ();
+		gravity ();
 		springForces ();
 		endPoints ();
 	}
@@ -68,5 +66,15 @@ public class Rope : PointController {
 	 */
 	public Point getPoint(int index) {
 		return points[index];
+	}
+
+	/**
+	 * Sets force for endpoints to zero to make them fixed. 
+	 * Should be called after calculating forces for all points.
+	 */
+	protected void endPoints() {
+		foreach (Point endp in anchors) {
+			endp.force = Vector3.zero;
+		}
 	}
 }

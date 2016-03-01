@@ -14,7 +14,7 @@ public class Plank : MonoBehaviour {
 	private Point point3;
 	private Point point4;
 
-	public float mass = 1;
+	public float mass = 100;
 
 	private float length;
 	private float width;
@@ -43,7 +43,7 @@ public class Plank : MonoBehaviour {
 
 	public void simulation() {
 		float timestep = 1f/60f;
-		force = point1.force + point2.force + point3.force + point4.force;
+		force = point1.force + point2.force + point3.force + point4.force + Vector3.down * 9.82f * mass;
 
 		velocity += timestep * force / mass;
 		position += timestep * velocity;
@@ -53,6 +53,10 @@ public class Plank : MonoBehaviour {
 		point4.position += timestep * velocity;
 		// Clear forces on points
 		clearPointForces();
+	}
+
+	public void simulation2() {
+
 	}
 
 	public void clearPointForces() {

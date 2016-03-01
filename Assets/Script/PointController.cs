@@ -54,7 +54,7 @@ public abstract class PointController : MonoBehaviour {
 	 */
 	protected void gravity() {
 		for (int i = 0; i < points.Count; ++i) {
-			points[i].force += Vector3.down * 1f * points[i].mass;
+			points[i].force += Vector3.down * 9.82f * points[i].mass;
 		}
 	}
 

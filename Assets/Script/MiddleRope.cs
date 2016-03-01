@@ -80,6 +80,9 @@ public class MiddleRope : PointController {
 	override public void simulationStep() {
 		gravity ();
 		springForces ();
+
+		// TODO Plankforce();
+
 		plank.simulation ();
 	}
 	

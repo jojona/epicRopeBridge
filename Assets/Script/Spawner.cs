@@ -25,6 +25,7 @@ public class Spawner : MonoBehaviour {
 
 	// Rope properties (stiffness and dampening)
 	public float ropeStiffness = 800f;
+	public float middleRopeStiffness = 800f;
 	public float ropeDampening = 1f;
 
 	private bool first = true;
@@ -85,7 +86,7 @@ public class Spawner : MonoBehaviour {
 		// Creates middle rope points and adds them to list
 		for (int i = 0; i * 2 + 3 < amountOfPointsPerRope - 1; ++i) {
 			MiddleRope r = (MiddleRope) Instantiate(middleRopePrefab, Vector3.zero, Quaternion.identity);
-			r.init(true, 5, segmentLength/5, r1.getPoint (i * 2 + 2), r1.getPoint (i * 2 + 3), r2.getPoint (i * 2 + 2), r2.getPoint (i * 2 + 3), ropeDirection, ropeStiffness, ropeDampening);
+			r.init(true, 5, segmentLength/5, r1.getPoint (i * 2 + 2), r1.getPoint (i * 2 + 3), r2.getPoint (i * 2 + 2), r2.getPoint (i * 2 + 3), ropeDirection, middleRopeStiffness, ropeDampening);
 			ropes.Add(r);
 		}
 		totalPoints = 0;
@@ -103,6 +104,7 @@ public class Spawner : MonoBehaviour {
 		for (int i = 0; i < amountOfPointsPerRope; ++i) {
 			// Debug.Log (""); // Paus before decommenting this
 		}
+// ######################## Swap integration method here ###################################################
 		rk4.newEuler(simulationStep, ropes);
 		//integrator.integrate(ropes, simulationStep);
 	}

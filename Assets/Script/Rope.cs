@@ -30,7 +30,7 @@ public class Rope : PointController {
 
 		// Generates rope
 		for (int i = 0; i < amountOfPoints; ++i) {
-			points.Add(createPoint(position, name + i));
+			createPoint(position, name + i);
 			position += ropeDirection;
 		}
 

@@ -373,6 +373,7 @@ MonoBehaviour:
   amountOfPointsPerRope: 20
   timestep: 0.016666668
   ropeStiffness: 2000
+  middleRopeStiffness: 800
   ropeDampening: 5
 --- !u!4 &1906836836
 Transform:

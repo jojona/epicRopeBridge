@@ -15,17 +15,20 @@ public abstract class PointController : MonoBehaviour {
 	public abstract void simulationStep ();
 
 	/**
-	 * Creates a point at given position.
+	 * Creates a point and add it to list of points 
+	 * Creates the point at given position.
 	 */
 	protected Point createPoint(Vector3 position) {
 		Point p = (Point)Instantiate (pointPrefab, position, Quaternion.identity);
 		p.position = position;
 		p.transform.parent = transform;
+		points.Add (p);
 		return p;
 	}
 
 	/**
-	 * Creates a point at given position with a name.
+	 * Creates a point and add it to list of points 
+	 * Create the point at given position with a name.
 	 */
 	protected Point createPoint(Vector3 position, string name) {
 		Point p = createPoint (position);

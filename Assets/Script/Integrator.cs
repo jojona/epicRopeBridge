@@ -41,10 +41,12 @@ public class Integrator {
 	private List<IntegrateData> m_calcData = new List<IntegrateData>();
 	List<PointController> pcl;
 	private int numPoints, prevNumPoints;
+	private float timestep;
 
 
 	public Integrator(List<PointController> pcl){
 		m_calcData = new List<IntegrateData> ();
+		timestep = 1f / 60f;
 		this.pcl = pcl;
 		numPoints = 0;
 		prevNumPoints = 0;
@@ -59,7 +61,7 @@ public class Integrator {
 
 		// a
 
-		evaluate(forceFunc, 0f); //TODO timestep?
+		evaluate(forceFunc, timestep*0f); //TODO timestep?
 		for (int i = 0; i < pcl.Count; ++i) {
 			pc = pcl [i];
 			for (int j = 0; j < pc.getPoints().Count; ++j) {
@@ -69,7 +71,7 @@ public class Integrator {
 
 		// b
 
-		evaluate(forceFunc, 0.5f); //TODO timestep?
+		evaluate(forceFunc, timestep*0.5f); //TODO timestep?
 		for (int i = 0; i < pcl.Count; ++i) {
 			pc = pcl [i];
 			for (int j = 0; j < pc.getPoints().Count; ++j) {
@@ -79,7 +81,7 @@ public class Integrator {
 
 		// c
 
-		evaluate(forceFunc, 0.5f); //TODO timestep?
+		evaluate(forceFunc, timestep*0.5f); //TODO timestep?
 		for (int i = 0; i < pcl.Count; ++i) {
 			pc = pcl [i];
 			for (int j = 0; j < pc.getPoints().Count; ++j) {
@@ -89,7 +91,7 @@ public class Integrator {
 
 		// d
 
-		evaluate(forceFunc, 1f); //TODO timestep?
+		evaluate(forceFunc, timestep*1f); //TODO timestep?
 		for (int i = 0; i < pcl.Count; ++i) {
 			pc = pcl [i];
 			for (int j = 0; j < pc.getPoints().Count; ++j) {
@@ -101,7 +103,6 @@ public class Integrator {
 		Vector3 deltaPos, deltaVel;
 		Point p;
 
-
 		// Weighted sum
 		for (int i = 0; i < pcl.Count; ++i) {
 			pc = pcl [i];
@@ -110,8 +111,8 @@ public class Integrator {
 				deltaPos = (1f / 6f) * (iData.a.deltaPosition + 2 * (iData.b.deltaPosition + iData.c.deltaPosition) + iData.d.deltaPosition);
 				deltaVel = (1f / 6f) * (iData.a.deltaVelocity + 2 * (iData.b.deltaVelocity + iData.c.deltaVelocity) + iData.d.deltaVelocity);
 				p = pc.getPoints () [j];
-				p.position += deltaPos;
-				p.velocity += deltaVel; // TODO multiply with timestep?
+				p.position += deltaPos*timestep;
+				p.velocity += deltaVel*timestep; // TODO multiply with timestep?
 			}
 		}
 
@@ -177,12 +178,8 @@ public class Integrator {
 	}
 
 	private void loadState(){
-		PointController pc;
-		Point p;
-		for (int i = 0; i < pcl.Count; ++i) {
-			pc = pcl [i];
-			for (int j = 0; j < pc.getPoints().Count; ++j) {
-				p = pc.getPoints () [j];
+		foreach(PointController pc in pcl) {
+			foreach(Point p in pc.getPoints()) {
 				p.position = p.statePos;
 				p.velocity = p.stateVel;
 			}

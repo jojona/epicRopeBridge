@@ -66,10 +66,19 @@ public class MiddleRope : PointController {
 		points [3].name += "Corner4";
 
 		// TODO check below if right
+		/*
+		*/
 		p1.AddNeigbour (points[amount * 4 - 4]);
 		p2.AddNeigbour (points[amount * 4 - 3]);
 		p3.AddNeigbour (points[amount * 4 - 2]);
 		p4.AddNeigbour (points[amount * 4 - 1]);
+		/*
+		points [amount * 4 - 4].AddNeigbour (p1);
+		points [amount * 4 - 3].AddNeigbour (p2);
+		points [amount * 4 - 2].AddNeigbour (p3);
+		points [amount * 4 - 1].AddNeigbour (p4);
+		*/
+
 		points[amount * 4 - 4].name += "Fel 1";
 		points[amount * 4 - 3].name += "Fel 2";
 		points[amount * 4 - 2].name += "Fel 3";

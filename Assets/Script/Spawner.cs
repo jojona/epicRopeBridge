@@ -103,8 +103,8 @@ public class Spawner : MonoBehaviour {
 		for (int i = 0; i < amountOfPointsPerRope; ++i) {
 			// Debug.Log (""); // Paus before decommenting this
 		}
-		//rk4.newEuler(simulationStep, ropes);
-		integrator.integrate(ropes, simulationStep);
+		rk4.newEuler(simulationStep, ropes);
+		//integrator.integrate(ropes, simulationStep);
 	}
 
 	/**

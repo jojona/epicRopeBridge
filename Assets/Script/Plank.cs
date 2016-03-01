@@ -42,20 +42,28 @@ public class Plank : MonoBehaviour {
 	}
 
 	public void simulation() {
-		Vector3 force = point1.force + point2.force + point3.force + point4.force;
+		float timestep = 1f/60f;
+		force = point1.force + point2.force + point3.force + point4.force;
 
-		Vector3 r = Vector3.Cross(point1.force, (point1.position - position));
-
-		Debug.DrawRay (position, r, Color.green, 1f, true);
-		Debug.DrawRay (point1.position, point1.force, Color.red, 1f, true);
-		Debug.DrawRay (position, point1.force, Color.red, 1f, true);
-		Debug.DrawRay (position, point1.position - position, Color.yellow, 1f, true);
-
+		velocity += timestep * force / mass;
+		position += timestep * velocity;
+		point1.position += timestep * velocity;
+		point2.position += timestep * velocity;
+		point3.position += timestep * velocity;
+		point4.position += timestep * velocity;
 		// Clear forces on points
+		clearPointForces();
+	}
+
+	public void clearPointForces() {
+		point1.force = Vector3.zero;
+		point2.force = Vector3.zero;
+		point3.force = Vector3.zero;
+		point4.force = Vector3.zero;
 	}
 	
 	// Update is called once per frame
-	void Update () {
-		// TODO
+	void LateUpdate () {
+		transform.position = position;
 	}
 }

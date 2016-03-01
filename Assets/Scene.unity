@@ -216,6 +216,10 @@ Prefab:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: c12e479fb4344174a884055f08930c3d, type: 2}
+    - target: {fileID: 113210, guid: c3c54b95ab5547d4b9eb979646af124d, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c3c54b95ab5547d4b9eb979646af124d, type: 2}
   m_IsPrefabParent: 0
@@ -365,10 +369,10 @@ MonoBehaviour:
   ropePrefab: {fileID: 11498972, guid: 1f24c9d6719c8a04fb34132c23ab139c, type: 2}
   middleRopePrefab: {fileID: 11416536, guid: 2ffaae99f52be954a9bd2057177c2b19, type: 2}
   anchorPointStart: {x: 0, y: 0, z: 0}
-  anchorPointEnd: {x: 10, y: 0, z: 0}
-  amountOfPointsPerRope: 6
+  anchorPointEnd: {x: 50, y: 0, z: 0}
+  amountOfPointsPerRope: 20
   timestep: 0.016666668
-  ropeStiffnes: 2000
+  ropeStiffness: 800
   ropeDampening: 10
 --- !u!4 &1906836836
 Transform:

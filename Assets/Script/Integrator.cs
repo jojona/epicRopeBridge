@@ -73,5 +73,4 @@ public class Integrator {
 			m_calcData[i].evalResult.Reset();
 		}
 	}
-
 }

@@ -55,6 +55,10 @@ public class Plank : MonoBehaviour {
 		point4.mass = mass / 4;
 
 		length = 2 * (point1.position - point2.position).magnitude;
+		point1.position.x -= length / 4;
+		point2.position.x += length / 4;
+		point3.position.x -= length / 4;
+		point4.position.x += length / 4;
 		width = (point3.position - point1.position).magnitude;
 		transform.localScale = new Vector3(width, height, length);
 		transform.position = position;

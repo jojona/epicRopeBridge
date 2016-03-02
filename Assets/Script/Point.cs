@@ -9,7 +9,7 @@ public class Point : MonoBehaviour {
 	public Vector3 position = Vector3.zero;
 	public Vector3 velocity = Vector3.zero;
 	public Vector3 force = Vector3.zero;
-	public float mass = 1.0f;
+	public float mass = 10000f;
 
 
 	public Vector3 dx = Vector3.zero;

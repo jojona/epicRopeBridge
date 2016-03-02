@@ -12,29 +12,29 @@ public class Plank : MonoBehaviour {
 	private Point point3;
 	private Point point4;
 
-	private float length;
-	private float width;
-	private float height = 0.3f;
+	private float length; // z
+	private float width; // x
+	private float height = 0.3f; // y
 
-	// X
-	public Vector3 position = Vector3.zero;
-	public Matrix R = new Matrix(3, 3); // Local space rotation R(t)
-	public Quaternion q;
-	public Vector3 P = Vector3.zero; // Linear momentum // TODO Size
-	public Vector3 L = Vector3.zero; // Angular momentum	L(t) = I(t)w(t)
+	// Y(t)
+	public Vector3 position;
+	private Matrix R = new Matrix(3, 3); // Local space rotation R(t)
+	private Quaternion q;
+	private Vector3 P = Vector3.zero; // Linear momentum // TODO Size
+	private Vector3 L = Vector3.zero; // Angular momentum	L(t) = I(t)w(t)
 
-	// Dx
-	public Vector3 velocity = Vector3.zero;
-	public Vector3 w = Vector3.zero; // Omega Angular Velocity
-	public Vector3 force = Vector3.zero;
-	public Vector3 torque = Vector3.zero; // dL(t) = torque
+	// d/dt Y(t)
+	private Vector3 velocity = Vector3.zero;
+	private Vector3 w = Vector3.zero; // Omega Angular Velocity
+	private Vector3 force = Vector3.zero;
+	private Vector3 torque = Vector3.zero; // dL(t) = torque
 
-	public float mass = 100;
-	// Center of mass = position
 
 	// Intertia (Ibody)	// Invers is (I^-1body) 1/xij from normal inertia matrix
 	public Matrix Ibody;
 	public Matrix IbodyInv;
+	public float mass = 100;
+	// Center of mass = position
 
 	// Use this for initialization
 	void Start () {
@@ -52,17 +52,17 @@ public class Plank : MonoBehaviour {
 		point3.mass = mass;
 		point4.mass = mass;
 
-		length = (point1.position - point2.position).magnitude * 2;
-		width = (point3.position - point4.position).magnitude * 2;
-		transform.localScale = new Vector3(length, height, width);
+		length = (point1.position - point2.position).magnitude;
+		width = (point3.position - point1.position).magnitude;
+		transform.localScale = new Vector3(width, height, length);
 		transform.position = position;
 
 		// Calculate intertia
 
 		Ibody = new Matrix (3, 3);
-		Ibody [0, 0] = height * height * length * length * mass / 12;
-		Ibody [1, 1] = width * width * length * length * mass / 12;
-		Ibody [2, 2] = height * height * width * width * mass / 12;
+		Ibody [0, 0] = (height * height + length * length) * mass / 12;
+		Ibody [1, 1] = (width * width + length * length) * mass / 12;
+		Ibody [2, 2] = (height * height + width * width) * mass / 12;
 		IbodyInv = Ibody.Invert ();
 
 		R [0, 0] = 1; R [0, 1] = 0; R [0, 2] = 0;
@@ -118,15 +118,14 @@ public class Plank : MonoBehaviour {
 	public void simulation() {
 		float timestep = 1f / 60f;
 
-		// TODO http://www.cc.gatech.edu/classes/AY2012/cs4496_spring/slides/RigidSim.pdf p 53
+
+		// LOOK AT THIS
+		// https://github.com/ept/maniation/blob/master/matlab/rigidbody.m
 
 		// Calculate torque and force
-
 		torque = Vector3.zero;
-
 		// Force
 		force = point1.force + point2.force + point3.force + point4.force + Vector3.down * 9.82f * mass;
-
 		// Torque = Sum((pi - x) X Fi)
 		Vector3 t1 = Vector3.Cross ((point1.position - position), point1.force);
 		Vector3 t2 = Vector3.Cross ((point1.position - position), point2.force);
@@ -134,26 +133,16 @@ public class Plank : MonoBehaviour {
 		Vector3 t4 = Vector3.Cross ((point1.position - position), point4.force);
 		torque += t1 + t2 + t3 + t4;
 
-
-		// Y(t) ####################
-		// x(t) position
-		// R(t) rotation { x y z }
-		// P(t) velocity
-		// L(t) angularMomentum-  { -X -Y -Z }			= Iw		dL = torque
+		// get R from q
+		R[0,0] = (1 - 2 * q.y * q.y - q.z*q.z); R[0,1] = 2 * q.x * q.y - 2 * q.w * q.z; R[0,2] = 2 * q.x * q.z + 2 * q.w * q.y;
+		R[1,0] = 2 * q.x * q.y + 2 * q.w * q.z; R[0,1] = (1 - 2 * q.x * q.x - q.z*q.z); R[1,2] = 2 * q.y * q.z - 2 * q.w * q.x;
+		R[2,0] = 2 * q.x * q.z - 2 * q.w * q.y; R[2,1] = 2 * q.y * q.z + 2 * q.w * q.x; R[2,2] = (1 - 2 * q.x * q.x - q.y*q.y);
 
 		// Calculate I(t)	
-			// I(t) = R(t) Ibody R(t)^T
-			// I(t)^-1 R(t) I^-1body R(t)^T
-		Matrix I = R * Ibody * Matrix.Transpose (R);
+		// I(t) = R(t) Ibody R(t)^T
+		// I(t)^-1 = R(t) I^-1body R(t)^T
+		//Matrix I = R * Ibody * Matrix.Transpose (R);
 		Matrix IInv = R * IbodyInv * Matrix.Transpose(R);
-
-		// dY(t) ##################
-		// v(t)
-		// w(t) * R(t)
-		// F(t)
-		// torque
-
-		velocity += timestep * force / mass;
 
 		// Calculate w(t) = I(t)^-1 L(t)
 		Matrix Ltmp = new Matrix(3,1);
@@ -161,7 +150,19 @@ public class Plank : MonoBehaviour {
 		Ltmp [1, 0] = L.y;
 		Ltmp [2, 0] = L.z;
 		Matrix wMatrix = IInv * Ltmp; 
-		Vector3 w = new Vector3 (wMatrix [0, 0], wMatrix [1, 0], wMatrix [1, 0]);
+		w = new Vector3 (wMatrix [0, 0], wMatrix [1, 0], wMatrix [2, 0]);
+
+		// Y(t) ####################
+		// x(t) position
+		// R(t) rotation { x y z }
+		// P(t) velocity
+		// L(t) angularMomentum-  { -X -Y -Z }			= Iw		dL = torque
+
+		// dY(t) ##################
+		// v(t)
+		// w(t) * R(t)
+		// F(t)
+		// torque
 
 		Matrix wStar = new Matrix (3, 3);
 		wStar [0, 0] = 0; 	wStar [0, 1] = -w.z;wStar [0, 2] = w.y;
@@ -177,32 +178,57 @@ public class Plank : MonoBehaviour {
 		dR [1, 0] = dry [0]; dR [1, 1] = dry [1]; dR [1, 2] = dry [2];
 		dR [2, 0] = drz [0]; dR [2, 1] = drz [1]; dR [2, 2] = drz [2];*/
 
-		position += timestep * velocity;
+		//R += timestep * dR;
 
-		R += timestep * dR;
-		q = q * (new Quaternion (0, w.x * timestep * 1/2, w.y * timestep * 1/2, w.z * timestep * 1/2)); // 1/2 [0 ; w(t)] q(t)
+		Quaternion dq = (new Quaternion (0, w.x * timestep * 1/2, w.y * timestep * 1/2, w.z * timestep * 1/2)) * q; // 1/2 [0 ; w(t)] q(t)
 
+		q.w += dq.w;
+		q.x += dq.x;
+		q.y += dq.y;
+		q.z += dq.z;
+
+		float norm = Mathf.Sqrt(q.w*q.w + q.x * q.x + q.y*q.y + q.z*q.z);
+		q.w = q.w / norm;
+		q.x = q.x / norm;
+		q.y = q.y / norm;
+		q.z = q.z / norm;
+
+		// Calculate P and L
 		P += force * timestep;
 		L += torque * timestep;
 
+		// Calculate R, v, Iinv, w
+		velocity = P / mass;
+
+		position += timestep * velocity;
+
+		// Point velocity
 		point1.position += timestep * velocity;
 		point2.position += timestep * velocity;
 		point3.position += timestep * velocity;
 		point4.position += timestep * velocity;
-		clearPointForces ();
 
-		// Point velocity
+		//Debug.Log ("New velocity " + Vector3.Cross (w, (point1.position - position)) + " Old vel " + velocity);
+
 		/*
-		point1.velocity = Vector3.Cross (w, (point1.position - position)) * timestep + velocity;
-		point2.velocity = Vector3.Cross (w, (point2.position - position)) * timestep+ velocity;
-		point3.velocity = Vector3.Cross (w, (point3.position - position)) * timestep+ velocity;
-		point4.velocity = Vector3.Cross (w, (point4.position - position)) * timestep+ velocity;
+		point1.position += (velocity + Vector3.Cross (w, (point1.position - position))) * timestep;
+		point2.position += (velocity + Vector3.Cross (w, (point2.position - position))) * timestep;
+		point3.position += (velocity + Vector3.Cross (w, (point3.position - position))) * timestep;
+		point4.position += (velocity + Vector3.Cross (w, (point4.position - position))) * timestep;
 		*/
+
+		clearPointForces ();
 	}
 }
 
+// TODO http://www.cc.gatech.edu/classes/AY2012/cs4496_spring/slides/RigidSim.pdf p 53
 // http://www.cs.cmu.edu/~baraff/sigcourse/notesd1.pdf
+// http://web.engr.illinois.edu/~yyz/teaching/cs598lect/RigidBodyImpl.pdf
+// http://ocw.mit.edu/courses/aeronautics-and-astronautics/16-07-dynamics-fall-2009/lecture-notes/MIT16_07F09_Lec25.pdf
+// http://www.cs.unc.edu/~lin/COMP768-F07/LEC/rbd1.pdf
 
+// Visualisation of torque https://www.youtube.com/watch?v=Sm4pV3xyJRE
+// Quaternion http://www.math.unm.edu/~vageli/papers/rrr.pdf
 /*
 		// Angular properties
 angularVelocity // Scalar in units of radians per timestep (or seconds) (omega)

@@ -11,6 +11,7 @@ public class Spawner : MonoBehaviour {
 	public Point pointPrefab;
 	public Plank plankPrefab;
 	public Rope ropePrefab;
+	public Box boxPrefab;
 	public MiddleRope middleRopePrefab;
 
 	// Anchor points for the bridge
@@ -40,6 +41,8 @@ public class Spawner : MonoBehaviour {
 	private List<Plank> planks;
 	private List<PointController> ropes;
 
+	private Box box;
+
 	// Length of each segment (space between rope points)
 	private float segmentLength;
 
@@ -57,8 +60,11 @@ public class Spawner : MonoBehaviour {
 		ropes = new List<PointController> ();
 
 		// Spawn all points and planks
-		spawn();
+// ######################## Change spwan here ###################################################
+		//spawn();
 		//simpleSpawn ();
+		miniSpawn();
+		plankSpawn();
 
 		// Creates RK4 object for further calculations of movement
 		rk4 = new RK4 (points, amountOfPointsPerRope, totalPoints, ropeStiffness, ropeDampening, segmentLength);
@@ -92,6 +98,38 @@ public class Spawner : MonoBehaviour {
 		totalPoints = 0;
 	}
 
+	/**
+	 * Mini spawn
+	 */
+	void miniSpawn() {
+		anchorPointEnd = anchorPointStart + Vector3.right * 5;
+		amountOfPointsPerRope = 4;
+
+		Vector3 ropeDirection = (anchorPointEnd - anchorPointStart) / amountOfPointsPerRope;
+		segmentLength = ropeDirection.magnitude;
+
+		Rope r1 = (Rope) Instantiate(ropePrefab, Vector3.zero, Quaternion.identity);
+		Rope r2 = (Rope) Instantiate(ropePrefab, Vector3.zero, Quaternion.identity);
+		r1.init(anchorPointStart, anchorPointEnd, true, amountOfPointsPerRope, "rope1", ropeStiffness, ropeDampening);
+		r2.init(anchorPointStart + Vector3.back * segmentLength * 3, anchorPointEnd + Vector3.back * segmentLength * 3, true, amountOfPointsPerRope, "rope2", ropeStiffness, ropeDampening);
+	
+		// Adds newly created points to rope
+		ropes.Add(r1);
+		ropes.Add(r2);
+
+		MiddleRope r = (MiddleRope) Instantiate(middleRopePrefab, Vector3.zero, Quaternion.identity);
+		r.init(true, 1, segmentLength/5, r1.getPoint (1), r1.getPoint (2), r2.getPoint (1), r2.getPoint (2), ropeDirection, middleRopeStiffness, ropeDampening);
+		ropes.Add(r);
+	}
+
+	void plankSpawn() {
+		Vector3 position = new Vector3(15, 0,0 );
+		box = (Box)Instantiate (boxPrefab, position, Quaternion.identity);
+		box.position = position;
+		box.transform.parent = transform;
+		box.transform.forward = Vector3.forward;
+		box.init ();
+	}
 
 	/** 
 	 * Update that is called once per frame.
@@ -119,6 +157,11 @@ public class Spawner : MonoBehaviour {
 		foreach (PointController pc in ropes) {
 			pc.simulationStep ();
 		}
+
+		box.force = Vector3.zero;
+		box.simulation();
+
+
 	}
 
 	/*

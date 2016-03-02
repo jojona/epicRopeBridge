@@ -42,12 +42,14 @@ MonoBehaviour:
   pointPrefab: {fileID: 11417710, guid: fa576286656fe364f98ad95cf9afd3a7, type: 2}
   plankPrefab: {fileID: 11429754, guid: e04cc0841e4c6034fbb14c198eaffb6d, type: 2}
   ropePrefab: {fileID: 11498972, guid: 1f24c9d6719c8a04fb34132c23ab139c, type: 2}
+  boxPrefab: {fileID: 11476684, guid: 217f067ade20e9f46b2846588f15f6e2, type: 2}
   middleRopePrefab: {fileID: 11416536, guid: 2ffaae99f52be954a9bd2057177c2b19, type: 2}
   anchorPointStart: {x: 0, y: 0, z: 0}
   anchorPointEnd: {x: 50, y: 0, z: 0}
   amountOfPointsPerRope: 20
   timestep: 0.016666668
   ropeStiffness: 1000
+  middleRopeStiffness: 800
   ropeDampening: 10
 --- !u!1001 &100100000
 Prefab:

@@ -61,9 +61,8 @@ public class Spawner : MonoBehaviour {
 
 		// Spawn all points and planks
 // ######################## Change spwan here ###################################################
-		//spawn();
-		//simpleSpawn ();
-		miniSpawn();
+		spawn();
+		//miniSpawn();
 		plankSpawn();
 
 		// Creates RK4 object for further calculations of movement
@@ -102,7 +101,7 @@ public class Spawner : MonoBehaviour {
 	 * Mini spawn
 	 */
 	void miniSpawn() {
-		anchorPointEnd = anchorPointStart + Vector3.right * 5;
+		anchorPointEnd = anchorPointStart + Vector3.right * 10;
 		amountOfPointsPerRope = 4;
 
 		Vector3 ropeDirection = (anchorPointEnd - anchorPointStart) / amountOfPointsPerRope;
@@ -162,103 +161,5 @@ public class Spawner : MonoBehaviour {
 		box.simulation();
 
 
-	}
-
-	/*
-	 *  ###################################################################
-	 * 
-	 * Simple simulation spawner below
-	 * 
-	 *  ###################################################################
-	 */
-
-	/**
-	 * Spawns a simple simulation.
-	 */
-	void simpleSpawn() {
-		// Set position, space between points and rope direction
-		Vector3 position = anchorPointStart;
-		Vector3 ropeDirection = (anchorPointEnd - anchorPointStart) / amountOfPointsPerRope;
-		segmentLength = ropeDirection.magnitude;
-
-		// Spawn rope 1:s points
-		position = spawnRope(position, ropeDirection, amountOfPointsPerRope, 1);
-
-		// Set new position for rope 2 and spawn it
-		position -= ropeDirection * amountOfPointsPerRope + Vector3.back * segmentLength * 3;
-		position = spawnRope(position, ropeDirection, amountOfPointsPerRope, 2);
-
-		// Spawn middle rope
-		position = spawnMiddleRope(ropeDirection, position);
-
-		// Be sure to set this to the correct value, count your points and your good to go
-		totalPoints = amountOfPointsPerRope * 3;
-	}
-
-	/**
-	 * Spawns points for a rope and adds neighbours.
-	 */
-	Vector3 spawnRope(Vector3 position, Vector3 ropeDirection, int amountOfPointsPerRope, int ropeNumber) {
-		int ropeIndex = ropeNumber - 1;
-
-		// Add points
-		for (int i = 0; i < amountOfPointsPerRope; ++i) {
-			points.Add(createPoint(position, "Rope " + ropeNumber + ", point " + i + " (" + (i + ropeIndex * amountOfPointsPerRope) + ")"));
-			position += ropeDirection;
-		}
-
-		// Add links between points
-		for (int i = 1 + amountOfPointsPerRope * ropeIndex; i < amountOfPointsPerRope * ropeIndex; ++i) {
-			points[i].AddNeigbour(points[i - 1]);
-		}
-
-		// Uncomment for double linked points
-		/*
-		for (int i = 0; i < amountOfPointsPerRope - 1; ++i) {
-			points[i + (amountOfPointsPerRope * ropeNumber)].AddNeigbour(points [i + 1]);
-		}
-		*/
-		return position;
-	}
-
-	/** 
-	 * Spawns middle ropes.
-	 */
-	Vector3 spawnMiddleRope(Vector3 ropeDirection, Vector3 position) {
-		for (int i = 0; i < amountOfPointsPerRope / 2; ++i) {
-			points.Add(createPoint((anchorPointStart + ropeDirection * (2 * i)) + Vector3.forward * segmentLength, "MiddlePoint 1, point " + i));
-			points.Add(createPoint((anchorPointStart + ropeDirection * (2 * i)) + Vector3.forward * segmentLength * 2, "MiddlePoint 2, point " + i));
-
-			if (i % 2 == 0) {
-				points[amountOfPointsPerRope * 2 + 2 * i].AddNeigbour (points [amountOfPointsPerRope * 2 + 1 + 2 * i]);
-			} else {
-				Plank p = (Plank)Instantiate (plankPrefab, position, Quaternion.identity);
-				p.init (points [amountOfPointsPerRope * 2 + 2 * i], points [amountOfPointsPerRope * 2 + 1 + 2 * i], points[0], points[0]);
-				planks.Add (p);
-			}
-			points [amountOfPointsPerRope * 2 + 2 * i].AddNeigbour (points [2 * i]);
-			points [amountOfPointsPerRope * 2 + 1 + 2*i].AddNeigbour (points[amountOfPointsPerRope + 2 * i]);
-		}
-		return position;
-	}
-
-
-	/**
-	 * Creates a point at given position.
-	 */
-	private Point createPoint(Vector3 position) {
-		Point p = (Point) Instantiate(pointPrefab, position, Quaternion.identity);
-		p.position = position;
-		p.transform.parent = transform;
-		return p;
-	}
-
-	/**
-	 * Creates a point at given position with a name.
-	 */
-	private Point createPoint(Vector3 position, string name) {
-		Point p = createPoint(position);
-		p.name = name;
-		return p;
 	}
 }

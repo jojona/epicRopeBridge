@@ -53,6 +53,23 @@ public class Integrator {
 		prepIntegration ();
 	}
 
+	/*
+	 * Euler integration
+	 */
+	public void euler(List<PointController> pcl, Action simulationStep) {
+		simulationStep ();
+
+		foreach (PointController pc in pcl) {
+			foreach (Point point in pc.getPoints ()) {
+				point.velocity += timestep * point.force / point.mass;
+				point.position += timestep * point.velocity;
+			}
+		}
+	}
+
+	/**
+	 * RK4 Integration
+	 */
 	public void integrate(List<PointController> pcl, Action forceFunc){
 		this.pcl = pcl;
 		prepIntegration ();
@@ -60,7 +77,6 @@ public class Integrator {
 		PointController pc;
 
 		// a
-
 		evaluate(forceFunc, timestep*0f);
 		for (int i = 0, tot = 0; i < pcl.Count; ++i) {
 			pc = pcl [i];
@@ -70,7 +86,6 @@ public class Integrator {
 		}
 
 		// b
-
 		evaluate(forceFunc, timestep*0.5f);
 		for (int i = 0, tot = 0; i < pcl.Count; ++i) {
 			pc = pcl [i];
@@ -80,7 +95,6 @@ public class Integrator {
 		}
 
 		// c
-
 		evaluate(forceFunc, timestep*0.5f);
 		for (int i = 0, tot = 0; i < pcl.Count; ++i) {
 			pc = pcl [i];
@@ -90,7 +104,6 @@ public class Integrator {
 		}
 
 		// d
-
 		evaluate(forceFunc, timestep*1f);
 		for (int i = 0, tot = 0; i < pcl.Count; ++i) {
 			pc = pcl [i];

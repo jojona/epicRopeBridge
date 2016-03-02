@@ -39,13 +39,13 @@ public class Spawner : MonoBehaviour {
 	// Lists of ropes
 	private List<PointController> ropes;
 
+	// Experiment object // TODO remove
 	private Box box;
 
 	// Length of each segment (space between rope points)
 	private float segmentLength;
 
 	// Runge-Kutta RK4 object
-	private RK4 rk4;
 	private Integrator integrator;
 
 	public int lap = 0;
@@ -60,12 +60,11 @@ public class Spawner : MonoBehaviour {
 		// Spawn all points and planks
 // ######################## Change spwan here ###################################################
 		spawn();
-		miniSpawn();
-		plankSpawn();
+		//miniSpawn();
+		//plankSpawn();
 
 
 		// Creates RK4 object for further calculations of movement
-		rk4 = new RK4 (new List<Point>(), amountOfPointsPerRope, 0, ropeStiffness, ropeDampening, segmentLength);
 		integrator = new Integrator (ropes, timestep);
 	}
 
@@ -86,7 +85,7 @@ public class Spawner : MonoBehaviour {
 			anchorPointEnd, 
 			true, 
 			amountOfPointsPerRope * spacing - x, 
-			"rope1", 
+			"rope1 ", 
 			ropeStiffness, 
 			ropeDampening
 		);
@@ -95,7 +94,7 @@ public class Spawner : MonoBehaviour {
 			anchorPointEnd + Vector3.back * segmentLength * 3, 
 			true, 
 			amountOfPointsPerRope * spacing - x, 
-			"rope2", 
+			"rope2 ", 
 			ropeStiffness, 
 			ropeDampening
 		);
@@ -107,7 +106,7 @@ public class Spawner : MonoBehaviour {
 			anchorPointEnd + Vector3.down * segmentLength * 3, 
 			true, 
 			amountOfPointsPerRope * spacing - x, 
-			"rope3", 
+			"rope3 ", 
 			ropeStiffness, 
 			ropeDampening
 		);
@@ -116,7 +115,7 @@ public class Spawner : MonoBehaviour {
 			anchorPointEnd + Vector3.back * segmentLength * 3 + Vector3.down * segmentLength * 3, 
 			true, 
 			amountOfPointsPerRope * spacing - x, 
-			"rope24", 
+			"rope4 ", 
 			ropeStiffness, 
 			ropeDampening
 		);
@@ -184,7 +183,7 @@ public class Spawner : MonoBehaviour {
 			// Debug.Log (""); // Paus before decommenting this
 		}
 // ######################## Swap integration method here ###################################################
-		rk4.newEuler(simulationStep, ropes);
+		integrator.euler(ropes, simulationStep);
 		//integrator.integrate(ropes, simulationStep);
 	}
 

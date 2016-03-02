@@ -30,11 +30,6 @@ public class Point : MonoBehaviour {
 
 	private List<Point> neighbour = new List<Point>();
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-
 	// Update is called once per frame
 	void LateUpdate () {
 		transform.position = position;
@@ -42,8 +37,6 @@ public class Point : MonoBehaviour {
 
 	public void AddNeigbour(Point p) {
 		neighbour.Add (p);
-
-		//Debug.Log (name + " Neighbour with " + p.name); 
 	}
 
 	public List<Point> GetNeighours() {

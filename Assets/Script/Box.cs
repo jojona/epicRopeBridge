@@ -24,11 +24,9 @@ public class Box : MonoBehaviour {
 	public Vector3 L = Vector3.zero; // Angular momentum	L(t) = I(t)w(t)
 
 	// d/dt Y(t)
-	private Vector3 velocity = Vector3.zero;
 	private Vector3 w = Vector3.zero; // Omega Angular Velocity
 	public Vector3 force = Vector3.zero;
 	public Vector3 torque = Vector3.zero; // dL(t) = torque
-
 
 	// Intertia (Ibody)	// Invers is (I^-1body) 1/xij from normal inertia matrix
 	private Matrix Ibody;
@@ -69,7 +67,6 @@ public class Box : MonoBehaviour {
 	// Update is called once per frame
 	void LateUpdate () {
 		transform.position = position;
-
 		transform.rotation = q;
 	}
 
@@ -78,8 +75,6 @@ public class Box : MonoBehaviour {
 		float timestep = 1f / 60f;
 
 		// Torque = Sum((pi - x) X Fi)
-		//Vector3 t1 = Vector3.Cross ((p1 - position), force1);
-		//Vector3 t2 = Vector3.Cross ((p2 - position), force2);
 		Vector3 t1 = Vector3.Cross ((p1), force1);
 		Vector3 t2 = Vector3.Cross ((p2), force2);
 		torque = t1 + t2;
@@ -87,7 +82,6 @@ public class Box : MonoBehaviour {
 		// Force Sum(Fi)
 		force = force1 + force2;
 		
-
 		// Calculate P = P + dt * F
 		P += force * timestep;
 
@@ -129,21 +123,9 @@ public class Box : MonoBehaviour {
 		// w(t) * R(t)
 		// F(t)
 		// torque
-
-
-		/*
-		Matrix wStar = new Matrix (3, 3);
-		wStar [0, 0] = 0; 	wStar [0, 1] = -w.z;wStar [0, 2] = w.y;
-		wStar [1, 0] = w.z; wStar [1, 1] = 0; 	wStar [1, 2] = -w.x;
-		wStar [2, 0] = -w.y;wStar [2, 1] = w.x; wStar [2, 2] = 0;
-
-		Matrix dR = wStar * R;
-		*/
-
 	}
 
 	private void calculateR() {
-
 		// get R from q
 		R[0,0] = (1 - 2 * q.y * q.y - q.z*q.z); R[0,1] = 2 * q.x * q.y - 2 * q.w * q.z; R[0,2] = 2 * q.x * q.z + 2 * q.w * q.y;
 		R[1,0] = 2 * q.x * q.y + 2 * q.w * q.z; R[0,1] = (1 - 2 * q.x * q.x - q.z*q.z); R[1,2] = 2 * q.y * q.z - 2 * q.w * q.x;

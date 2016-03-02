@@ -72,25 +72,6 @@ public class Plank : MonoBehaviour {
 		calculateIinv();
 	}
 
-	public void simulationxxx() {
-		float timestep = 1f / 60f;
-		force = point1.force + point2.force + point3.force + point4.force + Vector3.down * 9.82f * mass * 4;
-
-		velocity += timestep * force / mass;
-		position += timestep * velocity;
-
-		point1.position += timestep * velocity;
-		point2.position += timestep * velocity;
-		point3.position += timestep * velocity;
-		point4.position += timestep * velocity;
-		// Clear forces on points
-		clearPointForces();
-	}
-
-	public void simulation2() {
-		
-	}
-
 	public void clearPointForces() {
 		point1.force = Vector3.zero;
 		point2.force = Vector3.zero;
@@ -102,16 +83,6 @@ public class Plank : MonoBehaviour {
 	void LateUpdate () {
 		transform.position = position;
 		transform.rotation = q;
-
-
-		// Apply rotation matrix R
-
-		//Debug.Log (R.ToString ());
-		//transform.right += new Vector3(R[0, 0], R[1, 0], R[2, 0]); 
-		//transform.up += new Vector3(R[0, 1], R[1, 1], R[2, 1]);
-		//transform.forward += new Vector3(R[0, 2], R[1, 2], R[2, 2]);
-
-		//Debug.Log (q);
 	}
 
 
@@ -146,14 +117,6 @@ public class Plank : MonoBehaviour {
 		point2.position += (velocity + Vector3.Cross (w, (point2.position - position))) * timestep;
 		point3.position += (velocity + Vector3.Cross (w, (point3.position - position))) * timestep;
 		point4.position += (velocity + Vector3.Cross (w, (point4.position - position))) * timestep;
-
-		// Point velocity
-		/*
-		point1.position += timestep * velocity;
-		point2.position += timestep * velocity;
-		point3.position += timestep * velocity;
-		point4.position += timestep * velocity;
-		*/
 
 		Quaternion dq = (new Quaternion (w.x * 1/2, w.y * 1/2, w.z * 1/2, 0)) * q; // 1/2 [0 ; w(t)] q(t)
 		q.w += dq.w * timestep;
@@ -214,60 +177,21 @@ public class Plank : MonoBehaviour {
 // Visualisation of torque https://www.youtube.com/watch?v=Sm4pV3xyJRE
 // Quaternion http://www.math.unm.edu/~vageli/papers/rrr.pdf
 /*
-		// Angular properties
-angularVelocity // Scalar in units of radians per timestep (or seconds) (omega)
-angularAcceleration // (alpha)
-rotationalForce // (Torque)
-momentOfInertia // I
 
 //I_h = (m / 12) * (w^2+d^2)
 //I_w = (m / 12) * (d^2+h^2)
 //I_d = (m / 12) * (w^2+h^2)
-		 
-
-// torque = I * angularAcceleration
-
-//angularacc = sum (torqueVector) / I; 
-
+		  
 // When we have the force
 // http://stackoverflow.com/questions/28922969/how-to-add-torque-to-a-rigidbody-until-its-angular-velocity-is-0
 */
 
 /*
-// Center of mass
-Vector3 centerofMass = position;
-
-// Point of application
-Vector3 momentArm1 =  point1.position - centerofMass;
-Vector3 torqueVector1 = (point1.force - (momentArm1 * (Vector3.Dot(point1.force, momentArm1) / momentArm1.magnitude))) * momentArm1.magnitude;
-
-Vector3 momentArm2 =  point2.position - centerofMass;
-Vector3 torqueVector2 = (point2.force - (momentArm2 * (Vector3.Dot(point2.force, momentArm2) / momentArm2.magnitude))) * momentArm2.magnitude;
-
-Vector3 momentArm3 =  point3.position - centerofMass;
-Vector3 torqueVector3 = (point3.force - (momentArm3 * (Vector3.Dot(point3.force, momentArm3) / momentArm3.magnitude))) * momentArm3.magnitude;
-
-Vector3 momentArm4 =  point4.position - centerofMass;
-Vector3 torqueVector4 = (point4.force - (momentArm4 * (Vector3.Dot(point4.force, momentArm4) / momentArm4.magnitude))) * momentArm4.magnitude;
-
-float inertia = 1;
-
-torqueVector1 = torqueVector1 / inertia;
-torqueVector2 = torqueVector2 / inertia;
-torqueVector3 = torqueVector3 / inertia;
-torqueVector4 = torqueVector4 / inertia;
-
-Vector3 torque = torqueVector1 + torqueVector2 + torqueVector3 + torqueVector4;
-
-//transform.Rotate(torque * timestep);
-Debug.DrawRay (position, torque , Color.green, 1f, true);
-
 
 Crash at 
 1425
 1424
 1424
 1426
-
 
 */

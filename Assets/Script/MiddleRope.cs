@@ -32,18 +32,11 @@ public class MiddleRope : PointController {
 			Vector3 corner3 = position + (p3.position - p1.position) / 5 - (p2.position - p1.position) / 5;
 			Vector3 corner4 = position + (p3.position - p1.position) / 5 + (p2.position - p1.position) / 5; 
 
-			//Debug.DrawRay (corner1, Vector3.up, Color.green, 1000f, true);
-			//Debug.DrawRay (corner2, Vector3.up, Color.yellow, 1000f, true);
-			//Debug.DrawRay (corner3, Vector3.up, Color.black, 1000f, true);
-			//Debug.DrawRay (corner4, Vector3.up, Color.red, 1000f, true);
-
 			createPoint (corner1 + (p1.position - corner1) * i / (amount) , "A"+i);
 			createPoint (corner2 + (p2.position - corner2) * i / (amount) , "B"+i);
 			createPoint (corner3 + (p3.position - corner3) * i / (amount) , "C"+i);
 			createPoint (corner4 + (p4.position - corner4) * i / (amount) , "D"+i);
 		}
-
-		//Debug.DrawRay (position, p1.position - position , Color.green, 10000f, true);
 
 		for (int i = 0; i < amount - 1; ++i) {
 			points [4 * i + 0].AddNeigbour (points[4 * (i + 1) + 0]);
@@ -57,7 +50,8 @@ public class MiddleRope : PointController {
 		plank.transform.parent = transform;
 		plank.transform.forward = direction;
 		plank.init (points[0], points[1], points[2], points[3]);
-		/*Names*/points [0].name += "Corner1"; points [1].name += "Corner2";	points [2].name += "Corner3"; points [3].name += "Corner4";
+		// Names
+		points [0].name += " Corner1"; points [1].name += " Corner2";	points [2].name += " Corner3"; points [3].name += " Corner4";
 
 		points [amount * 4 - 4].AddNeigbour (p1);
 		points [amount * 4 - 3].AddNeigbour (p2);
@@ -79,8 +73,6 @@ public class MiddleRope : PointController {
 		gravity ();
 		springForces ();
 
-// ####################### Swap plank simulation here ########################################################
-		//plank.simulationxxx ();
 		plank.simulation ();
 	}
 	

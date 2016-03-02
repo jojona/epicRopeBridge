@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-
 public class Plank : MonoBehaviour {
 
 	private Point point1;
@@ -19,16 +18,15 @@ public class Plank : MonoBehaviour {
 	// Y(t)
 	public Vector3 position;
 	private Matrix R = new Matrix(3, 3); // Local space rotation R(t)
-	private Quaternion q;
-	private Vector3 P = Vector3.zero; // Linear momentum // TODO Size
-	private Vector3 L = Vector3.zero; // Angular momentum	L(t) = I(t)w(t)
+	public  Quaternion q;
+	public Vector3 P = Vector3.zero; // Linear momentum // TODO Size
+	public Vector3 L = Vector3.zero; // Angular momentum	L(t) = I(t)w(t)
 
 	// d/dt Y(t)
 	private Vector3 velocity = Vector3.zero;
-	private Vector3 w = Vector3.zero; // Omega Angular Velocity
-	private Vector3 force = Vector3.zero;
-	private Vector3 torque = Vector3.zero; // dL(t) = torque
-
+	public Vector3 w = Vector3.zero; // Omega Angular Velocity
+	public Vector3 force = Vector3.zero;
+	public Vector3 torque = Vector3.zero; // dL(t) = torque
 
 	// Intertia (Ibody)	// Invers is (I^-1body) 1/xij from normal inertia matrix
 	private Matrix Ibody;
@@ -48,18 +46,21 @@ public class Plank : MonoBehaviour {
 		point3 = p3;
 		point4 = p4;
 
-		point1.mass = mass;
-		point2.mass = mass;
-		point3.mass = mass;
-		point4.mass = mass;
+		point1.mass = mass / 4;
+		point2.mass = mass / 4;
+		point3.mass = mass / 4;
+		point4.mass = mass / 4;
 
-		length = (point1.position - point2.position).magnitude;
+		length = 2 * (point1.position - point2.position).magnitude;
+		point1.position.x -= length / 4;
+		point2.position.x += length / 4;
+		point3.position.x -= length / 4;
+		point4.position.x += length / 4;
 		width = (point3.position - point1.position).magnitude;
 		transform.localScale = new Vector3(width, height, length);
 		transform.position = position;
 
 		// Calculate intertia
-
 		Ibody = new Matrix (3, 3);
 		Ibody [0, 0] = (height * height + length * length) * mass / 12;
 		Ibody [1, 1] = (width * width + length * length) * mass / 12;
@@ -73,7 +74,7 @@ public class Plank : MonoBehaviour {
 
 	public void simulationxxx() {
 		float timestep = 1f / 60f;
-		force = point1.force + point2.force + point3.force + point4.force + Vector3.down * 9.82f * mass;
+		force = point1.force + point2.force + point3.force + point4.force + Vector3.down * 9.82f * mass * 4;
 
 		velocity += timestep * force / mass;
 		position += timestep * velocity;
@@ -100,6 +101,7 @@ public class Plank : MonoBehaviour {
 	// Update is called once per frame
 	void LateUpdate () {
 		transform.position = position;
+		transform.rotation = q;
 
 
 		// Apply rotation matrix R
@@ -110,7 +112,6 @@ public class Plank : MonoBehaviour {
 		//transform.forward += new Vector3(R[0, 2], R[1, 2], R[2, 2]);
 
 		//Debug.Log (q);
-		transform.rotation = q;
 	}
 
 
@@ -146,7 +147,6 @@ public class Plank : MonoBehaviour {
 		point3.position += (velocity + Vector3.Cross (w, (point3.position - position))) * timestep;
 		point4.position += (velocity + Vector3.Cross (w, (point4.position - position))) * timestep;
 
-
 		// Point velocity
 		/*
 		point1.position += timestep * velocity;
@@ -155,7 +155,7 @@ public class Plank : MonoBehaviour {
 		point4.position += timestep * velocity;
 		*/
 
-		Quaternion dq = (new Quaternion (0, w.x * 1/2, w.y * 1/2, w.z * 1/2)) * q; // 1/2 [0 ; w(t)] q(t)
+		Quaternion dq = (new Quaternion (w.x * 1/2, w.y * 1/2, w.z * 1/2, 0)) * q; // 1/2 [0 ; w(t)] q(t)
 		q.w += dq.w * timestep;
 		q.x += dq.x * timestep;
 		q.y += dq.y * timestep;
@@ -197,7 +197,7 @@ public class Plank : MonoBehaviour {
 	}
 
 	private void normalizeQuaternion() {
-		float norm = Mathf.Sqrt(q.w*q.w + q.x * q.x + q.y*q.y + q.z*q.z);
+		float norm = Mathf.Sqrt(q.w * q.w + q.x * q.x + q.y*q.y + q.z * q.z);
 		q.w = q.w / norm;
 		q.x = q.x / norm;
 		q.y = q.y / norm;
@@ -261,4 +261,13 @@ Vector3 torque = torqueVector1 + torqueVector2 + torqueVector3 + torqueVector4;
 
 //transform.Rotate(torque * timestep);
 Debug.DrawRay (position, torque , Color.green, 1f, true);
+
+
+Crash at 
+1425
+1424
+1424
+1426
+
+
 */

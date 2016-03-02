@@ -20,7 +20,8 @@ public class MiddleRope : PointController {
 	public void init(bool withPlank, int amount, float segmentLength, Point p1, Point p2, Point p3, Point p4, Vector3 direction, float stiffness, float dampening) {
 		init (stiffness, dampening, segmentLength);
 
-		/*Names*/p1.name += " P1"; p2.name += " P2"; p3.name += " P3"; p4.name += " P4";
+		// Names
+		p1.name += " P1"; p2.name += " P2"; p3.name += " P3"; p4.name += " P4";
 
 		Vector3 position = p1.position + (p3.position - p1.position) / 2 + (p2.position - p1.position) / 2 + Vector3.down * segmentLength * amount;
 
@@ -41,7 +42,7 @@ public class MiddleRope : PointController {
 			createPoint (corner3 + (p3.position - corner3) * i / (amount) , "C"+i);
 			createPoint (corner4 + (p4.position - corner4) * i / (amount) , "D"+i);
 		}
-			
+
 		//Debug.DrawRay (position, p1.position - position , Color.green, 10000f, true);
 
 		for (int i = 0; i < amount - 1; ++i) {
@@ -50,7 +51,7 @@ public class MiddleRope : PointController {
 			points [4 * i + 2].AddNeigbour (points[4 * (i + 1) + 2]);
 			points [4 * i + 3].AddNeigbour (points[4 * (i + 1) + 3]);
 		}
-			
+
 		plank = (Plank)Instantiate (plankPrefab, position, Quaternion.identity);
 		plank.position = position;
 		plank.transform.parent = transform;
@@ -62,6 +63,16 @@ public class MiddleRope : PointController {
 		points [amount * 4 - 3].AddNeigbour (p2);
 		points [amount * 4 - 2].AddNeigbour (p3);
 		points [amount * 4 - 1].AddNeigbour (p4);
+	}
+
+	public void init(bool withPlank, int amount, float segmentLength, Point p1, Point p2, Point p3, Point p4, Point p5, Point p6, Point p7, Point p8, Vector3 direction, float stiffness, float dampening) {
+		init (withPlank, amount, segmentLength, p1, p2, p3, p4, direction, stiffness, dampening);
+
+		points[0].AddNeigbour(p5);
+		points[1].AddNeigbour(p6);
+		points[2].AddNeigbour(p7);
+		points[3].AddNeigbour(p8);
+
 	}
 
 	override public void simulationStep() {

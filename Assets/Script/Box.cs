@@ -12,16 +12,16 @@ public class Box : MonoBehaviour {
 	public Vector3 p2;
 	public Vector3 force2;
 
-	private float length; // z
-	private float width; // x
+	private float length = 3; // z
+	private float width = 3; // x
 	private float height = 3; // y
 
 	// Y(t)
 	public Vector3 position;
 	private Matrix R = new Matrix(3, 3); // Local space rotation R(t)
-	private Quaternion q;
-	private Vector3 P = Vector3.zero; // Linear momentum // TODO Size
-	private Vector3 L = Vector3.zero; // Angular momentum	L(t) = I(t)w(t)
+	public Quaternion q;
+	public Vector3 P = Vector3.zero; // Linear momentum // TODO Size
+	public Vector3 L = Vector3.zero; // Angular momentum	L(t) = I(t)w(t)
 
 	// d/dt Y(t)
 	private Vector3 velocity = Vector3.zero;
@@ -44,8 +44,6 @@ public class Box : MonoBehaviour {
 
 	public void init() {
 
-		length = 3;
-		width = 3;
 		transform.localScale = new Vector3(width, height, length);
 		transform.position = position;
 
@@ -56,7 +54,9 @@ public class Box : MonoBehaviour {
 		Ibody [2, 2] = (height * height + width * width) * mass / 12;
 		IbodyInv = Ibody.Invert ();
 		
-		q = transform.rotation;
+		//q = transform.rotation;
+		q = Quaternion.identity;
+
 		calculateR();
 		calculateIinv();
 
@@ -64,10 +64,6 @@ public class Box : MonoBehaviour {
 		force1 = new Vector3(0, 0, 0);
 		p2 = new Vector3(-3, 0, 0);
 		force2 = new Vector3(0, 0, 0);
-
-
-
-
 	}
 
 	// Update is called once per frame
@@ -110,7 +106,7 @@ public class Box : MonoBehaviour {
 		position = position + timestep * P / mass;
 
 		// Calculate q = q + dt * 1/2 * w * q
-		Quaternion dq = (new Quaternion (0, w.x * 1/2, w.y * 1/2, w.z * 1/2)) * q; // 1/2 [0 ; w(t)] q(t)
+		Quaternion dq = (new Quaternion (w.x * 1/2, w.y * 1/2, w.z * 1/2, 0)) * q; // 1/2 [0 ; w(t)] q(t)
 		q.w += dq.w * timestep;
 		q.x += dq.x * timestep;
 		q.y += dq.y * timestep;

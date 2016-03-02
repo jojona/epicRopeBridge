@@ -24,6 +24,8 @@ public class Rope : PointController {
 	public void init(Vector3 start, Vector3 end, bool anchor, int amountOfPoints, string name, float stiffness, float dampening) {
 		init(stiffness, dampening, ((start-end)/amountOfPoints).magnitude);
 
+		amountOfPoints++;
+
 		// Inits points list, sets posiiton and direction
 		Vector3 position = start;
 		Vector3 ropeDirection = (end - start) / amountOfPoints;

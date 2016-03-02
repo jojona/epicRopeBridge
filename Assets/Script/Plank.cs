@@ -28,7 +28,7 @@ public class Plank : MonoBehaviour {
 	private Vector3 w = Vector3.zero; // Omega Angular Velocity
 	private Vector3 force = Vector3.zero;
 	private Vector3 torque = Vector3.zero; // dL(t) = torque
-
+	private Vector3 rotation;
 
 	// Intertia (Ibody)	// Invers is (I^-1body) 1/xij from normal inertia matrix
 	public Matrix Ibody;
@@ -42,17 +42,19 @@ public class Plank : MonoBehaviour {
 	}
 
 	public void init(Point p1, Point p2, Point p3, Point p4) {
+		rotation = Vector3.zero;
+
 		point1 = p1;
 		point2 = p2;
 		point3 = p3;
 		point4 = p4;
 
-		point1.mass = mass;
-		point2.mass = mass;
-		point3.mass = mass;
-		point4.mass = mass;
+		point1.mass = mass / 4;
+		point2.mass = mass / 4;
+		point3.mass = mass / 4;
+		point4.mass = mass / 4;
 
-		length = (point1.position - point2.position).magnitude;
+		length = 2 * (point1.position - point2.position).magnitude;
 		width = (point3.position - point1.position).magnitude;
 		transform.localScale = new Vector3(width, height, length);
 		transform.position = position;
@@ -74,7 +76,7 @@ public class Plank : MonoBehaviour {
 
 	public void simulationxxx() {
 		float timestep = 1f / 60f;
-		force = point1.force + point2.force + point3.force + point4.force + Vector3.down * 9.82f * mass;
+		force = point1.force + point2.force + point3.force + point4.force + Vector3.down * 9.82f * mass * 4;
 
 		velocity += timestep * force / mass;
 		position += timestep * velocity;
@@ -101,6 +103,7 @@ public class Plank : MonoBehaviour {
 	// Update is called once per frame
 	void LateUpdate () {
 		transform.position = position;
+		transform.rotation = q;
 
 
 		// Apply rotation matrix R
@@ -111,99 +114,49 @@ public class Plank : MonoBehaviour {
 		//transform.forward += new Vector3(R[0, 2], R[1, 2], R[2, 2]);
 
 		//Debug.Log (q);
-		transform.rotation = q;
 	}
 
 
 	public void simulation() {
 		float timestep = 1f / 60f;
+		double halfDia = Math.Sqrt (height * height + width * width) / 2;
 
-
-		// LOOK AT THIS
-		// https://github.com/ept/maniation/blob/master/matlab/rigidbody.m
-
-		// Calculate torque and force
-		torque = Vector3.zero;
 		// Force
 		force = point1.force + point2.force + point3.force + point4.force + Vector3.down * 9.82f * mass;
-		// Torque = Sum((pi - x) X Fi)
-		Vector3 t1 = Vector3.Cross ((point1.position - position), point1.force);
-		Vector3 t2 = Vector3.Cross ((point1.position - position), point2.force);
-		Vector3 t3 = Vector3.Cross ((point1.position - position), point3.force);
-		Vector3 t4 = Vector3.Cross ((point1.position - position), point4.force);
-		torque += t1 + t2 + t3 + t4;
+		/*
+		// Moment on every point
+		double momentX1 = point1.force.x * halfDia;
+		double momentX2 = point2.force.x * halfDia;
+		double momentX3 = point3.force.x * halfDia;
+		double momentX4 = point4.force.x * halfDia;
+		double momentY1 = point1.force.y * halfDia;
+		double momentY2 = point2.force.y * halfDia;
+		double momentY3 = point3.force.y * halfDia;
+		double momentY4 = point4.force.y * halfDia;
+		double momentZ1 = point1.force.z * halfDia;
+		double momentZ2 = point2.force.z * halfDia;
+		double momentZ3 = point3.force.z * halfDia;
+		double momentZ4 = point4.force.z * halfDia;
 
-		// get R from q
-		R[0,0] = (1 - 2 * q.y * q.y - q.z*q.z); R[0,1] = 2 * q.x * q.y - 2 * q.w * q.z; R[0,2] = 2 * q.x * q.z + 2 * q.w * q.y;
-		R[1,0] = 2 * q.x * q.y + 2 * q.w * q.z; R[0,1] = (1 - 2 * q.x * q.x - q.z*q.z); R[1,2] = 2 * q.y * q.z - 2 * q.w * q.x;
-		R[2,0] = 2 * q.x * q.z - 2 * q.w * q.y; R[2,1] = 2 * q.y * q.z + 2 * q.w * q.x; R[2,2] = (1 - 2 * q.x * q.x - q.y*q.y);
+		float momentZ = (float) (momentZ2 + momentZ4 - momentZ1 - momentZ3);
+		float momentY = (float) (momentY1 - momentY2 - momentY3 + momentY4);
+		float momentX = (float) (momentX3 + momentX4 - momentX1 - momentX2);
 
-		// Calculate I(t)	
-		// I(t) = R(t) Ibody R(t)^T
-		// I(t)^-1 = R(t) I^-1body R(t)^T
-		//Matrix I = R * Ibody * Matrix.Transpose (R);
-		Matrix IInv = R * IbodyInv * Matrix.Transpose(R);
-
-		// Calculate w(t) = I(t)^-1 L(t)
-		Matrix Ltmp = new Matrix(3,1);
-		Ltmp [0, 0] = L.x;
-		Ltmp [1, 0] = L.y;
-		Ltmp [2, 0] = L.z;
-		Matrix wMatrix = IInv * Ltmp; 
-		w = new Vector3 (wMatrix [0, 0], wMatrix [1, 0], wMatrix [2, 0]);
-
-		// Y(t) ####################
-		// x(t) position
-		// R(t) rotation { x y z }
-		// P(t) velocity
-		// L(t) angularMomentum-  { -X -Y -Z }			= Iw		dL = torque
-
-		// dY(t) ##################
-		// v(t)
-		// w(t) * R(t)
-		// F(t)
-		// torque
-
-		Matrix wStar = new Matrix (3, 3);
-		wStar [0, 0] = 0; 	wStar [0, 1] = -w.z;wStar [0, 2] = w.y;
-		wStar [1, 0] = w.z; wStar [1, 1] = 0; 	wStar [1, 2] = -w.x;
-		wStar [2, 0] = -w.y;wStar [2, 1] = w.x; wStar [2, 2] = 0;
-
-		Matrix dR = wStar * R;
-		/* dR (Inefficient)
-		Vector3 drx = Vector3.Cross(w, new Vector3(R[0, 0], R[1, 0], R[2, 0]));
-		Vector3 dry = Vector3.Cross(w, new Vector3(R[0, 1], R[1, 1], R[2, 1]));
-		Vector3 drz = Vector3.Cross(w, new Vector3(R[0, 2], R[1, 2], R[2, 2]));
-		dR [0, 0] = drx [0]; dR [0, 1] = drx [1]; dR [0, 2] = drx [2];
-		dR [1, 0] = dry [0]; dR [1, 1] = dry [1]; dR [1, 2] = dry [2];
-		dR [2, 0] = drz [0]; dR [2, 1] = drz [1]; dR [2, 2] = drz [2];*/
-
-		//R += timestep * dR;
-
-		Quaternion dq = (new Quaternion (0, w.x * timestep * 1/2, w.y * timestep * 1/2, w.z * timestep * 1/2)) * q; // 1/2 [0 ; w(t)] q(t)
-
-		q.w += dq.w;
-		q.x += dq.x;
-		q.y += dq.y;
-		q.z += dq.z;
-
-		float norm = Mathf.Sqrt(q.w*q.w + q.x * q.x + q.y*q.y + q.z*q.z);
-		q.w = q.w / norm;
-		q.x = q.x / norm;
-		q.y = q.y / norm;
-		q.z = q.z / norm;
-
-		// Calculate P and L
-		P += force * timestep;
-		L += torque * timestep;
+		q.x += momentX;
+		q.y += momentY;
+		q.z += momentZ;
+		*/
 
 		// Calculate R, v, Iinv, w
-		velocity = P / mass;
+		velocity += timestep * force / mass;
 
 		position += timestep * velocity;
 
 		// Point velocity
 		point1.position += timestep * velocity;
+		//point1.position.x += Math.Sin(momentX) * width;
+		//point1.position.y += Math.Sin(momentY) * width;
+		//point1.position.y += (float) Math.Sin(momentZ) * width;
 		point2.position += timestep * velocity;
 		point3.position += timestep * velocity;
 		point4.position += timestep * velocity;

@@ -42,4 +42,9 @@ public class Point : MonoBehaviour {
 	public List<Point> GetNeighours() {
 		return neighbour;
 	}
+
+	public void clearMovement() {
+		velocity = Vector3.zero;
+		force = Vector3.zero;
+	}
 }

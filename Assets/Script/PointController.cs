@@ -13,6 +13,7 @@ public abstract class PointController : MonoBehaviour {
 	protected float segmentLength;
 
 	public abstract void simulationStep ();
+	public abstract void clearMovement();
 
 	/**
 	 * Creates a point and add it to list of points 

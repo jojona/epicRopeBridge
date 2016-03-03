@@ -78,4 +78,10 @@ public class Rope : PointController {
 			endp.force = Vector3.zero;
 		}
 	}
+
+	override public void clearMovement() {
+		foreach(Point p in points) {
+			p.clearMovement();
+		}
+	}
 }

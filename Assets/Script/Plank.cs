@@ -102,14 +102,8 @@ public class Plank : MonoBehaviour {
 		P += force * timestep;
 
 		L += torque * timestep;
-	
-		// Calculate w(t) = I(t)^-1 L(t)
-		Matrix Ltmp = new Matrix(3,1);
-		Ltmp [0, 0] = L.x;
-		Ltmp [1, 0] = L.y;
-		Ltmp [2, 0] = L.z;
-		Matrix wMatrix = Iinv * Ltmp; 
-		w = new Vector3 (wMatrix [0, 0], wMatrix [1, 0], wMatrix [2, 0]);
+
+		calculateW();
 		
 		position = position + timestep * P / mass;
 		velocity = P / mass;
@@ -146,9 +140,9 @@ public class Plank : MonoBehaviour {
 	private void calculateR() {
 
 		// get R from q
-		R[0,0] = (1 - 2 * q.y * q.y - q.z*q.z); R[0,1] = 2 * q.x * q.y - 2 * q.w * q.z; R[0,2] = 2 * q.x * q.z + 2 * q.w * q.y;
-		R[1,0] = 2 * q.x * q.y + 2 * q.w * q.z; R[0,1] = (1 - 2 * q.x * q.x - q.z*q.z); R[1,2] = 2 * q.y * q.z - 2 * q.w * q.x;
-		R[2,0] = 2 * q.x * q.z - 2 * q.w * q.y; R[2,1] = 2 * q.y * q.z + 2 * q.w * q.x; R[2,2] = (1 - 2 * q.x * q.x - q.y*q.y);
+		R[0,0] = (1 - 2 * q.y * q.y - 2 * q.z*q.z); R[0,1] = 2 * q.x * q.y - 2 * q.w * q.z; R[0,2] = 2 * q.x * q.z + 2 * q.w * q.y;
+		R[1,0] = 2 * q.x * q.y + 2 * q.w * q.z; R[0,1] = (1 - 2 * q.x * q.x - 2 * q.z*q.z); R[1,2] = 2 * q.y * q.z - 2 * q.w * q.x;
+		R[2,0] = 2 * q.x * q.z - 2 * q.w * q.y; R[2,1] = 2 * q.y * q.z + 2 * q.w * q.x; R[2,2] = (1 - 2 * q.x * q.x - 2 * q.y*q.y);
 	}
 
 	private void calculateIinv() {
@@ -159,12 +153,30 @@ public class Plank : MonoBehaviour {
 		Iinv = R * IbodyInv * Matrix.Transpose(R);
 	}
 
+	private void calculateW() {
+		// Calculate w(t) = I(t)^-1 L(t)
+		Matrix Ltmp = new Matrix(3,1);
+		Ltmp [0, 0] = L.x;
+		Ltmp [1, 0] = L.y;
+		Ltmp [2, 0] = L.z;
+		Matrix wMatrix = Iinv * Ltmp; 
+		w = new Vector3 (wMatrix [0, 0], wMatrix [1, 0], wMatrix [2, 0]);
+	}
+
 	private void normalizeQuaternion() {
 		float norm = Mathf.Sqrt(q.w * q.w + q.x * q.x + q.y*q.y + q.z * q.z);
 		q.w = q.w / norm;
 		q.x = q.x / norm;
 		q.y = q.y / norm;
 		q.z = q.z / norm;
+	}
+
+	public void clearMovement() {
+		P = Vector3.zero;
+		L = Vector3.zero;
+		w = Vector3.zero;
+		torque = Vector3.zero;
+		force = Vector3.zero;
 	}
 }
 

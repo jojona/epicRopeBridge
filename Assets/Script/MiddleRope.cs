@@ -80,4 +80,11 @@ public class MiddleRope : PointController {
 	void Update () {
 	
 	}
+
+	override public void clearMovement() {
+		foreach(Point p in points) {
+			p.clearMovement();
+		}
+		plank.clearMovement();
+	}
 }

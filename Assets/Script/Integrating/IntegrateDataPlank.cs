@@ -67,8 +67,15 @@ public class IntegrateDataPlank : IntegrateAbstract{
 		evalResult.deltaP = p.force;
 		evalResult.deltaL = p.torque;
 
+		p.point1.integrate.evalResult.deltaPosition = p.P / p.mass + Vector3.Cross (p.w, (p.point1.position - p.position));
+		p.point2.integrate.evalResult.deltaPosition = p.P / p.mass + Vector3.Cross (p.w, (p.point2.position - p.position));
+		p.point3.integrate.evalResult.deltaPosition = p.P / p.mass + Vector3.Cross (p.w, (p.point3.position - p.position));
+		p.point4.integrate.evalResult.deltaPosition = p.P / p.mass + Vector3.Cross (p.w, (p.point4.position - p.position));
 
-
+		p.point1.integrate.evalResult.deltaVelocity = Vector3.zero;
+		p.point2.integrate.evalResult.deltaVelocity = Vector3.zero;
+		p.point3.integrate.evalResult.deltaVelocity = Vector3.zero;
+		p.point4.integrate.evalResult.deltaVelocity = Vector3.zero;
 //		evalResult.deltaPosition = p.velocity;
 //		evalResult.deltaVelocity = p.force / p.mass;
 	}

@@ -13,6 +13,7 @@ public class Point : MonoBehaviour {
 
 	public Vector3 statePos = Vector3.zero;
 	public Vector3 stateVel = Vector3.zero;
+	public IntegrateDataPoint integrate;
 
 	private List<Point> neighbour = new List<Point>();
 

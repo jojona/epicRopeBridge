@@ -91,7 +91,6 @@ public class Plank : MonoBehaviour {
 		transform.rotation = q;
 	}
 
-
 	public void simulation() {
 		float timestep = 1f / 60f;
 

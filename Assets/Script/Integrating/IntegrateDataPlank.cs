@@ -1,4 +1,8 @@
 ﻿using UnityEngine;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 public class IntegrateDataPlank : IntegrateAbstract{
 
@@ -21,6 +25,9 @@ public class IntegrateDataPlank : IntegrateAbstract{
 	}
 
 	public override void weightedSum(float timestep) {
+		p.P += (1f / 6f) * (a.deltaP + 2 * (b.deltaP + c.deltaP) + d.deltaP) * timestep;
+		p.L += (1f / 6f) * (a.deltaL + 2 * (b.deltaL + c.deltaL) + d.deltaL) * timestep;
+		
 		p.position += (1f / 6f) * (a.deltaX + 2 * (b.deltaX + c.deltaX) + d.deltaX) * timestep;
 
 		p.q.x += (1f / 6f) * (a.deltaQ.x + 2 * (b.deltaQ.x + c.deltaQ.x) + d.deltaQ.x) * timestep;
@@ -28,26 +35,36 @@ public class IntegrateDataPlank : IntegrateAbstract{
 		p.q.z += (1f / 6f) * (a.deltaQ.z + 2 * (b.deltaQ.z + c.deltaQ.z) + d.deltaQ.z) * timestep;
 		p.q.w += (1f / 6f) * (a.deltaQ.w + 2 * (b.deltaQ.w + c.deltaQ.w) + d.deltaQ.w) * timestep;
 
-		p.P += (1f / 6f) * (a.deltaP + 2 * (b.deltaP + c.deltaP) + d.deltaP) * timestep;
-		p.L += (1f / 6f) * (a.deltaL + 2 * (b.deltaL + c.deltaL) + d.deltaL) * timestep;
+		p.normalizeQuaternion();
+		p.calculateR();
+		p.pointPositions();
+		p.calculateIinv();
 	}
 
 
 	public override void eulerSum(float timestep) {
-		p.position += p.P / p.mass * timestep;
 		p.P += p.force * timestep;
 		p.L += p.torque * timestep;
+		
+		p.calculateW();
 
-		p.q.x += p.dq.x * timestep;
-		p.q.y += p.dq.y * timestep;
-		p.q.z += p.dq.z * timestep;
-		p.q.w += p.dq.w * timestep;
+		p.position += p.P / p.mass * timestep;
+		Quaternion dq = (new Quaternion (p.w.x * 1/2, p.w.y * 1/2, p.w.z * 1/2, 0)) * p.q;
+		p.q.x += dq.x * timestep;
+		p.q.y += dq.y * timestep;
+		p.q.z += dq.z * timestep;
+		p.q.w += dq.w * timestep;
 
-		Vector3 velocity = p.P / p.mass;
-		p.point1.position += (velocity + Vector3.Cross (p.w, (p.point1.position - p.position))) * timestep;
-		p.point2.position += (velocity + Vector3.Cross (p.w, (p.point2.position - p.position))) * timestep;
-		p.point3.position += (velocity + Vector3.Cross (p.w, (p.point3.position - p.position))) * timestep;
-		p.point4.position += (velocity + Vector3.Cross (p.w, (p.point4.position - p.position))) * timestep;
+		// Vector3 velocity = p.P / p.mass;
+		// p.point1.position += (velocity + Vector3.Cross (p.w, (p.point1.position - p.position))) * timestep;
+		// p.point2.position += (velocity + Vector3.Cross (p.w, (p.point2.position - p.position))) * timestep;
+		// p.point3.position += (velocity + Vector3.Cross (p.w, (p.point3.position - p.position))) * timestep;
+		// p.point4.position += (velocity + Vector3.Cross (p.w, (p.point4.position - p.position))) * timestep;
+		
+		p.normalizeQuaternion();
+		p.calculateR();
+		p.pointPositions();
+		p.calculateIinv();
 	}
 
 	public override void stepA() {
@@ -76,26 +93,30 @@ public class IntegrateDataPlank : IntegrateAbstract{
 
 		p.L += evalResult.deltaL * timestep;
 
-
+		p.normalizeQuaternion();
+		p.calculateR();
+		p.pointPositions();
+		p.calculateIinv();
 	}
 
 	public override void saveDerivate() {
-		evalResult.deltaX = p.P / p.mass;
-		evalResult.deltaQ = (new Quaternion (p.w.x * 1 / 2, p.w.y * 1 / 2, p.w.z * 1 / 2, 0)) * p.q;
 		evalResult.deltaP = p.force;
 		evalResult.deltaL = p.torque;
+		
+		p.calculateW();
 
-		p.point1.integrate.evalResult.deltaPosition = p.P / p.mass + Vector3.Cross (p.w, (p.point1.position - p.position));
-		p.point2.integrate.evalResult.deltaPosition = p.P / p.mass + Vector3.Cross (p.w, (p.point2.position - p.position));
-		p.point3.integrate.evalResult.deltaPosition = p.P / p.mass + Vector3.Cross (p.w, (p.point3.position - p.position));
-		p.point4.integrate.evalResult.deltaPosition = p.P / p.mass + Vector3.Cross (p.w, (p.point4.position - p.position));
+		evalResult.deltaX = p.P / p.mass;
 
-		p.point1.integrate.evalResult.deltaVelocity = Vector3.zero;
-		p.point2.integrate.evalResult.deltaVelocity = Vector3.zero;
-		p.point3.integrate.evalResult.deltaVelocity = Vector3.zero;
-		p.point4.integrate.evalResult.deltaVelocity = Vector3.zero;
-//		evalResult.deltaPosition = p.velocity;
-//		evalResult.deltaVelocity = p.force / p.mass;
+		// TODO Is normalization needed?;
+		Quaternion dq = (new Quaternion (p.w.x * 1 / 2, p.w.y * 1 / 2, p.w.z * 1 / 2, 0));
+		normalizeQuaternion(dq);
+		evalResult.deltaQ =  dq * p.q;
+		normalizeQuaternion(evalResult.deltaQ); 
+
+		p.normalizeQuaternion();
+		p.calculateR();
+		p.pointPositions();
+		p.calculateIinv();
 	}
 
 	public override void saveState() {
@@ -103,7 +124,6 @@ public class IntegrateDataPlank : IntegrateAbstract{
 		p.stateP = p.P;
 		p.stateL = p.L;
 		p.stateQ = p.q;
-
 	}
 
 	public override void loadState () {
@@ -111,10 +131,23 @@ public class IntegrateDataPlank : IntegrateAbstract{
 		p.P = p.stateP;
 		p.L = p.stateL;
 		p.q = p.stateQ;
+
+		p.normalizeQuaternion();
+		p.calculateR();
+		p.pointPositions();
+		p.calculateIinv();
 	}
 
 	public override void reset() {
 		evalResult.reset();
+	}
+
+	public void normalizeQuaternion(Quaternion q) {
+		float norm = Mathf.Sqrt(q.w * q.w + q.x * q.x + q.y*q.y + q.z * q.z);
+		q.w = q.w / norm;
+		q.x = q.x / norm;
+		q.y = q.y / norm;
+		q.z = q.z / norm;
 	}
 
 }

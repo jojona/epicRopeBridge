@@ -69,6 +69,41 @@ public class Spawner : MonoBehaviour {
 		integrator = new Integrator (ropes, timestep);
 	}
 
+		/** 
+	 * Update that is called once per frame.
+	 */
+	void FixedUpdate () {
+		lap++;
+		if (lap == 3470) {
+			EditorApplication.isPaused = true;
+		}
+		// if (lap == 150 && lap == 200) {
+		// 	foreach(PointController pc in ropes) {
+		// 		pc.clearMovement();
+		// 	}
+		// }
+// ######################## Swap integration method here ###################################################
+		integrator.euler(ropes, simulationStep);
+		//integrator.integrate(ropes, simulationStep);
+	}
+
+	/**
+	 * Simulate one step in the simulation.
+	 */
+	void simulationStep() {
+		foreach (PointController pc in ropes) {
+			pc.clearForces ();
+		}
+		foreach (PointController pc in ropes) {
+			pc.simulationStep ();
+		}
+
+		if (box != null) {
+			box.force = Vector3.zero;
+			box.simulation ();
+		}
+	}
+
 	/**
 	 * Spawns rope.
 	 */
@@ -171,44 +206,6 @@ public class Spawner : MonoBehaviour {
 		box.init ();
 	}
 
-	/** 
-	 * Update that is called once per frame.
-	 */
-	void FixedUpdate () {
-		lap++;
-		// if (lap == 1400) {
-		// 	EditorApplication.isPaused = true;
-		// }
-		// if (lap == 150 && lap == 200) {
-		// 	foreach(PointController pc in ropes) {
-		// 		pc.clearMovement();
-		// 	}
-		// }
-// ######################## Swap integration method here ###################################################
-		integrator.euler(ropes, simulationStep);
-		//integrator.integrate(ropes, simulationStep);
-	}
-
-	/**
-	 * Simulate one step in the simulation.
-	 */
-	void simulationStep() {
-		foreach (PointController pc in ropes) {
-			pc.clearForces ();
-		}
-		foreach (PointController pc in ropes) {
-			pc.simulationStep ();
-		}
-
-		if (box != null) {
-			box.force = Vector3.zero;
-			box.simulation ();
-		}
-	}
-
-
-
-
 
 	/**
 	 * Spawns rope.
@@ -269,15 +266,10 @@ public class Spawner : MonoBehaviour {
 		ropes.Add(r4);
 
 		// Creates middle rope points and adds them to list
-		for (int i = 0; i * 2 + 3 < 2 * amountOfPointsPerRope - 1; ++i) {
-			
-			i = amountOfPointsPerRope / 2;
+		int i = amountOfPointsPerRope / 2;
 
-			MiddleRope r = (MiddleRope) Instantiate(middleRopePrefab, Vector3.zero, Quaternion.identity);
-			r.init(true, 5, segmentLength/5, r1.getPoint (i * spacing + 1), r1.getPoint (i * spacing + spacing), r2.getPoint (i * spacing + 1), r2.getPoint (i * spacing + spacing), r3.getPoint (i * spacing + 1), r3.getPoint (i * spacing + spacing), r4.getPoint (i * spacing + 1), r4.getPoint (i * spacing + spacing), ropeDirection, middleRopeStiffness, ropeDampening);
-			ropes.Add(r);
-
-			break;
-		}
+		MiddleRope r = (MiddleRope) Instantiate(middleRopePrefab, Vector3.zero, Quaternion.identity);
+		r.init(true, 5, segmentLength/5, r1.getPoint (i * spacing + 1), r1.getPoint (i * spacing + spacing), r2.getPoint (i * spacing + 1), r2.getPoint (i * spacing + spacing), r3.getPoint (i * spacing + 1), r3.getPoint (i * spacing + spacing), r4.getPoint (i * spacing + 1), r4.getPoint (i * spacing + spacing), ropeDirection, middleRopeStiffness, ropeDampening);
+		ropes.Add(r);
 	}
 }

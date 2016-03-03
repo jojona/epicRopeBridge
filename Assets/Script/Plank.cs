@@ -36,7 +36,6 @@ public class Plank : MonoBehaviour {
 
 	public Quaternion dq;
 
-
 	public Vector3 statePos;
 	public Quaternion stateQ;
 	public Vector3 stateP;
@@ -48,6 +47,7 @@ public class Plank : MonoBehaviour {
 	}
 
 	public void init(Point p1, Point p2, Point p3, Point p4) {
+
 		point1 = p1;
 		point2 = p2;
 		point3 = p3;
@@ -76,6 +76,7 @@ public class Plank : MonoBehaviour {
 
 		q = transform.rotation;
 		calculateR();
+		pointPositions();
 		calculateIinv();
 	}
 
@@ -107,7 +108,7 @@ public class Plank : MonoBehaviour {
 
 		// L += torque * timestep;
 
-		calculateW();
+		//calculateW();
 		
 		// position = position + timestep * P / mass;
 		//velocity = P / mass;
@@ -116,15 +117,21 @@ public class Plank : MonoBehaviour {
 		// point3.position += (velocity + Vector3.Cross (w, (point3.position - position))) * timestep;
 		// point4.position += (velocity + Vector3.Cross (w, (point4.position - position))) * timestep;
 
-		dq = (new Quaternion (w.x * 1/2, w.y * 1/2, w.z * 1/2, 0)) * q; // 1/2 [0 ; w(t)] q(t)
+		//dq = (new Quaternion (w.x * 1/2, w.y * 1/2, w.z * 1/2, 0)) * q; // 1/2 [0 ; w(t)] q(t)
 		// q.w += dq.w * timestep;
 		// q.x += dq.x * timestep;
 		// q.y += dq.y * timestep;
 		// q.z += dq.z * timestep;
+
+		//Vector3 velocity = P / mass;
+		//point1.velocity = (velocity + Vector3.Cross (w, (point1.position - position)));
+		//point2.velocity = (velocity + Vector3.Cross (w, (point2.position - position)));
+		//point3.velocity = (velocity + Vector3.Cross (w, (point3.position - position)));
+		//point4.velocity = (velocity + Vector3.Cross (w, (point4.position - position)));
 	
-		calculateR();
-		calculateIinv();
-		normalizeQuaternion();
+		//calculateR();
+		//calculateIinv();
+		//normalizeQuaternion();
 
 		clearPointForces ();
 
@@ -141,7 +148,7 @@ public class Plank : MonoBehaviour {
 		// torque
 	}
 
-	private void calculateR() {
+	public void calculateR() {
 
 		// get R from q
 		R[0,0] = (1 - 2 * q.y * q.y - 2 * q.z*q.z); R[0,1] = 2 * q.x * q.y - 2 * q.w * q.z; R[0,2] = 2 * q.x * q.z + 2 * q.w * q.y;
@@ -149,7 +156,7 @@ public class Plank : MonoBehaviour {
 		R[2,0] = 2 * q.x * q.z - 2 * q.w * q.y; R[2,1] = 2 * q.y * q.z + 2 * q.w * q.x; R[2,2] = (1 - 2 * q.x * q.x - 2 * q.y*q.y);
 	}
 
-	private void calculateIinv() {
+	public void calculateIinv() {
 		// Calculate I(t)	
 		// I(t) = R(t) Ibody R(t)^T
 		// I(t)^-1 = R(t) I^-1body R(t)^T
@@ -157,7 +164,7 @@ public class Plank : MonoBehaviour {
 		Iinv = R * IbodyInv * Matrix.Transpose(R);
 	}
 
-	private void calculateW() {
+	public void calculateW() {
 		// Calculate w(t) = I(t)^-1 L(t)
 		Matrix Ltmp = new Matrix(3,1);
 		Ltmp [0, 0] = L.x;
@@ -167,7 +174,7 @@ public class Plank : MonoBehaviour {
 		w = new Vector3 (wMatrix [0, 0], wMatrix [1, 0], wMatrix [2, 0]);
 	}
 
-	private void normalizeQuaternion() {
+	public void normalizeQuaternion() {
 		float norm = Mathf.Sqrt(q.w * q.w + q.x * q.x + q.y*q.y + q.z * q.z);
 		q.w = q.w / norm;
 		q.x = q.x / norm;
@@ -181,6 +188,34 @@ public class Plank : MonoBehaviour {
 		w = Vector3.zero;
 		torque = Vector3.zero;
 		force = Vector3.zero;
+	}
+
+	public void pointPositions() {
+		// Calculate point position from R
+		Matrix mp1 = new Matrix(3, 1); mp1[0, 0] = - width/2; mp1[2, 0] = - length/2;
+		Matrix mp2 = new Matrix(3, 1); mp2[0, 0] = - width/2; mp2[2, 0] = + length/2;
+		Matrix mp3 = new Matrix(3, 1); mp3[0, 0] = + width/2; mp3[2, 0] = - length/2;
+		Matrix mp4 = new Matrix(3, 1); mp4[0, 0] = + width/2; mp4[2, 0] = + length/2;
+
+		mp1 = R * mp1;
+		point1.position.x = mp1[0, 0] + position.x;
+		point1.position.y = mp1[1, 0] + position.y;
+		point1.position.z = mp1[2, 0] + position.z;
+
+		mp2 = R * mp2;
+		point2.position.x = mp2[0, 0] + position.x;
+		point2.position.y = mp2[1, 0] + position.y;
+		point2.position.z = mp2[2, 0] + position.z;
+		
+		mp3 = R * mp3;
+		point3.position.x = mp3[0, 0] + position.x;
+		point3.position.y = mp3[1, 0] + position.y;
+		point3.position.z = mp3[2, 0] + position.z;
+
+		mp4 = R * mp4;
+		point4.position.x = mp4[0, 0] + position.x;
+		point4.position.y = mp4[1, 0] + position.y;
+		point4.position.z = mp4[2, 0] + position.z;
 	}
 }
 

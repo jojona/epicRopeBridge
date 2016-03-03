@@ -24,18 +24,15 @@ public class Integrator {
 	 */
 	public void euler(List<PointController> pcl, Action simulationStep) {
 		simulationStep ();
+
 		foreach(PointController pc in pcl) {
 			foreach(IntegrateAbstract i in pc.integrateList	){
 				i.eulerSum (timestep);
 			}
 		}
-//		foreach (PointController pc in pcl) {
-//			foreach (Point point in pc.getPoints ()) {
-//				point.velocity += timestep * point.force / point.mass;
-//				point.position += timestep * point.velocity;
-//			}
-//		}
 	}
+
+	public static int lap = 0;
 
 	/**
 	 * RK4 Integration
@@ -43,8 +40,15 @@ public class Integrator {
 	public void integrate(List<PointController> pcl, Action forceFunc){
 		this.pcl = pcl;
 
+		Integrator.lap = 0;
+		// CLear
+		foreach(PointController pc in pcl) {
+			foreach(IntegrateAbstract i in pc.integrateList){
+				i.reset ();	
+			}
+		}
 
-		// a
+		// A
 		evaluate(forceFunc, timestep*0f);
 		foreach(PointController pc in pcl) {
 			foreach(IntegrateAbstract i in pc.integrateList){
@@ -52,7 +56,8 @@ public class Integrator {
 			}
 		}
 
-		// a
+		Integrator.lap = 1;
+		// B
 		evaluate(forceFunc, timestep*0.5f);
 		foreach(PointController pc in pcl) {
 			foreach(IntegrateAbstract i in pc.integrateList){
@@ -60,15 +65,17 @@ public class Integrator {
 			}
 		}
 
-		// a
+		Integrator.lap = 2;
+		// C
 		evaluate(forceFunc, timestep*0.5f);
 		foreach(PointController pc in pcl) {
 			foreach(IntegrateAbstract i in pc.integrateList){
 				i.stepC ();	
 			}
 		}
+		Integrator.lap = 3;
 
-		// a
+		// D
 		evaluate(forceFunc, timestep*1f);
 		foreach(PointController pc in pcl) {
 			foreach(IntegrateAbstract i in pc.integrateList){
@@ -92,7 +99,6 @@ public class Integrator {
 				i.saveState ();	
 			}
 		}
-
 
 		foreach(PointController pc in pcl) {
 			foreach(IntegrateAbstract i in pc.integrateList){

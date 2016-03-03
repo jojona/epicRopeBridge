@@ -32,10 +32,18 @@ public class MiddleRope : PointController {
 			Vector3 corner3 = position + (p3.position - p1.position) / 5 - (p2.position - p1.position) / 5;
 			Vector3 corner4 = position + (p3.position - p1.position) / 5 + (p2.position - p1.position) / 5; 
 
-			createPoint (corner1 + (p1.position - corner1) * i / (amount) , "A"+i);
-			createPoint (corner2 + (p2.position - corner2) * i / (amount) , "B"+i);
-			createPoint (corner3 + (p3.position - corner3) * i / (amount) , "C"+i);
-			createPoint (corner4 + (p4.position - corner4) * i / (amount) , "D"+i);
+			if (i == 0) {
+					createCorner (corner1 + (p1.position - corner1) * i / (amount) , "A"+i);
+					createCorner (corner2 + (p2.position - corner2) * i / (amount) , "B"+i);
+					createCorner (corner3 + (p3.position - corner3) * i / (amount) , "C"+i);
+					createCorner (corner4 + (p4.position - corner4) * i / (amount) , "D"+i);
+				
+				} else {
+					createPoint (corner1 + (p1.position - corner1) * i / (amount) , "A"+i);
+					createPoint (corner2 + (p2.position - corner2) * i / (amount) , "B"+i);
+					createPoint (corner3 + (p3.position - corner3) * i / (amount) , "C"+i);
+					createPoint (corner4 + (p4.position - corner4) * i / (amount) , "D"+i);
+				}
 		}
 
 		for (int i = 0; i < amount - 1; ++i) {

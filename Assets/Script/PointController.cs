@@ -42,6 +42,15 @@ public abstract class PointController : MonoBehaviour {
 		return p;
 	}
 
+	protected Point createCorner(Vector3 position, string name) {
+		Point p = (Point)Instantiate (pointPrefab, position, Quaternion.identity);
+		p.position = position;
+		p.transform.parent = transform;
+		points.Add (p);
+		p.name = name;
+		return p;
+	}
+
 	protected void init(float stiffness, float dampening, float segmentLength) {
 		ropeStiffness = stiffness;
 		ropeDampening = dampening;

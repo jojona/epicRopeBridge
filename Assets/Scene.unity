@@ -400,7 +400,7 @@ MonoBehaviour:
   anchorPointEnd: {x: 200, y: 0, z: 0}
   spacing: 5
   amountOfPointsPerRope: 20
-  timestep: 0.016666668
+  timestep: 0.001666667
   ropeStiffness: 2500
   middleRopeStiffness: 800
   ropeDampening: 6

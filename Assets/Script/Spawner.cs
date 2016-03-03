@@ -83,8 +83,8 @@ public class Spawner : MonoBehaviour {
 		// 	}
 		// }
 // ######################## Swap integration method here ###################################################
-		integrator.euler(ropes, simulationStep);
-		//integrator.integrate(ropes, simulationStep);
+		//integrator.euler(ropes, simulationStep);
+		integrator.integrate(ropes, simulationStep);
 	}
 
 	/**

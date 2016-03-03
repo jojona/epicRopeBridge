@@ -107,7 +107,6 @@ public class IntegrateDataPlank : IntegrateAbstract{
 
 		evalResult.deltaX = p.P / p.mass;
 
-		// TODO Is normalization needed?;
 		Quaternion dq = (new Quaternion (p.w.x * 1 / 2, p.w.y * 1 / 2, p.w.z * 1 / 2, 0));
 		normalizeQuaternion(dq);
 		evalResult.deltaQ =  dq * p.q;

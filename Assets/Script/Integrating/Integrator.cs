@@ -4,36 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Integrator {
-	private class Derivative{
-		public Vector3 deltaVelocity;
-		public Vector3 deltaPosition;
-		public Derivative (){
-			deltaPosition = Vector3.zero;
-			deltaVelocity = Vector3.zero;
-		}
-
-		public void reset(){
-			deltaPosition = Vector3.zero;
-			deltaVelocity = Vector3.zero;
-		}
-	}
-
-	private class IntegrateData{
-		public Derivative evalResult;
-		public Derivative a;
-		public Derivative b;
-		public Derivative c;
-		public Derivative d;
-		public IntegrateData(){
-			evalResult = new Derivative();
-			a = new Derivative();
-			b = new Derivative();
-			c = new Derivative();
-			d = new Derivative();
-		}
-	}
-
-
 	/////////////////////////
 	/// Integrator
 	/////////////////////////

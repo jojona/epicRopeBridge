@@ -7,6 +7,7 @@ public abstract class PointController : MonoBehaviour {
 
 	public Point pointPrefab;
 	protected List<Point> points;
+	protected List<IntegrateAbstract> integrateList;
 
 	protected float ropeStiffness;
 	protected float ropeDampening;
@@ -24,6 +25,9 @@ public abstract class PointController : MonoBehaviour {
 		p.position = position;
 		p.transform.parent = transform;
 		points.Add (p);
+
+		integrateList.Add(new IntegrateDataPoint(p));
+
 		return p;
 	}
 
@@ -42,6 +46,7 @@ public abstract class PointController : MonoBehaviour {
 		ropeDampening = dampening;
 		this.segmentLength = segmentLength;
 		points = new List<Point> ();
+		integrateList = new List<IntegrateAbstract>();
 	}
 
 	/** 

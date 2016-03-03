@@ -50,6 +50,9 @@ public class MiddleRope : PointController {
 		plank.transform.parent = transform;
 		plank.transform.forward = direction;
 		plank.init (points[0], points[1], points[2], points[3]);
+		integrateList.Add(new IntegrateDataPlank(plank));
+
+
 		// Names
 		points [0].name += " Corner1"; points [1].name += " Corner2";	points [2].name += " Corner3"; points [3].name += " Corner4";
 

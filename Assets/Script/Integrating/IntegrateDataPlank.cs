@@ -1,4 +1,6 @@
-﻿public class IntegrateDataPlank : IntegrateAbstract{
+﻿using UnityEngine;
+
+public class IntegrateDataPlank : IntegrateAbstract{
 
 	public DerivativeRotation evalResult;
 	public DerivativeRotation a;
@@ -20,7 +22,12 @@
 
 	public override void weightedSum(float timestep) {
 		p.position += (1f / 6f) * (a.deltaX + 2 * (b.deltaX + c.deltaX) + d.deltaX) * timestep;
-		p.q += (1f / 6f) * (a.deltaQ + 2 * (b.deltaQ + c.deltaQ) + d.deltaQ) * timestep;
+
+		p.q.x += (1f / 6f) * (a.deltaQ.x + 2 * (b.deltaQ.x + c.deltaQ.x) + d.deltaQ.x) * timestep;
+		p.q.y += (1f / 6f) * (a.deltaQ.y + 2 * (b.deltaQ.y + c.deltaQ.y) + d.deltaQ.y) * timestep;
+		p.q.z += (1f / 6f) * (a.deltaQ.z + 2 * (b.deltaQ.z + c.deltaQ.z) + d.deltaQ.z) * timestep;
+		p.q.w += (1f / 6f) * (a.deltaQ.w + 2 * (b.deltaQ.w + c.deltaQ.w) + d.deltaQ.w) * timestep;
+
 		p.P += (1f / 6f) * (a.deltaP + 2 * (b.deltaP + c.deltaP) + d.deltaP) * timestep;
 		p.L += (1f / 6f) * (a.deltaL + 2 * (b.deltaL + c.deltaL) + d.deltaL) * timestep;
 	}
@@ -39,13 +46,31 @@
 	}
 
 	public override void tryDerivate(float timestep) { //TODO
-		p.position += evalResult.deltaPosition * timestep;
-		p.velocity += evalResult.deltaVelocity * timestep;
+		
+		p.position += evalResult.deltaX * timestep;
+
+		p.q.x += evalResult.deltaQ.x * timestep;
+		p.q.z += evalResult.deltaQ.z * timestep;
+		p.q.y += evalResult.deltaQ.y * timestep;
+		p.q.w += evalResult.deltaQ.w * timestep;
+
+		p.P += evalResult.deltaP * timestep;
+
+		p.L += evalResult.deltaL * timestep;
+
+
 	}
 
 	public override void saveDerivate() {
-		evalResult.deltaPosition = p.velocity;
-		evalResult.deltaVelocity = p.force / p.mass;
+		evalResult.deltaX = p.P / p.mass;
+		evalResult.deltaQ = (new Quaternion (p.w.x * 1 / 2, p.w.y * 1 / 2, p.w.z * 1 / 2, 0)) * p.q;
+		evalResult.deltaP = p.force;
+		evalResult.deltaL = p.torque;
+
+
+
+//		evalResult.deltaPosition = p.velocity;
+//		evalResult.deltaVelocity = p.force / p.mass;
 	}
 
 	public override void saveState() {

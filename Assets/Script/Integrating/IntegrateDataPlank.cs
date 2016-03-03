@@ -32,6 +32,24 @@ public class IntegrateDataPlank : IntegrateAbstract{
 		p.L += (1f / 6f) * (a.deltaL + 2 * (b.deltaL + c.deltaL) + d.deltaL) * timestep;
 	}
 
+
+	public override void eulerSum(float timestep) {
+		p.position += p.P / p.mass * timestep;
+		p.P += p.force * timestep;
+		p.L += p.torque * timestep;
+
+		p.q.x += p.dq.x * timestep;
+		p.q.y += p.dq.y * timestep;
+		p.q.z += p.dq.z * timestep;
+		p.q.w += p.dq.w * timestep;
+
+		Vector3 velocity = p.P / p.mass;
+		p.point1.position += (velocity + Vector3.Cross (p.w, (p.point1.position - p.position))) * timestep;
+		p.point2.position += (velocity + Vector3.Cross (p.w, (p.point2.position - p.position))) * timestep;
+		p.point3.position += (velocity + Vector3.Cross (p.w, (p.point3.position - p.position))) * timestep;
+		p.point4.position += (velocity + Vector3.Cross (p.w, (p.point4.position - p.position))) * timestep;
+	}
+
 	public override void stepA() {
 		a = evalResult;
 	}

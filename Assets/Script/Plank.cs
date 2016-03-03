@@ -23,7 +23,6 @@ public class Plank : MonoBehaviour {
 	public Vector3 L = Vector3.zero; // Angular momentum	L(t) = I(t)w(t)
 
 	// d/dt Y(t)
-	private Vector3 velocity = Vector3.zero;
 	public Vector3 w = Vector3.zero; // Omega Angular Velocity
 	public Vector3 force = Vector3.zero;
 	public Vector3 torque = Vector3.zero; // dL(t) = torque
@@ -34,6 +33,8 @@ public class Plank : MonoBehaviour {
 	private Matrix Iinv;
 	public float mass = 100;
 	// Center of mass = position
+
+	public Quaternion dq;
 
 
 	public Vector3 statePos;
@@ -92,8 +93,6 @@ public class Plank : MonoBehaviour {
 	}
 
 	public void simulation() {
-		float timestep = 1f / 60f;
-
 		// Torque = Sum((pi - x) X Fi)
 		Vector3 t1 = Vector3.Cross ((point1.position - position), point1.force);
 		Vector3 t2 = Vector3.Cross ((point2.position - position), point2.force);
@@ -111,13 +110,13 @@ public class Plank : MonoBehaviour {
 		calculateW();
 		
 		// position = position + timestep * P / mass;
-		velocity = P / mass;
+		//velocity = P / mass;
 		// point1.position += (velocity + Vector3.Cross (w, (point1.position - position))) * timestep;
 		// point2.position += (velocity + Vector3.Cross (w, (point2.position - position))) * timestep;
 		// point3.position += (velocity + Vector3.Cross (w, (point3.position - position))) * timestep;
 		// point4.position += (velocity + Vector3.Cross (w, (point4.position - position))) * timestep;
 
-		// Quaternion dq = (new Quaternion (w.x * 1/2, w.y * 1/2, w.z * 1/2, 0)) * q; // 1/2 [0 ; w(t)] q(t)
+		dq = (new Quaternion (w.x * 1/2, w.y * 1/2, w.z * 1/2, 0)) * q; // 1/2 [0 ; w(t)] q(t)
 		// q.w += dq.w * timestep;
 		// q.x += dq.x * timestep;
 		// q.y += dq.y * timestep;

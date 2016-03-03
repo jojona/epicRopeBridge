@@ -8,19 +8,15 @@ public class Integrator {
 	/// Integrator
 	/////////////////////////
 
-	private List<IntegrateData> m_calcData = new List<IntegrateData>();
+
 	List<PointController> pcl;
 	private int numPoints, prevNumPoints;
 	private float timestep;
 
 
 	public Integrator(List<PointController> pcl, float timestep){
-		m_calcData = new List<IntegrateData> ();
 		this.timestep = timestep;
 		this.pcl = pcl;
-		numPoints = 0;
-		prevNumPoints = 0;
-		prepIntegration ();
 	}
 
 	/*
@@ -28,13 +24,17 @@ public class Integrator {
 	 */
 	public void euler(List<PointController> pcl, Action simulationStep) {
 		simulationStep ();
-
-		foreach (PointController pc in pcl) {
-			foreach (Point point in pc.getPoints ()) {
-				point.velocity += timestep * point.force / point.mass;
-				point.position += timestep * point.velocity;
+		foreach(PointController pc in pcl) {
+			foreach(IntegrateAbstract i in pc.integrateList	){
+				i.eulerSum (timestep);
 			}
 		}
+//		foreach (PointController pc in pcl) {
+//			foreach (Point point in pc.getPoints ()) {
+//				point.velocity += timestep * point.force / point.mass;
+//				point.position += timestep * point.velocity;
+//			}
+//		}
 	}
 
 	/**
@@ -42,130 +42,76 @@ public class Integrator {
 	 */
 	public void integrate(List<PointController> pcl, Action forceFunc){
 		this.pcl = pcl;
-		prepIntegration ();
 
-		PointController pc;
 
 		// a
 		evaluate(forceFunc, timestep*0f);
-		for (int i = 0, tot = 0; i < pcl.Count; ++i) {
-			pc = pcl [i];
-			for (int j = 0; j < pc.getPoints().Count; ++j, ++tot) {
-				m_calcData [tot].a = m_calcData [tot].evalResult;
+		foreach(PointController pc in pcl) {
+			foreach(IntegrateAbstract i in pc.integrateList){
+				i.stepA ();	
 			}
 		}
 
-		// b
+		// a
 		evaluate(forceFunc, timestep*0.5f);
-		for (int i = 0, tot = 0; i < pcl.Count; ++i) {
-			pc = pcl [i];
-			for (int j = 0; j < pc.getPoints().Count; ++j, ++tot) {
-				m_calcData [tot].b = m_calcData [tot].evalResult;
+		foreach(PointController pc in pcl) {
+			foreach(IntegrateAbstract i in pc.integrateList){
+				i.stepB ();	
 			}
 		}
 
-		// c
+		// a
 		evaluate(forceFunc, timestep*0.5f);
-		for (int i = 0, tot = 0; i < pcl.Count; ++i) {
-			pc = pcl [i];
-			for (int j = 0; j < pc.getPoints().Count; ++j, ++tot) {
-				m_calcData [tot].c = m_calcData [tot].evalResult;
+		foreach(PointController pc in pcl) {
+			foreach(IntegrateAbstract i in pc.integrateList){
+				i.stepC ();	
 			}
 		}
 
-		// d
+		// a
 		evaluate(forceFunc, timestep*1f);
-		for (int i = 0, tot = 0; i < pcl.Count; ++i) {
-			pc = pcl [i];
-			for (int j = 0; j < pc.getPoints().Count; ++j, ++tot) {
-				m_calcData [tot].d = m_calcData [tot].evalResult;
+		foreach(PointController pc in pcl) {
+			foreach(IntegrateAbstract i in pc.integrateList){
+				i.stepD ();	
 			}
 		}
 
-		IntegrateData iData;
-		Vector3 deltaPos, deltaVel;
-		Point p;
-
-		// Weighted sum
-		for (int i = 0, tot = 0; i < pcl.Count; ++i) {
-			pc = pcl [i];
-			for (int j = 0; j < pc.getPoints().Count; ++j, ++tot) {
-				iData = m_calcData [tot];
-				deltaPos = (1f / 6f) * (iData.a.deltaPosition + 2 * (iData.b.deltaPosition + iData.c.deltaPosition) + iData.d.deltaPosition);
-				deltaVel = (1f / 6f) * (iData.a.deltaVelocity + 2 * (iData.b.deltaVelocity + iData.c.deltaVelocity) + iData.d.deltaVelocity);
-				p = pc.getPoints () [j];
-				p.position += deltaPos*timestep;
-				p.velocity += deltaVel*timestep;
+	
+		foreach(PointController pc in pcl) {
+			foreach(IntegrateAbstract i in pc.integrateList){
+				i.weightedSum (timestep);	
 			}
 		}
 
 	}
 
 	private void evaluate(Action updateForcesFunc, float dt){
-		PointController pc;
-		Point p;
 
-		Derivative derivative;
+		foreach(PointController pc in pcl) {
+			foreach(IntegrateAbstract i in pc.integrateList){
+				i.saveState ();	
+			}
+		}
 
-		saveState ();
-		for (int i = 0, tot = 0; i < pcl.Count; ++i) {
-			pc = pcl [i];
-			for (int j = 0; j < pc.getPoints().Count; ++j, ++tot) {
-				p = pc.getPoints () [j];
-				derivative = m_calcData [tot].evalResult;
-				p.position += derivative.deltaPosition * dt;
-				p.velocity += derivative.deltaVelocity * dt;
+
+		foreach(PointController pc in pcl) {
+			foreach(IntegrateAbstract i in pc.integrateList){
+				i.tryDerivate (timestep);	
 			}
 		}
 		updateForcesFunc ();
-		for (int i = 0, tot = 0; i < pcl.Count; ++i) {
-			pc = pcl [i];
-			for (int j = 0; j < pc.getPoints().Count; ++j, ++tot) {
-				p = pc.getPoints () [j];
-				derivative = m_calcData [tot].evalResult;
-				derivative.deltaPosition = p.velocity;
-				derivative.deltaVelocity = p.force / p.mass;
-			}
-		}
-		loadState ();
-	}
 
-	private void prepIntegration(){
-		numPoints = 0;
-		foreach (PointController pc in pcl) {
-			numPoints += pc.getPoints().Count;
-		}
-		int diff = numPoints - prevNumPoints;
-		prevNumPoints = numPoints;
-
-		//Do we need more? Create more! Never shrink
-		if (diff > 0){
-			for (int i = 0; i < diff; i++){
-				m_calcData.Add(new IntegrateData());
-			}
-		}
-
-		for (int i = 0; i < numPoints; i++){
-			m_calcData[i].evalResult.reset();
-		}
-	}
-
-
-	private void saveState(){
 		foreach(PointController pc in pcl) {
-			foreach(Point p in pc.getPoints()) {
-				p.statePos = p.position;
-				p.stateVel = p.velocity;
+			foreach(IntegrateAbstract i in pc.integrateList){
+				i.saveDerivate ();	
+			}
+		}
+
+		foreach(PointController pc in pcl) {
+			foreach(IntegrateAbstract i in pc.integrateList){
+				i.loadState ();	
 			}
 		}
 	}
 
-	private void loadState(){
-		foreach(PointController pc in pcl) {
-			foreach(Point p in pc.getPoints()) {
-				p.position = p.statePos;
-				p.velocity = p.stateVel;
-			}
-		}
-	}
 }

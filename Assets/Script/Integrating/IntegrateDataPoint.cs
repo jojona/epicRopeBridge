@@ -28,6 +28,11 @@ public class IntegrateDataPoint : IntegrateAbstract{
 		p.velocity += deltaVel*timestep;
 	}
 
+	public override void eulerSum(float timestep) {
+		p.velocity += timestep * p.force / p.mass;
+		p.position += timestep * p.velocity;
+	}
+
 	public override void stepA() {
 		a = evalResult;
 	}

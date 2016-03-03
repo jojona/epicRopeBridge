@@ -6,10 +6,10 @@ using System.Linq;
 
 public class Plank : MonoBehaviour {
 
-	private Point point1;
-	private Point point2;
-	private Point point3;
-	private Point point4;
+	public Point point1;
+	public Point point2;
+	public Point point3;
+	public Point point4;
 
 	private float length; // z
 	private float width; // x
@@ -18,7 +18,7 @@ public class Plank : MonoBehaviour {
 	// Y(t)
 	public Vector3 position;
 	private Matrix R = new Matrix(3, 3); // Local space rotation R(t)
-	public  Quaternion q;
+	public Quaternion q;
 	public Vector3 P = Vector3.zero; // Linear momentum // TODO Size
 	public Vector3 L = Vector3.zero; // Angular momentum	L(t) = I(t)w(t)
 
@@ -34,6 +34,12 @@ public class Plank : MonoBehaviour {
 	private Matrix Iinv;
 	public float mass = 100;
 	// Center of mass = position
+
+
+	public Vector3 statePos;
+	public Quaternion stateQ;
+	public Vector3 stateP;
+	public Vector3 stateL;
 
 	// Use this for initialization
 	void Start () {
@@ -99,24 +105,24 @@ public class Plank : MonoBehaviour {
 		// Force Sum(Fi)
 		force = point1.force + point2.force + point3.force + point4.force + Vector3.down * 9.82f * mass;
 		
-		P += force * timestep;
+		// P += force * timestep;
 
-		L += torque * timestep;
+		// L += torque * timestep;
 
 		calculateW();
 		
-		position = position + timestep * P / mass;
+		// position = position + timestep * P / mass;
 		velocity = P / mass;
-		point1.position += (velocity + Vector3.Cross (w, (point1.position - position))) * timestep;
-		point2.position += (velocity + Vector3.Cross (w, (point2.position - position))) * timestep;
-		point3.position += (velocity + Vector3.Cross (w, (point3.position - position))) * timestep;
-		point4.position += (velocity + Vector3.Cross (w, (point4.position - position))) * timestep;
+		// point1.position += (velocity + Vector3.Cross (w, (point1.position - position))) * timestep;
+		// point2.position += (velocity + Vector3.Cross (w, (point2.position - position))) * timestep;
+		// point3.position += (velocity + Vector3.Cross (w, (point3.position - position))) * timestep;
+		// point4.position += (velocity + Vector3.Cross (w, (point4.position - position))) * timestep;
 
-		Quaternion dq = (new Quaternion (w.x * 1/2, w.y * 1/2, w.z * 1/2, 0)) * q; // 1/2 [0 ; w(t)] q(t)
-		q.w += dq.w * timestep;
-		q.x += dq.x * timestep;
-		q.y += dq.y * timestep;
-		q.z += dq.z * timestep;
+		// Quaternion dq = (new Quaternion (w.x * 1/2, w.y * 1/2, w.z * 1/2, 0)) * q; // 1/2 [0 ; w(t)] q(t)
+		// q.w += dq.w * timestep;
+		// q.x += dq.x * timestep;
+		// q.y += dq.y * timestep;
+		// q.z += dq.z * timestep;
 	
 		calculateR();
 		calculateIinv();
@@ -126,8 +132,8 @@ public class Plank : MonoBehaviour {
 
 		// Y(t) ####################
 		// x(t) position
-		// R(t) rotation { x y z }
-		// P(t) velocity
+		// q(t) quaternion
+		// P(t) linearmomentum
 		// L(t) angularMomentum-  { -X -Y -Z }			= Iw		dL = torque
 
 		// dY(t) ##################

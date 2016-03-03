@@ -404,6 +404,7 @@ MonoBehaviour:
   ropeStiffness: 2500
   middleRopeStiffness: 800
   ropeDampening: 6
+  lap: 0
 --- !u!4 &1906836836
 Transform:
   m_ObjectHideFlags: 0

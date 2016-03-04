@@ -21,8 +21,8 @@ public class IntegrateDataPoint : IntegrateAbstract{
 	}
 
 	public override void weightedSum(float timestep) {
-		Vector3 deltaPos = (1f / 6f) * (a.deltaPosition + 2 * (b.deltaPosition + c.deltaPosition) + d.deltaPosition);
-		Vector3 deltaVel = (1f / 6f) * (a.deltaVelocity + 2 * (b.deltaVelocity + c.deltaVelocity) + d.deltaVelocity);
+		Vector3 deltaPos = (1.0f / 6.0f) * (a.deltaPosition + 2.0f * (b.deltaPosition + c.deltaPosition) + d.deltaPosition);
+		Vector3 deltaVel = (1.0f / 6.0f) * (a.deltaVelocity + 2.0f * (b.deltaVelocity + c.deltaVelocity) + d.deltaVelocity);
 
 		p.position += deltaPos*timestep;
 		p.velocity += deltaVel*timestep;

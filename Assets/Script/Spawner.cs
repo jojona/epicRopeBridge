@@ -70,7 +70,6 @@ public class Spawner : MonoBehaviour {
 		//miniSpawn();
 		//plankSpawn();
 
-
 		// Creates RK4 object for further calculations of movement
 		integrator = new Integrator (ropes, timestep);
 	}
@@ -80,9 +79,9 @@ public class Spawner : MonoBehaviour {
 	 */
 	void FixedUpdate () {
 		lap++;
-		if (lap == 3470) {
-			EditorApplication.isPaused = true;
-		}
+		// if (lap == 3470) {
+		// 	EditorApplication.isPaused = true;
+		// }
 		// if (lap == 150 && lap == 200) {
 		// 	foreach(PointController pc in ropes) {
 		// 		pc.clearMovement();

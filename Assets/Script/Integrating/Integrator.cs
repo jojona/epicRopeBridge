@@ -102,7 +102,7 @@ public class Integrator {
 
 		foreach(PointController pc in pcl) {
 			foreach(IntegrateAbstract i in pc.integrateList){
-				i.tryDerivate (timestep);	
+				i.tryDerivate (dt);	
 			}
 		}
 		updateForcesFunc ();

@@ -11,7 +11,7 @@ public abstract class PointController : MonoBehaviour {
 
 	protected float ropeStiffness;
 	protected float ropeDampening;
-	protected float segmentLength;
+	public float segmentLength;
 
 	public abstract void simulationStep ();
 	public abstract void clearMovement();
@@ -62,7 +62,7 @@ public abstract class PointController : MonoBehaviour {
 	/** 
 	 * Clears old forces and sets all to zero.
 	 */
-	public void clearForces() {
+	virtual public void clearForces() {
 		for (int i = 0; i < points.Count; ++i) {
 			points [i].force = Vector3.zero;
 		}

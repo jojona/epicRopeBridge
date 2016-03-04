@@ -86,6 +86,17 @@ public class MiddleRope : PointController {
 
 		plank.simulation ();
 	}
+
+	/** 
+	 * Clears old forces and sets all to zero.
+	 */
+	override public void clearForces() {
+		for (int i = 0; i < points.Count; ++i) {
+			points [i].force = Vector3.zero;
+		}
+		plank.force = Vector3.zero;
+		plank.torque = Vector3.zero;
+	}
 	
 	// Update is called once per frame
 	void Update () {

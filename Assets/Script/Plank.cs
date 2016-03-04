@@ -40,7 +40,9 @@ public class Plank : MonoBehaviour {
 	
 	}
 
-	public void init(Point p1, Point p2, Point p3, Point p4) {
+	public void init(Point p1, Point p2, Point p3, Point p4, float widthT) {
+		position = p1.position + (p3.position - p1.position) / 2 + (p2.position - p1.position) / 2;
+
 		point1 = p1;
 		point2 = p2;
 		point3 = p3;
@@ -51,16 +53,18 @@ public class Plank : MonoBehaviour {
 		point3.mass = mass / 4;
 		point4.mass = mass / 4;
 
-		length = 2 * (point1.position - point2.position).magnitude;
-		point1.position.x -= length / 4;
-		point2.position.x += length / 4;
-		point3.position.x -= length / 4;
-		point4.position.x += length / 4;
-		width = (point3.position - point1.position).magnitude;
+		//length = width;
+		point1.position.x = position.x - widthT / 2;
+		point3.position.x = position.x - widthT / 2;
+		point2.position.x = position.x + widthT / 2;
+		point4.position.x = position.x + widthT / 2;
+
+		width = (point2.position - point1.position).magnitude;
+		length = (point3.position - point1.position).magnitude;
 		transform.localScale = new Vector3(width, height, length);
 		transform.position = position;
 
-		// Calculate intertia
+		// Calculate inertia
 		Ibody = new Matrix (3, 3);
 		Ibody [0, 0] = (height * height + length * length) * mass / 12;
 		Ibody [1, 1] = (width * width + length * length) * mass / 12;
@@ -70,6 +74,11 @@ public class Plank : MonoBehaviour {
 		q = transform.rotation;
 		calculateR();
 		calculateIinv();
+
+		Debug.DrawRay (point1.position, Vector3.up * 1, Color.green);
+		Debug.DrawRay (point2.position, Vector3.up * 3, Color.red);
+		Debug.DrawRay (point3.position, Vector3.up * 5, Color.blue);
+		Debug.DrawRay (point4.position, Vector3.up * 7, Color.yellow);
 	}
 
 	public void clearPointForces() {
@@ -141,7 +150,7 @@ public class Plank : MonoBehaviour {
 
 		// get R from q
 		R[0,0] = (1 - 2 * q.y * q.y - 2 * q.z*q.z); R[0,1] = 2 * q.x * q.y - 2 * q.w * q.z; R[0,2] = 2 * q.x * q.z + 2 * q.w * q.y;
-		R[1,0] = 2 * q.x * q.y + 2 * q.w * q.z; R[0,1] = (1 - 2 * q.x * q.x - 2 * q.z*q.z); R[1,2] = 2 * q.y * q.z - 2 * q.w * q.x;
+		R[1,0] = 2 * q.x * q.y + 2 * q.w * q.z; R[1,1] = (1 - 2 * q.x * q.x - 2 * q.z*q.z); R[1,2] = 2 * q.y * q.z - 2 * q.w * q.x;
 		R[2,0] = 2 * q.x * q.z - 2 * q.w * q.y; R[2,1] = 2 * q.y * q.z + 2 * q.w * q.x; R[2,2] = (1 - 2 * q.x * q.x - 2 * q.y*q.y);
 	}
 

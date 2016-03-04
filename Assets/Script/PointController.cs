@@ -19,9 +19,10 @@ public abstract class PointController : MonoBehaviour {
 	 * Creates a point and add it to list of points 
 	 * Creates the point at given position.
 	 */
-	protected Point createPoint(Vector3 position) {
+	protected Point createPoint(Vector3 position, float mass) {
 		Point p = (Point)Instantiate (pointPrefab, position, Quaternion.identity);
 		p.position = position;
+		p.mass = mass;
 		p.transform.parent = transform;
 		points.Add (p);
 		return p;
@@ -31,8 +32,8 @@ public abstract class PointController : MonoBehaviour {
 	 * Creates a point and add it to list of points 
 	 * Create the point at given position with a name.
 	 */
-	protected Point createPoint(Vector3 position, string name) {
-		Point p = createPoint (position);
+	protected Point createPoint(Vector3 position, string name, float mass) {
+		Point p = createPoint (position, mass);
 		p.name = name;
 		return p;
 	}

@@ -33,6 +33,9 @@ public class Point : MonoBehaviour {
 	// Update is called once per frame
 	void LateUpdate () {
 		transform.position = position;
+		foreach (Point n in GetNeighours()) {
+			Debug.DrawRay (position, n.position-position, Color.black, 0.01f);
+		}
 	}
 
 	public void AddNeigbour(Point p) {

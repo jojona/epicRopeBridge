@@ -21,10 +21,8 @@ public class Rope : PointController {
 	/**
 	 * Inits this rope.
 	 */
-	public void init(Vector3 start, Vector3 end, bool anchor, int amountOfPoints, string name, float stiffness, float dampening) {
+	public void init(Vector3 start, Vector3 end, bool anchor, int amountOfPoints, string name, float stiffness, float dampening, float ropePointMass) {
 		init(stiffness, dampening, ((start-end)/amountOfPoints).magnitude);
-
-		amountOfPoints++;
 
 		// Inits points list, sets posiiton and direction
 		Vector3 position = start;
@@ -32,7 +30,7 @@ public class Rope : PointController {
 
 		// Generates rope
 		for (int i = 0; i < amountOfPoints; ++i) {
-			createPoint(position, name + i);
+			createPoint(position, name + i, ropePointMass);
 			position += ropeDirection;
 		}
 
@@ -42,8 +40,8 @@ public class Rope : PointController {
 		}
 
 		// Sets anchor if so
+		anchors = new List<Point> ();
 		if (anchor) {
-			anchors = new List<Point> ();
 			anchors.Add(points [0]);
 			anchors.Add(points[amountOfPoints - 1]);
 		}
@@ -67,6 +65,10 @@ public class Rope : PointController {
 	 */
 	public Point getPoint(int index) {
 		return points[index];
+	}
+
+	public int length() {
+		return points.Count;
 	}
 
 	/**

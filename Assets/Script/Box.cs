@@ -20,7 +20,7 @@ public class Box : MonoBehaviour {
 	public Vector3 position;
 	private Matrix R = new Matrix(3, 3); // Local space rotation R(t)
 	public Quaternion q;
-	public Vector3 P = Vector3.zero; // Linear momentum // TODO Size
+	public Vector3 P = Vector3.zero; // Linear momentum
 	public Vector3 L = Vector3.zero; // Angular momentum	L(t) = I(t)w(t)
 
 	// d/dt Y(t)

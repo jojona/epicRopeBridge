@@ -8,21 +8,17 @@ public class Integrator {
 	/// Integrator
 	/////////////////////////
 
-
-	List<PointController> pcl;
 	private int numPoints, prevNumPoints;
-	private float timestep;
 
 
-	public Integrator(List<PointController> pcl, float timestep){
-		this.timestep = timestep;
-		this.pcl = pcl;
+	public Integrator(){
+
 	}
 
 	/*
 	 * Euler integration
 	 */
-	public void euler(List<PointController> pcl, Action simulationStep) {
+	public void euler(List<PointController> pcl, Action simulationStep, float timestep) {
 		simulationStep ();
 
 		foreach(PointController pc in pcl) {
@@ -32,15 +28,10 @@ public class Integrator {
 		}
 	}
 
-	public static int lap = 0;
-
 	/**
 	 * RK4 Integration
 	 */
-	public void integrate(List<PointController> pcl, Action forceFunc){
-		this.pcl = pcl;
-
-		Integrator.lap = 0;
+	public void integrate(List<PointController> pcl, Action forceFunc, float timestep){
 		// CLear
 		foreach(PointController pc in pcl) {
 			foreach(IntegrateAbstract i in pc.integrateList){
@@ -49,41 +40,37 @@ public class Integrator {
 		}
 
 		// A
-		evaluate(forceFunc, timestep*0f);
+		evaluate(pcl, forceFunc, timestep*0f);
 		foreach(PointController pc in pcl) {
 			foreach(IntegrateAbstract i in pc.integrateList){
 				i.stepA ();	
 			}
 		}
-
-		Integrator.lap = 1;
+			
 		// B
-		evaluate(forceFunc, timestep*0.5f);
+		evaluate(pcl, forceFunc, timestep*0.5f);
 		foreach(PointController pc in pcl) {
 			foreach(IntegrateAbstract i in pc.integrateList){
 				i.stepB ();	
 			}
 		}
-
-		Integrator.lap = 2;
+			
 		// C
-		evaluate(forceFunc, timestep*0.5f);
+		evaluate(pcl, forceFunc, timestep*0.5f);
 		foreach(PointController pc in pcl) {
 			foreach(IntegrateAbstract i in pc.integrateList){
 				i.stepC ();	
 			}
 		}
-		Integrator.lap = 3;
-
+			
 		// D
-		evaluate(forceFunc, timestep*1f);
+		evaluate(pcl, forceFunc, timestep*1f);
 		foreach(PointController pc in pcl) {
 			foreach(IntegrateAbstract i in pc.integrateList){
 				i.stepD ();	
 			}
 		}
-
-	
+			
 		foreach(PointController pc in pcl) {
 			foreach(IntegrateAbstract i in pc.integrateList){
 				i.weightedSum (timestep);	
@@ -92,7 +79,7 @@ public class Integrator {
 
 	}
 
-	private void evaluate(Action updateForcesFunc, float dt){
+	private void evaluate(List<PointController> pcl, Action updateForcesFunc, float dt){
 
 		foreach(PointController pc in pcl) {
 			foreach(IntegrateAbstract i in pc.integrateList){
@@ -105,6 +92,7 @@ public class Integrator {
 				i.tryDerivate (dt);	
 			}
 		}
+
 		updateForcesFunc ();
 
 		foreach(PointController pc in pcl) {

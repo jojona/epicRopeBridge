@@ -22,7 +22,7 @@ public class Spawner : MonoBehaviour {
 	public int spacing = 3;
 
 	// Number of points per rope
-	public int amountOfPointsPerRope = 10 * 4;
+	public int amountOfPointsPerRope = 10 * 2;
 
 	// The time between each frame
 	public float timestep = 1.0f / 60.0f;
@@ -35,6 +35,12 @@ public class Spawner : MonoBehaviour {
 	[Range(1, 2)]
 	[Tooltip("Euler 1, Runge kutta 2")]
 	public int integrationMethod = 1;
+
+	public bool spawnSmall = false;
+	public bool spawnNormal = true;
+	public bool spawnBox = false;
+	public bool spawnRopes = false;
+	public bool spawnMini = false;
 
 	/**
 	 * Private fields.
@@ -64,14 +70,13 @@ public class Spawner : MonoBehaviour {
 		Time.fixedDeltaTime = timestep;
 
 		// Spawn all points and planks
-// ######################## Change spwan here ###################################################
-		spawn();
-		//spawnSmaller();
-		//miniSpawn();
-		//plankSpawn();
-
+		if (spawnNormal) spawn();
+		if (spawnSmall) spawnSmaller();
+		if (spawnMini) miniSpawn();
+		if (spawnBox) plankSpawn();
+		if (spawnRopes) spawnOnlyRopes ();
 		// Creates RK4 object for further calculations of movement
-		integrator = new Integrator (ropes, timestep);
+		integrator = new Integrator ();
 	}
 
 		/** 
@@ -79,19 +84,10 @@ public class Spawner : MonoBehaviour {
 	 */
 	void FixedUpdate () {
 		lap++;
-		// if (lap == 3470) {
-		// 	EditorApplication.isPaused = true;
-		// }
-		// if (lap == 150 && lap == 200) {
-		// 	foreach(PointController pc in ropes) {
-		// 		pc.clearMovement();
-		// 	}
-		// }
-// ######################## Swap integration method here ###################################################
 		if (integrationMethod == 1) {
-			integrator.euler(ropes, simulationStep);
+			integrator.euler(ropes, simulationStep, timestep);
 		} else {
-			integrator.integrate(ropes, simulationStep);
+			integrator.integrate(ropes, simulationStep, timestep);
 		}
 	}
 
@@ -175,6 +171,7 @@ public class Spawner : MonoBehaviour {
 			MiddleRope r = (MiddleRope) Instantiate(middleRopePrefab, Vector3.zero, Quaternion.identity);
 			r.init(true, 5, segmentLength/5, r1.getPoint (i * spacing + 1), r1.getPoint (i * spacing + spacing), r2.getPoint (i * spacing + 1), r2.getPoint (i * spacing + spacing), r3.getPoint (i * spacing + 1), r3.getPoint (i * spacing + spacing), r4.getPoint (i * spacing + 1), r4.getPoint (i * spacing + spacing), ropeDirection, middleRopeStiffness, ropeDampening);
 			ropes.Add(r);
+			r.name = "MiddleRope " + i;
 		}
 	}
 
@@ -182,16 +179,16 @@ public class Spawner : MonoBehaviour {
 	 * Mini spawn
 	 */
 	void miniSpawn() {
-		anchorPointEnd = anchorPointStart + Vector3.right * 10;
-		amountOfPointsPerRope = 4;
+		Vector3 minianchorPointEnd = anchorPointStart + Vector3.right * 10;
+		int miniamountOfPointsPerRope = 4;
 
-		Vector3 ropeDirection = (anchorPointEnd - anchorPointStart) / amountOfPointsPerRope;
+		Vector3 ropeDirection = (minianchorPointEnd - anchorPointStart) / miniamountOfPointsPerRope;
 		segmentLength = ropeDirection.magnitude;
 
 		Rope r1 = (Rope) Instantiate(ropePrefab, Vector3.zero, Quaternion.identity);
 		Rope r2 = (Rope) Instantiate(ropePrefab, Vector3.zero, Quaternion.identity);
-		r1.init(anchorPointStart, anchorPointEnd, true, amountOfPointsPerRope, "rope1", ropeStiffness, ropeDampening);
-		r2.init(anchorPointStart + Vector3.back * segmentLength * 3, anchorPointEnd + Vector3.back * segmentLength * 3, true, amountOfPointsPerRope, "rope2", ropeStiffness, ropeDampening);
+		r1.init(anchorPointStart, minianchorPointEnd, true, miniamountOfPointsPerRope, "rope1", ropeStiffness, ropeDampening);
+		r2.init(anchorPointStart + Vector3.back * segmentLength * 3, minianchorPointEnd + Vector3.back * segmentLength * 3, true, miniamountOfPointsPerRope, "rope2", ropeStiffness, ropeDampening);
 	
 		// Adds newly created points to rope
 		ropes.Add(r1);
@@ -279,5 +276,61 @@ public class Spawner : MonoBehaviour {
 		MiddleRope r = (MiddleRope) Instantiate(middleRopePrefab, Vector3.zero, Quaternion.identity);
 		r.init(true, 5, segmentLength/5, r1.getPoint (i * spacing + 1), r1.getPoint (i * spacing + spacing), r2.getPoint (i * spacing + 1), r2.getPoint (i * spacing + spacing), r3.getPoint (i * spacing + 1), r3.getPoint (i * spacing + spacing), r4.getPoint (i * spacing + 1), r4.getPoint (i * spacing + spacing), ropeDirection, middleRopeStiffness, ropeDampening);
 		ropes.Add(r);
+	}
+
+	public void spawnOnlyRopes () {
+		// Calculate start points, direction and how long the rope will be
+		Vector3 ropeDirection = (anchorPointEnd - anchorPointStart) / amountOfPointsPerRope;
+		segmentLength = ropeDirection.magnitude;
+
+		// Copies the ropePrefab and creates to rope start points
+		Rope r1 = (Rope) Instantiate(ropePrefab, Vector3.zero, Quaternion.identity);
+		Rope r2 = (Rope) Instantiate(ropePrefab, Vector3.zero, Quaternion.identity);
+		int x = spacing > 1 ? 6 : 0;
+		r1.init(
+			anchorPointStart,                                    
+			anchorPointEnd, 
+			true, 
+			amountOfPointsPerRope * spacing - x, 
+			"rope1 ", 
+			ropeStiffness, 
+			ropeDampening
+		);
+		r2.init(
+			anchorPointStart + Vector3.back * segmentLength * 3, 
+			anchorPointEnd + Vector3.back * segmentLength * 3, 
+			true, 
+			amountOfPointsPerRope * spacing - x, 
+			"rope2 ", 
+			ropeStiffness, 
+			ropeDampening
+		);
+
+		Rope r3 = (Rope) Instantiate(ropePrefab, Vector3.zero, Quaternion.identity);
+		Rope r4 = (Rope) Instantiate(ropePrefab, Vector3.zero, Quaternion.identity);
+		r3.init(
+			anchorPointStart + Vector3.down * segmentLength * 3,                                    
+			anchorPointEnd + Vector3.down * segmentLength * 3, 
+			true, 
+			amountOfPointsPerRope * spacing - x, 
+			"rope3 ", 
+			ropeStiffness, 
+			ropeDampening
+		);
+		r4.init(
+			anchorPointStart + Vector3.back * segmentLength * 3 + Vector3.down * segmentLength * 3, 
+			anchorPointEnd + Vector3.back * segmentLength * 3 + Vector3.down * segmentLength * 3, 
+			true, 
+			amountOfPointsPerRope * spacing - x, 
+			"rope4 ", 
+			ropeStiffness, 
+			ropeDampening
+		);
+
+		// Adds newly created points to rope
+		ropes.Add(r1);
+		ropes.Add(r2);
+		ropes.Add(r3);
+		ropes.Add(r4);
 	}
 }

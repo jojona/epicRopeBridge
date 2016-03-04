@@ -32,10 +32,18 @@ public class MiddleRope : PointController {
 			Vector3 corner3 = position + (p3.position - p1.position) / 5 - (p2.position - p1.position) / 5;
 			Vector3 corner4 = position + (p3.position - p1.position) / 5 + (p2.position - p1.position) / 5; 
 
-			createPoint (corner1 + (p1.position - corner1) * i / (amount) , "A"+i);
-			createPoint (corner2 + (p2.position - corner2) * i / (amount) , "B"+i);
-			createPoint (corner3 + (p3.position - corner3) * i / (amount) , "C"+i);
-			createPoint (corner4 + (p4.position - corner4) * i / (amount) , "D"+i);
+			if (i == 0) {
+					createCorner (corner1 + (p1.position - corner1) * i / (amount) , "A"+i);
+					createCorner (corner2 + (p2.position - corner2) * i / (amount) , "B"+i);
+					createCorner (corner3 + (p3.position - corner3) * i / (amount) , "C"+i);
+					createCorner (corner4 + (p4.position - corner4) * i / (amount) , "D"+i);
+				
+				} else {
+					createPoint (corner1 + (p1.position - corner1) * i / (amount) , "A"+i);
+					createPoint (corner2 + (p2.position - corner2) * i / (amount) , "B"+i);
+					createPoint (corner3 + (p3.position - corner3) * i / (amount) , "C"+i);
+					createPoint (corner4 + (p4.position - corner4) * i / (amount) , "D"+i);
+				}
 		}
 
 		for (int i = 0; i < amount - 1; ++i) {
@@ -50,6 +58,9 @@ public class MiddleRope : PointController {
 		plank.transform.parent = transform;
 		plank.transform.forward = direction;
 		plank.init (points[0], points[1], points[2], points[3]);
+		integrateList.Add(new IntegrateDataPlank(plank));
+
+
 		// Names
 		points [0].name += " Corner1"; points [1].name += " Corner2";	points [2].name += " Corner3"; points [3].name += " Corner4";
 
@@ -74,6 +85,17 @@ public class MiddleRope : PointController {
 		springForces ();
 
 		plank.simulation ();
+	}
+
+	/** 
+	 * Clears old forces and sets all to zero.
+	 */
+	override public void clearForces() {
+		for (int i = 0; i < points.Count; ++i) {
+			points [i].force = Vector3.zero;
+		}
+		plank.force = Vector3.zero;
+		plank.torque = Vector3.zero;
 	}
 	
 	// Update is called once per frame

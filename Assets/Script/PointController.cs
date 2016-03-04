@@ -7,10 +7,11 @@ public abstract class PointController : MonoBehaviour {
 
 	public Point pointPrefab;
 	protected List<Point> points;
+	public List<IntegrateAbstract> integrateList;
 
 	protected float ropeStiffness;
 	protected float ropeDampening;
-	protected float segmentLength;
+	public float segmentLength;
 
 	public abstract void simulationStep ();
 	public abstract void clearMovement();
@@ -24,6 +25,10 @@ public abstract class PointController : MonoBehaviour {
 		p.position = position;
 		p.transform.parent = transform;
 		points.Add (p);
+		IntegrateDataPoint ip = new IntegrateDataPoint(p);
+		integrateList.Add(ip);
+		p.integrate = ip;
+
 		return p;
 	}
 
@@ -37,17 +42,27 @@ public abstract class PointController : MonoBehaviour {
 		return p;
 	}
 
+	protected Point createCorner(Vector3 position, string name) {
+		Point p = (Point)Instantiate (pointPrefab, position, Quaternion.identity);
+		p.position = position;
+		p.transform.parent = transform;
+		points.Add (p);
+		p.name = name;
+		return p;
+	}
+
 	protected void init(float stiffness, float dampening, float segmentLength) {
 		ropeStiffness = stiffness;
 		ropeDampening = dampening;
 		this.segmentLength = segmentLength;
 		points = new List<Point> ();
+		integrateList = new List<IntegrateAbstract>();
 	}
 
 	/** 
 	 * Clears old forces and sets all to zero.
 	 */
-	public void clearForces() {
+	virtual public void clearForces() {
 		for (int i = 0; i < points.Count; ++i) {
 			points [i].force = Vector3.zero;
 		}

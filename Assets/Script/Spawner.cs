@@ -32,6 +32,10 @@ public class Spawner : MonoBehaviour {
 	public float middleRopeStiffness = 800f;
 	public float ropeDampening = 1f;
 
+	[Range(1, 2)]
+	[Tooltip("Euler 1, Runge kutta 2")]
+	public int integrationMethod = 1;
+
 	/**
 	 * Private fields.
 	 */
@@ -57,6 +61,8 @@ public class Spawner : MonoBehaviour {
 		// Init lists
 		ropes = new List<PointController> ();
 
+		Time.fixedDeltaTime = timestep;
+
 		// Spawn all points and planks
 // ######################## Change spwan here ###################################################
 		spawn();
@@ -64,9 +70,46 @@ public class Spawner : MonoBehaviour {
 		//miniSpawn();
 		//plankSpawn();
 
-
 		// Creates RK4 object for further calculations of movement
 		integrator = new Integrator (ropes, timestep);
+	}
+
+		/** 
+	 * Update that is called once per frame.
+	 */
+	void FixedUpdate () {
+		lap++;
+		// if (lap == 3470) {
+		// 	EditorApplication.isPaused = true;
+		// }
+		// if (lap == 150 && lap == 200) {
+		// 	foreach(PointController pc in ropes) {
+		// 		pc.clearMovement();
+		// 	}
+		// }
+// ######################## Swap integration method here ###################################################
+		if (integrationMethod == 1) {
+			integrator.euler(ropes, simulationStep);
+		} else {
+			integrator.integrate(ropes, simulationStep);
+		}
+	}
+
+	/**
+	 * Simulate one step in the simulation.
+	 */
+	void simulationStep() {
+		foreach (PointController pc in ropes) {
+			pc.clearForces ();
+		}
+		foreach (PointController pc in ropes) {
+			pc.simulationStep ();
+		}
+
+		if (box != null) {
+			box.force = Vector3.zero;
+			box.simulation ();
+		}
 	}
 
 	/**
@@ -171,44 +214,6 @@ public class Spawner : MonoBehaviour {
 		box.init ();
 	}
 
-	/** 
-	 * Update that is called once per frame.
-	 */
-	void FixedUpdate () {
-		lap++;
-		// if (lap == 1400) {
-		// 	EditorApplication.isPaused = true;
-		// }
-		// if (lap == 150 && lap == 200) {
-		// 	foreach(PointController pc in ropes) {
-		// 		pc.clearMovement();
-		// 	}
-		// }
-// ######################## Swap integration method here ###################################################
-		integrator.euler(ropes, simulationStep);
-		//integrator.integrate(ropes, simulationStep);
-	}
-
-	/**
-	 * Simulate one step in the simulation.
-	 */
-	void simulationStep() {
-		foreach (PointController pc in ropes) {
-			pc.clearForces ();
-		}
-		foreach (PointController pc in ropes) {
-			pc.simulationStep ();
-		}
-
-		if (box != null) {
-			box.force = Vector3.zero;
-			box.simulation ();
-		}
-	}
-
-
-
-
 
 	/**
 	 * Spawns rope.
@@ -269,15 +274,10 @@ public class Spawner : MonoBehaviour {
 		ropes.Add(r4);
 
 		// Creates middle rope points and adds them to list
-		for (int i = 0; i * 2 + 3 < 2 * amountOfPointsPerRope - 1; ++i) {
-			
-			i = amountOfPointsPerRope / 2;
+		int i = amountOfPointsPerRope / 2;
 
-			MiddleRope r = (MiddleRope) Instantiate(middleRopePrefab, Vector3.zero, Quaternion.identity);
-			r.init(true, 5, segmentLength/5, r1.getPoint (i * spacing + 1), r1.getPoint (i * spacing + spacing), r2.getPoint (i * spacing + 1), r2.getPoint (i * spacing + spacing), r3.getPoint (i * spacing + 1), r3.getPoint (i * spacing + spacing), r4.getPoint (i * spacing + 1), r4.getPoint (i * spacing + spacing), ropeDirection, middleRopeStiffness, ropeDampening);
-			ropes.Add(r);
-
-			break;
-		}
+		MiddleRope r = (MiddleRope) Instantiate(middleRopePrefab, Vector3.zero, Quaternion.identity);
+		r.init(true, 5, segmentLength/5, r1.getPoint (i * spacing + 1), r1.getPoint (i * spacing + spacing), r2.getPoint (i * spacing + 1), r2.getPoint (i * spacing + spacing), r3.getPoint (i * spacing + 1), r3.getPoint (i * spacing + spacing), r4.getPoint (i * spacing + 1), r4.getPoint (i * spacing + spacing), ropeDirection, middleRopeStiffness, ropeDampening);
+		ropes.Add(r);
 	}
 }

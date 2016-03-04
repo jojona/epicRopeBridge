@@ -44,13 +44,22 @@ MonoBehaviour:
   ropePrefab: {fileID: 11498972, guid: 1f24c9d6719c8a04fb34132c23ab139c, type: 2}
   boxPrefab: {fileID: 11476684, guid: 217f067ade20e9f46b2846588f15f6e2, type: 2}
   middleRopePrefab: {fileID: 11416536, guid: 2ffaae99f52be954a9bd2057177c2b19, type: 2}
+  ball: {fileID: 0}
   anchorPointStart: {x: 0, y: 0, z: 0}
-  anchorPointEnd: {x: 50, y: 0, z: 0}
-  amountOfPointsPerRope: 20
-  timestep: 0.016666668
-  ropeStiffness: 1000
-  middleRopeStiffness: 800
-  ropeDampening: 10
+  anchorPointEnd: {x: 200, y: 0, z: 0}
+  spacing: 5
+  amountOfPointsPerRope: 10
+  timestep: 0.01666667
+  ropeStiffness: 2000
+  middleRopeStiffness: 2000
+  ropeDampening: 5
+  integrationMethod: 2
+  spawnSmall: 0
+  spawnNormal: 1
+  spawnBox: 0
+  spawnRopes: 0
+  spawnMini: 0
+  lap: 0
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

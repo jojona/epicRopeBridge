@@ -105,6 +105,12 @@ public abstract class PointController : MonoBehaviour {
 		neighbour.force -= force;
 	}
 
+	virtual public void collideWith(Ball ball) {
+		foreach (Point p in points) {
+			ball.collide (p);
+		}
+	}
+
 	public List<Point> getPoints() {
 		return points;
 	}

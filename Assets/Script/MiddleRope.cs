@@ -109,4 +109,12 @@ public class MiddleRope : PointController {
 		}
 		plank.clearMovement();
 	}
+
+	override public void collideWith(Ball ball) {
+		foreach (Point p in points) {
+			ball.collide (p);
+		}
+
+		ball.collide (plank);
+	}
 }

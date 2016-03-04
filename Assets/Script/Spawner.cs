@@ -104,8 +104,14 @@ public class Spawner : MonoBehaviour {
 			pc.clearForces ();
 		}
 		foreach (PointController pc in ropes) {
-			pc.simulationStep ();
+			//pc.simulationStep ();
 		}
+
+		// Check for collisions
+		foreach (PointController pc in ropes) {
+			pc.collideWith (ball);
+		}
+
 
 		if (box != null) {
 			box.force = Vector3.zero;

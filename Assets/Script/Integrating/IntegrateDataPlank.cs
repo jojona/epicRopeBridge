@@ -54,12 +54,6 @@ public class IntegrateDataPlank : IntegrateAbstract{
 		p.q.y += dq.y * timestep;
 		p.q.z += dq.z * timestep;
 		p.q.w += dq.w * timestep;
-
-		// Vector3 velocity = p.P / p.mass;
-		// p.point1.position += (velocity + Vector3.Cross (p.w, (p.point1.position - p.position))) * timestep;
-		// p.point2.position += (velocity + Vector3.Cross (p.w, (p.point2.position - p.position))) * timestep;
-		// p.point3.position += (velocity + Vector3.Cross (p.w, (p.point3.position - p.position))) * timestep;
-		// p.point4.position += (velocity + Vector3.Cross (p.w, (p.point4.position - p.position))) * timestep;
 		
 		p.normalizeQuaternion();
 		p.calculateR();
@@ -103,19 +97,14 @@ public class IntegrateDataPlank : IntegrateAbstract{
 		evalResult.deltaP = p.force;
 		evalResult.deltaL = p.torque;
 		
-		p.calculateW();
 
 		evalResult.deltaX = p.P / p.mass;
 
+		p.calculateW();
 		Quaternion dq = (new Quaternion (p.w.x * 1 / 2, p.w.y * 1 / 2, p.w.z * 1 / 2, 0));
 		normalizeQuaternion(dq);
 		evalResult.deltaQ =  dq * p.q;
 		normalizeQuaternion(evalResult.deltaQ); 
-
-		p.normalizeQuaternion();
-		p.calculateR();
-		p.pointPositions();
-		p.calculateIinv();
 	}
 
 	public override void saveState() {

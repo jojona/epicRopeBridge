@@ -32,6 +32,10 @@ public class Spawner : MonoBehaviour {
 	public float middleRopeStiffness = 800f;
 	public float ropeDampening = 1f;
 
+	[Range(1, 2)]
+	[Tooltip("Euler 1, Runge kutta 2")]
+	public int integrationMethod = 1;
+
 	/**
 	 * Private fields.
 	 */
@@ -56,6 +60,8 @@ public class Spawner : MonoBehaviour {
 	void Start () {
 		// Init lists
 		ropes = new List<PointController> ();
+
+		Time.fixedDeltaTime = timestep;
 
 		// Spawn all points and planks
 // ######################## Change spwan here ###################################################
@@ -83,8 +89,11 @@ public class Spawner : MonoBehaviour {
 		// 	}
 		// }
 // ######################## Swap integration method here ###################################################
-		//integrator.euler(ropes, simulationStep);
-		integrator.integrate(ropes, simulationStep);
+		if (integrationMethod == 1) {
+			integrator.euler(ropes, simulationStep);
+		} else {
+			integrator.integrate(ropes, simulationStep);
+		}
 	}
 
 	/**

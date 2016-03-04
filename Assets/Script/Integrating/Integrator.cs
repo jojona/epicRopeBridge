@@ -34,6 +34,7 @@ public class Integrator {
 	public void integrate(List<PointController> pcl, Action forceFunc, float timestep){
 		// CLear
 		foreach(PointController pc in pcl) {
+			Debug.Log (pc.integrateList);
 			foreach(IntegrateAbstract i in pc.integrateList){
 				i.reset ();	
 			}

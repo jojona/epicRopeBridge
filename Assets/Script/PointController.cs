@@ -7,7 +7,7 @@ public abstract class PointController : MonoBehaviour {
 
 	public Point pointPrefab;
 	protected List<Point> points;
-	public List<IntegrateAbstract> integrateList;
+	public List<IntegrateAbstract> integrateList = new List<IntegrateAbstract>();
 
 	protected float ropeStiffness;
 	protected float ropeDampening;
@@ -20,10 +20,11 @@ public abstract class PointController : MonoBehaviour {
 	 * Creates a point and add it to list of points 
 	 * Creates the point at given position.
 	 */
-	protected Point createPoint(Vector3 position) {
+	protected Point createPoint(Vector3 position, float mass) {
 		Point p = (Point)Instantiate (pointPrefab, position, Quaternion.identity);
 		p.position = position;
 		p.transform.parent = transform;
+		p.mass = mass;
 		points.Add (p);
 		IntegrateDataPoint ip = new IntegrateDataPoint(p);
 		integrateList.Add(ip);
@@ -36,8 +37,8 @@ public abstract class PointController : MonoBehaviour {
 	 * Creates a point and add it to list of points 
 	 * Create the point at given position with a name.
 	 */
-	protected Point createPoint(Vector3 position, string name) {
-		Point p = createPoint (position);
+	protected Point createPoint(Vector3 position, string name, float mass) {
+		Point p = createPoint (position, 1f);
 		p.name = name;
 		return p;
 	}

@@ -19,7 +19,7 @@ public class Plank : MonoBehaviour {
 	public Vector3 position;
 	private Matrix R = new Matrix(3, 3); // Local space rotation R(t)
 	public Quaternion q;
-	public Vector3 P = Vector3.zero; // Linear momentum // TODO Size
+	public Vector3 P = Vector3.zero; // Linear momentum
 	public Vector3 L = Vector3.zero; // Angular momentum	L(t) = I(t)w(t)
 
 	// d/dt Y(t)
@@ -103,35 +103,6 @@ public class Plank : MonoBehaviour {
 
 		// Force Sum(Fi)
 		force = point1.force + point2.force + point3.force + point4.force + Vector3.down * 9.82f * mass;
-		
-		// P += force * timestep;
-
-		// L += torque * timestep;
-
-		//calculateW();
-		
-		// position = position + timestep * P / mass;
-		//velocity = P / mass;
-		// point1.position += (velocity + Vector3.Cross (w, (point1.position - position))) * timestep;
-		// point2.position += (velocity + Vector3.Cross (w, (point2.position - position))) * timestep;
-		// point3.position += (velocity + Vector3.Cross (w, (point3.position - position))) * timestep;
-		// point4.position += (velocity + Vector3.Cross (w, (point4.position - position))) * timestep;
-
-		//dq = (new Quaternion (w.x * 1/2, w.y * 1/2, w.z * 1/2, 0)) * q; // 1/2 [0 ; w(t)] q(t)
-		// q.w += dq.w * timestep;
-		// q.x += dq.x * timestep;
-		// q.y += dq.y * timestep;
-		// q.z += dq.z * timestep;
-
-		//Vector3 velocity = P / mass;
-		//point1.velocity = (velocity + Vector3.Cross (w, (point1.position - position)));
-		//point2.velocity = (velocity + Vector3.Cross (w, (point2.position - position)));
-		//point3.velocity = (velocity + Vector3.Cross (w, (point3.position - position)));
-		//point4.velocity = (velocity + Vector3.Cross (w, (point4.position - position)));
-	
-		//calculateR();
-		//calculateIinv();
-		//normalizeQuaternion();
 
 		clearPointForces ();
 
@@ -235,14 +206,4 @@ public class Plank : MonoBehaviour {
 		  
 // When we have the force
 // http://stackoverflow.com/questions/28922969/how-to-add-torque-to-a-rigidbody-until-its-angular-velocity-is-0
-*/
-
-/*
-
-Crash at 
-1425
-1424
-1424
-1426
-
 */

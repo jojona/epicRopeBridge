@@ -16,6 +16,8 @@ public class Spawner : MonoBehaviour {
 	public Box boxPrefab;
 	public MiddleRope middleRopePrefab;
 
+	public Ball ball;
+
 	// Anchor points for the bridge
 	public Vector3 anchorPointStart = Vector3.zero;
 	public Vector3 anchorPointEnd   = Vector3.zero + Vector3.right * 10;
@@ -84,6 +86,9 @@ public class Spawner : MonoBehaviour {
 	 */
 	void FixedUpdate () {
 		lap++;
+
+		ball.simulate (timestep);
+
 		if (integrationMethod == 1) {
 			integrator.euler(ropes, simulationStep, timestep);
 		} else {

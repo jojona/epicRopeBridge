@@ -31,7 +31,7 @@ public class Plank : MonoBehaviour {
 	private Matrix Ibody;
 	private Matrix IbodyInv;
 	private Matrix Iinv;
-	public float mass = 100;
+	public float mass = 10;
 	// Center of mass = position
 
 	public Quaternion dq;

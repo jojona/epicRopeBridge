@@ -21,7 +21,7 @@ public class Point : MonoBehaviour {
 	void LateUpdate () {
 		transform.position = position;
 		foreach (Point n in GetNeighours()) {
-			Debug.DrawRay (position, n.position-position, Color.black, 0.01f);
+			Debug.DrawRay (position, n.position-position, new Color(100f/255,80f/255,75f/255), 0.01f);
 		}
 	}
 

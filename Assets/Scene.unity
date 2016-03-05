@@ -354,31 +354,33 @@ MonoBehaviour:
   ropePrefab: {fileID: 11498972, guid: 1f24c9d6719c8a04fb34132c23ab139c, type: 2}
   boxPrefab: {fileID: 11476684, guid: 217f067ade20e9f46b2846588f15f6e2, type: 2}
   middleRopePrefab: {fileID: 11416536, guid: 2ffaae99f52be954a9bd2057177c2b19, type: 2}
-  anchorPoint1Up: {x: 0, y: 0, z: 20}
-  anchorPoint1Down: {x: 22.5, y: -20, z: 20}
-  anchorPoint2Up: {x: 200, y: 0, z: 20}
-  anchorPoint2Down: {x: 177.5, y: -20, z: 20}
-  anchorPoint3Up: {x: 0, y: 0, z: 0}
-  anchorPoint3Down: {x: 22.5, y: -20, z: 0}
-  anchorPoint4Up: {x: 200, y: 0, z: 0}
-  anchorPoint4Down: {x: 177.5, y: -20, z: 0}
-  ropePointMass: 2
-  extraUp: 7
-  extraDown: 1
-  planksPerTriangle: 3
-  numberOfPlanks: 15
+  anchorPoint1Up: {x: 0, y: -10, z: 20}
+  anchorPoint1Down: {x: 15, y: -30, z: 20}
+  anchorPoint2Up: {x: 200, y: -10, z: 20}
+  anchorPoint2Down: {x: 185, y: -30, z: 20}
+  anchorPoint3Up: {x: 0, y: -10, z: 0}
+  anchorPoint3Down: {x: 15, y: -30, z: 0}
+  anchorPoint4Up: {x: 200, y: -10, z: 0}
+  anchorPoint4Down: {x: 185, y: -30, z: 0}
+  segLengthUpRopes: 0.5
+  segLengthDownRopes: 0.4
+  segLengthVerticalRopes: 1.3
+  ropePointMass: 1
+  extraUp: 13
+  extraDown: 10
+  planksPerTriangle: 1
+  numberOfPlanks: 16
   pointsPerPlank: 2
   plankSpacing: 1
-  heightPoints: 10
-  spacing: 5
-  amountOfPointsPerRope: 10
+  heightPoints: 5
+  plankWidth: 7
   timestep: 0.01666667
   ropeStiffness: 2000
   middleRopeStiffness: 2000
-  ropeDampening: 5
+  ropeDampening: 20
   integrationMethod: 2
   spawnSmall: 0
-  spawnNormal: 1
+  spawnNormal: 0
   spawnBox: 0
   spawnRopes: 0
   spawnMini: 0

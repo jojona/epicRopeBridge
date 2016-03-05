@@ -48,6 +48,10 @@ public class Plank : MonoBehaviour {
 
 	public void init(Point p1, Point p2, Point p3, Point p4, float widthT) {
 		position = p1.position + (p3.position - p1.position) / 2 + (p2.position - p1.position) / 2;
+		p1.name += " P1";
+		p2.name += " P2";
+		p3.name += " P3";
+		p4.name += " P4";
 
 		point1 = p1;
 		point2 = p2;
@@ -61,8 +65,8 @@ public class Plank : MonoBehaviour {
 
 		//length = width;
 		point1.position.x = position.x - widthT / 2;
-		point3.position.x = position.x - widthT / 2;
 		point2.position.x = position.x + widthT / 2;
+		point3.position.x = position.x - widthT / 2;
 		point4.position.x = position.x + widthT / 2;
 
 		width = (point2.position - point1.position).magnitude;
@@ -80,11 +84,6 @@ public class Plank : MonoBehaviour {
 		q = transform.rotation;
 		calculateR();
 		calculateIinv();
-
-		Debug.DrawRay (point1.position, Vector3.up * 1, Color.green);
-		Debug.DrawRay (point2.position, Vector3.up * 3, Color.red);
-		Debug.DrawRay (point3.position, Vector3.up * 5, Color.blue);
-		Debug.DrawRay (point4.position, Vector3.up * 7, Color.yellow);
 	}
 
 	public void clearPointForces() {
@@ -129,9 +128,9 @@ public class Plank : MonoBehaviour {
 	public void calculateR() {
 
 		// get R from q
-		R[0,0] = (1 - 2 * q.y * q.y - 2 * q.z*q.z); R[0,1] = 2 * q.x * q.y - 2 * q.w * q.z; R[0,2] = 2 * q.x * q.z + 2 * q.w * q.y;
-		R[1,0] = 2 * q.x * q.y + 2 * q.w * q.z; R[1,1] = (1 - 2 * q.x * q.x - 2 * q.z*q.z); R[1,2] = 2 * q.y * q.z - 2 * q.w * q.x;
-		R[2,0] = 2 * q.x * q.z - 2 * q.w * q.y; R[2,1] = 2 * q.y * q.z + 2 * q.w * q.x; R[2,2] = (1 - 2 * q.x * q.x - 2 * q.y*q.y);
+		R[0,0] = (1 - 2 * q.y * q.y - 2 * q.z*q.z); R[0,1] = 2 * q.x * q.y - 2 * q.w * q.z;     R[0,2] = 2 * q.x * q.z + 2 * q.w * q.y;
+		R[1,0] = 2 * q.x * q.y + 2 * q.w * q.z;     R[1,1] = (1 - 2 * q.x * q.x - 2 * q.z*q.z); R[1,2] = 2 * q.y * q.z - 2 * q.w * q.x;
+		R[2,0] = 2 * q.x * q.z - 2 * q.w * q.y;     R[2,1] = 2 * q.y * q.z + 2 * q.w * q.x;     R[2,2] = (1 - 2 * q.x * q.x - 2 * q.y*q.y);
 	}
 
 	public void calculateIinv() {
@@ -170,10 +169,10 @@ public class Plank : MonoBehaviour {
 
 	public void pointPositions() {
 		// Calculate point position from R
-		Matrix mp1 = new Matrix(3, 1); mp1[0, 0] = - width/2; mp1[2, 0] = - length/2;
-		Matrix mp2 = new Matrix(3, 1); mp2[0, 0] = - width/2; mp2[2, 0] = + length/2;
-		Matrix mp3 = new Matrix(3, 1); mp3[0, 0] = + width/2; mp3[2, 0] = - length/2;
-		Matrix mp4 = new Matrix(3, 1); mp4[0, 0] = + width/2; mp4[2, 0] = + length/2;
+		Matrix mp1 = new Matrix(3, 1); mp1[0, 0] = - width/2; mp1[2, 0] = + length/2;
+		Matrix mp2 = new Matrix(3, 1); mp2[0, 0] = + width/2; mp2[2, 0] = + length/2;
+		Matrix mp3 = new Matrix(3, 1); mp3[0, 0] = - width/2; mp3[2, 0] = - length/2;
+		Matrix mp4 = new Matrix(3, 1); mp4[0, 0] = + width/2; mp4[2, 0] = - length/2;
 
 		mp1 = R * mp1;
 		point1.position.x = mp1[0, 0] + position.x;

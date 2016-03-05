@@ -40,7 +40,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_Materials:
-  - {fileID: 2100000, guid: 66b8748b3a873d34cadefeb0d6783428, type: 2}
+  - {fileID: 2100000, guid: c12e479fb4344174a884055f08930c3d, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_UseLightProbes: 1
@@ -74,10 +74,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab4db1b79411c7143a2de891e006d119, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  point1: {fileID: 0}
+  point2: {fileID: 0}
+  point3: {fileID: 0}
+  point4: {fileID: 0}
   position: {x: 0, y: 0, z: 0}
-  velocity: {x: 0, y: 0, z: 0}
+  q: {x: 0, y: 0, z: 0, w: 0}
+  P: {x: 0, y: 0, z: 0}
+  L: {x: 0, y: 0, z: 0}
+  w: {x: 0, y: 0, z: 0}
   force: {x: 0, y: 0, z: 0}
+  torque: {x: 0, y: 0, z: 0}
   mass: 10
+  dq: {x: 0, y: 0, z: 0, w: 0}
+  statePos: {x: 0, y: 0, z: 0}
+  stateQ: {x: 0, y: 0, z: 0, w: 0}
+  stateP: {x: 0, y: 0, z: 0}
+  stateL: {x: 0, y: 0, z: 0}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
@@ -89,6 +102,14 @@ Prefab:
       propertyPath: mass
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_UseLightProbes
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: c12e479fb4344174a884055f08930c3d, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 117998}

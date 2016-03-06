@@ -601,7 +601,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11463498, guid: e0e410cdb584869469a0bb449608748c, type: 2}
       propertyPath: upSpeed
-      value: 20
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 11463498, guid: e0e410cdb584869469a0bb449608748c, type: 2}
       propertyPath: wall1pos
@@ -639,6 +639,10 @@ Prefab:
       propertyPath: topwall
       value: 
       objectReference: {fileID: 1634992309}
+    - target: {fileID: 11463498, guid: e0e410cdb584869469a0bb449608748c, type: 2}
+      propertyPath: gravity
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e0e410cdb584869469a0bb449608748c, type: 2}
   m_IsPrefabParent: 0
@@ -760,7 +764,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11456904, guid: 89961ebd9510d7149b8a5bdba531e092, type: 2}
       propertyPath: timestep
-      value: 0.016666668
+      value: 0.008333334
       objectReference: {fileID: 0}
     - target: {fileID: 11456904, guid: 89961ebd9510d7149b8a5bdba531e092, type: 2}
       propertyPath: integrationMethod

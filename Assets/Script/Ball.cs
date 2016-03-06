@@ -28,6 +28,8 @@ public class Ball : MonoBehaviour {
 	[Range(0, 2)]
 	public int controlMode = 0;
 
+	public bool gravity = true;
+
 	private float radius = 2.5f;
 
 	private struct Collision {
@@ -46,7 +48,7 @@ public class Ball : MonoBehaviour {
 
 	void Update() {
 		if (controlMode == 0) {
-			force += Vector3.down * 9.82f * Time.deltaTime;
+			if (gravity) force += Vector3.down * 9.82f * Time.deltaTime;
 
 			if (Input.GetKey ("up") || Input.GetKey ("w")) {
 				force += Vector3.right * speed * 10 * Time.deltaTime;
@@ -68,7 +70,7 @@ public class Ball : MonoBehaviour {
 			}
 		} else if (controlMode == 1) {
 
-			velocity += Vector3.down * 9.82f * Time.deltaTime / mass;
+			if (gravity) velocity += Vector3.down * 9.82f * Time.deltaTime / mass;
 
 			if (Input.GetKey ("up") || Input.GetKey ("w")) {
 				velocity += Vector3.right * 10 * speed * Time.deltaTime;
@@ -86,7 +88,7 @@ public class Ball : MonoBehaviour {
 				velocity += Vector3.up * 10 * upSpeed * Time.deltaTime;
 			}
 			if (Input.GetKey ("x") || Input.GetKey("e")) {
-				position += Vector3.down * upSpeed * Time.deltaTime;
+				velocity += Vector3.down * upSpeed * Time.deltaTime;
 			}
 		} else if (controlMode == 2) {
 			if (Input.GetKey ("up") || Input.GetKey ("w")) {
@@ -117,8 +119,6 @@ public class Ball : MonoBehaviour {
 
 	// Update is called once per frame
 	public void simulate (float timestep) {
-
-
 		if (!behindPlane(downwall.position, Vector3.up) && Vector3.Dot(velocity, Vector3.up) < 0) {
 			velocity += Vector3.Dot(-velocity, Vector3.up) * Vector3.up;
 		}
@@ -138,9 +138,6 @@ public class Ball : MonoBehaviour {
 			velocity += Vector3.Dot(-velocity, Vector3.back) * Vector3.back;
 		}
 
-
-
-
 		lastPostion = position;
 		if (controlMode == 0) {
 			velocity += force / mass * timestep;
@@ -152,15 +149,12 @@ public class Ball : MonoBehaviour {
 		if (controlMode == 2) {
 			velocity = (position - lastPostion) * timestep;
 		}
-
 	}
 
 	public void collide(Point p) {
 		Vector3 distance = p.position - position;
 		if (distance.magnitude < 3) {
-			Debug.Log("Collision with point " + p.name);
-
-
+			//Debug.Log("Collision with point " + p.name);
 			Vector3 relativeVel = velocity - p.velocity;
 			Debug.DrawRay(p.position, relativeVel, Color.green, 1f, true);
 
@@ -183,26 +177,25 @@ public class Ball : MonoBehaviour {
 		Collision c = boxCollision(plank);
 
 		if (c.collision) {	// Planks are thin enough so ball cannot be completly inside a plank
-			Debug.Log ("Collision with plank " + plank.name);
+			//Debug.Log ("Collision with plank " + plank.name);
 
-			Vector3 collisionNormal = c.normal;
-			Vector3 collisionPosition = c.position;
+			Vector3 pointVelocity = plank.P / plank.mass + Vector3.Cross(plank.w, (c.position - plank.position));
 
-
-			Vector3 pointVelocity = plank.P / plank.mass + Vector3.Cross(plank.w, (collisionPosition - plank.position));
-
-			float relativeVel = Vector3.Dot((velocity - pointVelocity), collisionNormal);
+			float relativeVel = Vector3.Dot((velocity - pointVelocity), c.normal);
 
 			if (relativeVel < 0) {
 				// Collision
 
 				// Add force relativeVel * collisionNormal at collisionPosition
-				plank.P += relativeVel * plank.mass * collisionNormal;
-				plank.L += Vector3.Cross(collisionPosition - plank.position, relativeVel * collisionNormal);
+				plank.P += relativeVel * plank.mass * c.normal;
+				plank.L += Vector3.Cross(c.position - plank.position, relativeVel * c.normal);
 
-				velocity += -relativeVel * collisionNormal / plank.mass;
+				velocity += -relativeVel * c.normal / plank.mass;
 
-				position -= collisionNormal * (c.distance - 2.5f);
+				if (c.distance - 2.5f > 0)
+					Debug.Log ("HERE");
+
+				position -= c.normal * (c.distance - 2.5f); // TODO fix
 			}
 		}
 	}
@@ -247,8 +240,43 @@ public class Ball : MonoBehaviour {
 				}
 			}
 		} 
-
-		// TODO left, right front and back
+		/*
+		// Front back
+		if (rightDistance < radius && leftDistance < radius && topDistance < radius && bottomDistance < radius) {
+			if (Mathf.Abs(topDistance) <= radius || Mathf.Abs(bottomDistance) <= radius) {
+				if (Vector3.Dot(lastPostion - position, plank.zAxis()) > 0) {
+					if (frontDistance < c.distance) {
+						c.normal = plank.zAxis().normalized;
+						c.distance = frontDistance;
+						c.collision = true;
+					}
+				} else {
+					if (backDistance < c.distance) {
+						c.normal = -plank.zAxis().normalized;
+						c.distance = backDistance;
+						c.collision = true;
+					}
+				}
+			}
+		} 
+		if (frontDistance < radius && backDistance < radius && topDistance < radius && bottomDistance < radius) {
+			if (Mathf.Abs(topDistance) <= radius || Mathf.Abs(bottomDistance) <= radius) {
+				if (Vector3.Dot(lastPostion - position, plank.xAxis()) > 0) {
+					if (topDistance < c.distance) {
+						c.normal = plank.xAxis().normalized;
+						c.distance = topDistance;
+						c.collision = true;
+					}
+				} else {
+					if (bottomDistance < c.distance) {
+						c.normal = -plank.xAxis().normalized;
+						c.distance = bottomDistance;
+						c.collision = true;
+					}
+				}
+			}
+		} 
+		*/
 
 		c.position = position - c.distance * c.normal;
 		return c;

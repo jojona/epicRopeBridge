@@ -178,7 +178,10 @@ public class Ball : MonoBehaviour {
 		if (distance.magnitude > 17) {
 			return;
 		}
-		Collision c = sphere_intersects_box(plank);
+		
+		// OLD Collision c = sphere_intersects_box(plank);
+		Collision c = boxCollision(plank);
+
 		if (c.collision) {	// Planks are thin enough so ball cannot be completly inside a plank
 			Debug.Log ("Collision with plank " + plank.name);
 
@@ -216,6 +219,43 @@ public class Ball : MonoBehaviour {
 		return Mathf.Abs(distanceToPlane(planePosition, planeNormal)) <= radius;
 	}
 
+
+	Collision boxCollision(Plank plank) {
+		float rightDistance = distanceToPlane(plank.position + plank.xAxis(), plank.xAxis().normalized);
+		float leftDistance = distanceToPlane(plank.position - plank.xAxis(), -plank.xAxis().normalized);
+		float frontDistance = distanceToPlane(plank.position + plank.zAxis(), plank.zAxis().normalized);
+		float backDistance = distanceToPlane(plank.position - plank.zAxis(), -plank.zAxis().normalized);
+		float topDistance = distanceToPlane(plank.position + plank.yAxis(), plank.yAxis().normalized);
+		float bottomDistance = distanceToPlane(plank.position - plank.yAxis(), -plank.yAxis().normalized);
+
+		// Note: Behind if distance > radius;
+
+		Collision c = new Collision();
+
+
+		// Top Bottom
+		if (rightDistance < radius && leftDistance < radius && frontDistance < radius && backDistance < radius) {
+			if (Mathf.Abs(topDistance) <= radius || Mathf.Abs(bottomDistance) <= radius) {
+				if (Vector3.Dot(lastPostion - position, plank.yAxis()) > 0) {
+					c.normal = plank.yAxis().normalized;
+					c.distance = topDistance;
+					c.collision = true;
+				} else {
+					c.normal = -plank.yAxis().normalized;
+					c.distance = bottomDistance;
+					c.collision = true;
+				}
+			}
+		} 
+
+		// TODO left, right front and back
+
+		c.position = position - c.distance * c.normal;
+		return c;
+
+
+	}
+
 	Collision sphere_intersects_box(Plank plank) {
 		// http://theorangeduck.com/page/correct-box-sphere-intersection
 		bool in_right  = !behindPlane(plank.position + plank.xAxis(), plank.xAxis().normalized);
@@ -227,7 +267,6 @@ public class Ball : MonoBehaviour {
 
 		Collision c = new Collision();
 
-	
 		if (intersectPlane(plank.position + plank.yAxis(), plank.yAxis()) && in_left && in_right && in_front && in_back) {
 			c.collision = true;
 	 	}

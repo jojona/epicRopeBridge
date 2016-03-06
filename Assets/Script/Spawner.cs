@@ -104,7 +104,7 @@ public class Spawner : MonoBehaviour {
 			pc.clearForces ();
 		}
 		foreach (PointController pc in ropes) {
-			//pc.simulationStep ();
+			pc.simulationStep ();
 		}
 
 		// Check for collisions

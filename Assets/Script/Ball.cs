@@ -1,33 +1,52 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 public class Ball : MonoBehaviour {
 
 	public Vector3 force = Vector3.zero;
-	Vector3 position;
-	Vector3 velocity = Vector3.zero;
+	private Vector3 position;
+	private Vector3 lastPostion;
+	private Vector3 velocity = Vector3.zero;
 
 	public int mass;
+
+	public Transform downwall;
+	public Transform rightwall;
+	public Transform leftwall;
+	public Transform topwall;
+	public Transform forwardwall;
+	public Transform backwall;
+
+	[Range(1, 100)]
 	public int speed = 10;
-	[Range(10, 1000)]
-	public int upspeed = 15;
+	[Range(1, 100)]
+	public int upSpeed = 15;
 
 	[Tooltip("Force 0, Velocity 1, position 2")]
 	[Range(0, 2)]
 	public int controlMode = 0;
 
+	private float radius = 2.5f;
+
+	private struct Collision {
+		public bool collision;
+		public Vector3 normal;
+		public Vector3 position;
+		public float distance;
+	}
+
 
 	// Use this for initialization
 	void Start () {
 		position = transform.position;
+		lastPostion = position;
 	}
 
 	void Update() {
-
 		if (controlMode == 0) {
-			force = Vector3.zero;
-
-			force += Vector3.down * 9.82f * Time.deltaTime * 10;
+			force += Vector3.down * 9.82f * Time.deltaTime;
 
 			if (Input.GetKey ("up") || Input.GetKey ("w")) {
 				force += Vector3.right * speed * 10 * Time.deltaTime;
@@ -41,12 +60,15 @@ public class Ball : MonoBehaviour {
 			if (Input.GetKey ("right") || Input.GetKey ("d")) {
 				force += Vector3.back * speed * Time.deltaTime;
 			}
-			if (Input.GetKey ("space") || Input.GetKey ("z") || Input.GetKey ("left shift")) {
-				force += Vector3.up * upspeed * 10 * Time.deltaTime;
+			if (Input.GetKey ("space") || Input.GetKey ("z") || Input.GetKey ("left shift") || Input.GetKey ("q") ) {
+				force += Vector3.up * upSpeed * 10 * Time.deltaTime;
+			}
+			if (Input.GetKey ("x") || Input.GetKey("e")) {
+				force += Vector3.down * upSpeed * Time.deltaTime;
 			}
 		} else if (controlMode == 1) {
 
-			velocity += Vector3.down * 9.82f * 10 * Time.deltaTime / mass;
+			velocity += Vector3.down * 9.82f * Time.deltaTime / mass;
 
 			if (Input.GetKey ("up") || Input.GetKey ("w")) {
 				velocity += Vector3.right * 10 * speed * Time.deltaTime;
@@ -60,8 +82,11 @@ public class Ball : MonoBehaviour {
 			if (Input.GetKey ("right") || Input.GetKey ("d")) {
 				velocity += Vector3.back * 10 * speed * Time.deltaTime;
 			}
-			if (Input.GetKey ("space") || Input.GetKey ("z") || Input.GetKey ("left shift")) {
-				velocity += Vector3.up * 10 * upspeed * Time.deltaTime;
+			if (Input.GetKey ("space") || Input.GetKey ("z") || Input.GetKey ("left shift") || Input.GetKey ("q") ) {
+				velocity += Vector3.up * 10 * upSpeed * Time.deltaTime;
+			}
+			if (Input.GetKey ("x") || Input.GetKey("e")) {
+				position += Vector3.down * upSpeed * Time.deltaTime;
 			}
 		} else if (controlMode == 2) {
 			if (Input.GetKey ("up") || Input.GetKey ("w")) {
@@ -76,164 +101,167 @@ public class Ball : MonoBehaviour {
 			if (Input.GetKey ("right") || Input.GetKey ("d")) {
 				position += Vector3.back * speed * Time.deltaTime;
 			}
-			if (Input.GetKey ("space") || Input.GetKey ("z") || Input.GetKey ("left shift")) {
-				position += Vector3.up * upspeed * Time.deltaTime;
+			if (Input.GetKey ("space") || Input.GetKey ("z") || Input.GetKey ("left shift") || Input.GetKey ("q") ) {
+				position += Vector3.up * upSpeed * Time.deltaTime;
 			}
-			if (Input.GetKey ("x")) {
-				position += Vector3.down * upspeed * Time.deltaTime;
+			if (Input.GetKey ("x") || Input.GetKey("e")) {
+				position += Vector3.down * upSpeed * Time.deltaTime;
 			}
 		}
-
-
-		// || Input.GetKey(KeyCode.Space) || Input.GetKey ("left shift") || Input.GetKey (KeyCode.Keypad1)
 	}
 
 	void LateUpdate() {
 
-		//transform.position = position;
-		position = transform.position; // TODO Remove
+		transform.position = position;
 	}
 
 	// Update is called once per frame
 	public void simulate (float timestep) {
 
-		velocity *= 0.95f;
 
-		velocity += force / mass * timestep;
-		position += velocity * timestep;
+		if (!behindPlane(downwall.position, Vector3.up) && Vector3.Dot(velocity, Vector3.up) < 0) {
+			velocity += Vector3.Dot(-velocity, Vector3.up) * Vector3.up;
+		}
+		if (!behindPlane(rightwall.position, Vector3.right) && Vector3.Dot(velocity, Vector3.right) < 0) {
+			velocity += Vector3.Dot(-velocity, Vector3.right) * Vector3.right;
+		}
+		if (!behindPlane(leftwall.position, Vector3.left) && Vector3.Dot(velocity, Vector3.left) < 0) {
+			velocity += Vector3.Dot(-velocity, Vector3.left) * Vector3.left;
+		}
+		if (!behindPlane(topwall.position, Vector3.down) && Vector3.Dot(velocity, Vector3.down) < 0) {
+			velocity += Vector3.Dot(-velocity, Vector3.down) * Vector3.down;
+		}
+		if (!behindPlane(forwardwall.position, Vector3.forward) && Vector3.Dot(velocity, Vector3.forward) < 0) {
+			velocity += Vector3.Dot(-velocity, Vector3.forward) * Vector3.forward;
+		}
+		if (!behindPlane(backwall.position, Vector3.back) && Vector3.Dot(velocity, Vector3.back) < 0) {
+			velocity += Vector3.Dot(-velocity, Vector3.back) * Vector3.back;
+		}
+
+
+
+
+		lastPostion = position;
+		if (controlMode == 0) {
+			velocity += force / mass * timestep;
+			force = Vector3.zero;
+		}
+		if (controlMode <= 1) {
+			position += velocity * timestep;
+		}
+		if (controlMode == 2) {
+			velocity = (position - lastPostion) * timestep;
+		}
+
 	}
 
 	public void collide(Point p) {
 		Vector3 distance = p.position - position;
 		if (distance.magnitude < 3) {
-			//Debug.Log ("Collision" + distance + " " + distance.magnitude + " " + p.transform.localScale.x + transform.localScale.x);
+			Debug.Log("Collision with point " + p.name);
+
+
+			Vector3 relativeVel = velocity - p.velocity;
+			Debug.DrawRay(p.position, relativeVel, Color.green, 1f, true);
+
+			if (Vector3.Dot(relativeVel, position - p.position) < 0) {
+				velocity -= relativeVel / mass;
+				p.velocity += relativeVel / p.mass;
+			}
 		}
 
 	}
 
-	public void collide(Plank b) {
+	public void collide(Plank plank) {
 		// Bounding sphere
-		Vector3 distance = b.position - position;
+		Vector3 distance = plank.position - position;
 		if (distance.magnitude > 17) {
-			// TODO return;
+			return;
 		}
+		Collision c = sphere_intersects_box(plank);
+		if (c.collision) {	// Planks are thin enough so ball cannot be completly inside a plank
+			Debug.Log ("Collision with plank " + plank.name);
 
-		Debug.DrawRay (b.position, b.xAxis (), Color.green, 1000f, true); // Left
-		Debug.DrawRay (b.position, -b.xAxis (), Color.yellow, 1000f, true); // Right
+			Vector3 collisionNormal = c.normal;
+			Vector3 collisionPosition = c.position;
 
-		Debug.DrawRay (b.position, b.yAxis (), Color.blue, 1000f, true); // Top
-		Debug.DrawRay (b.position, -b.yAxis (), Color.red, 1000f, true); // Bottom
 
-		Debug.DrawRay (b.position, b.zAxis (), Color.green, 1000f, true); // Front
-		Debug.DrawRay (b.position, -b.zAxis (), Color.yellow, 1000f, true); // Back
+			Vector3 pointVelocity = plank.P / plank.mass + Vector3.Cross(plank.w, (collisionPosition - plank.position));
 
-		// in_right 	(b.position + b.xAxis(), b.xAxis());
-		// in_left   	(b.position - b.xAxis(), -b.xAxis());
-		// in_front  	(b.position + b.zAxis(), b.zAxis());
-		// in_back   	(b.position - b.zAxis(), -b.zAxis());
-		// in_top    	(b.position + b.yAxis(), b.yAxis());
-		// in_bottom	(b.position - b.yAxis(), -b.yAxis());
-		Debug.Log("Right " + plane_distance(b.position + b.xAxis(), b.xAxis()));
-		Debug.Log("left " + plane_distance(b.position - b.xAxis(), -b.xAxis()));
-		Debug.Log("front " + plane_distance(b.position + b.zAxis(), b.zAxis()));
-		Debug.Log("back " + plane_distance(b.position - b.zAxis(), -b.zAxis()));
-		Debug.Log("top " + plane_distance(b.position + b.yAxis(), b.yAxis()));
-		Debug.Log("bottom " + plane_distance(b.position - b.yAxis(), -b.yAxis()));
+			float relativeVel = Vector3.Dot((velocity - pointVelocity), collisionNormal);
 
-		Debug.Log ("x " + b.xAxis ().magnitude);
-		Debug.Log ("y " + b.yAxis ().magnitude);
-		Debug.Log ("z " + b.zAxis ().magnitude);
+			if (relativeVel < 0) {
+				// Collision
 
-		DrawPlane (b.position - b.xAxis (), -b.xAxis ());
-		DrawPlane (b.position + b.xAxis (), b.xAxis ());
-		DrawPlane (b.position + b.zAxis (), b.zAxis ());
-		DrawPlane (b.position - b.zAxis (), -b.zAxis ());
-		DrawPlane (b.position + b.yAxis (), b.yAxis ());
-		DrawPlane (b.position - b.yAxis (), -b.yAxis ());
-		if (sphere_intersects_box (b)) {
-		//	Debug.Log ("Yes we do" + b.position);
+				// Add force relativeVel * collisionNormal at collisionPosition
+				plank.P += relativeVel * plank.mass * collisionNormal;
+				plank.L += Vector3.Cross(collisionPosition - plank.position, relativeVel * collisionNormal);
+
+				velocity += -relativeVel * collisionNormal / plank.mass;
+
+				position -= collisionNormal * (c.distance - 2.5f);
+			}
 		}
 	}
-
-
-
-	float plane_distance(Vector3 planePosition, Vector3 planeNormal) {
-		return Vector3.Dot(position - planePosition, planeNormal);
+		
+	float distanceToPlane(Vector3 planePosition, Vector3 planeNormal) {
+		return Vector3.Dot(position - planePosition, planeNormal.normalized);
 	}
 
-	bool sphere_inside_plane(Vector3 planePosition, Vector3 planeNormal) {
-		return -plane_distance(planePosition, planeNormal) > 2.5f;
+	bool behindPlane(Vector3 planePosition, Vector3 planeNormal) {
+		return distanceToPlane(planePosition, planeNormal) > radius;
 	}
 
-	bool sphere_outside_plane(Vector3 planePosition, Vector3 planeNormal) {
-		return plane_distance(planePosition, planeNormal) > 2.5f;
+	bool intersectPlane(Vector3 planePosition, Vector3 planeNormal) {
+		return Mathf.Abs(distanceToPlane(planePosition, planeNormal)) <= radius;
 	}
 
-	bool sphere_intersects_plane(Vector3 planePosition, Vector3 planeNormal) {
-		return Mathf.Abs(plane_distance(planePosition, planeNormal)) <= 2.5f;
-	}
-
-	bool sphere_intersects_box(Plank b) {
-  
+	Collision sphere_intersects_box(Plank plank) {
 		// http://theorangeduck.com/page/correct-box-sphere-intersection
+		bool in_right  = !behindPlane(plank.position + plank.xAxis(), plank.xAxis().normalized);
+		bool in_left   = !behindPlane(plank.position - plank.xAxis(), -plank.xAxis().normalized);
+		bool in_front  = !behindPlane(plank.position + plank.zAxis(), plank.zAxis().normalized);
+		bool in_back   = !behindPlane(plank.position - plank.zAxis(), -plank.zAxis().normalized);
+		bool in_top    = !behindPlane(plank.position + plank.yAxis(), plank.yAxis().normalized);
+		bool in_bottom = !behindPlane(plank.position - plank.yAxis(), -plank.yAxis().normalized);
 
+		Collision c = new Collision();
 
-		bool in_right  = !sphere_outside_plane(b.position + b.xAxis(), b.xAxis());
-		bool in_left   = !sphere_outside_plane(b.position - b.xAxis(), -b.xAxis());
-		bool in_front  = !sphere_outside_plane(b.position + b.zAxis(), b.zAxis());
-		bool in_back   = !sphere_outside_plane(b.position - b.zAxis(), -b.zAxis());
-		bool in_top    = !sphere_outside_plane(b.position + b.yAxis(), b.yAxis());
-		bool in_bottom = !sphere_outside_plane(b.position - b.yAxis(), -b.yAxis());
-
-		Debug.DrawRay (position, Vector3.up * 2.5f, Color.green, 1000f, true);
-
-		if (sphere_intersects_plane(b.position + b.yAxis(), b.yAxis()) /*&& in_left && in_right && in_front && in_back*/) {
-	    	
-			// Intersect top
-			Debug.Log("Top intersect");
-			//return true;
-	 	 }
-	  
-		if (sphere_intersects_plane(b.position - b.yAxis(), -b.yAxis()) /*&& in_left && in_right && in_front && in_back*/) {
-	    	
-			// Intersect Bottom
-			Debug.Log("Bottom intersect");
-			//return true;
+	
+		if (intersectPlane(plank.position + plank.yAxis(), plank.yAxis()) && in_left && in_right && in_front && in_back) {
+			c.collision = true;
+	 	}
+		if (intersectPlane(plank.position - plank.yAxis(), -plank.yAxis()) && in_left && in_right && in_front && in_back) {
+			c.collision = true;
 	  	}
-	  
-		if (sphere_intersects_plane(b.position - b.xAxis(), -b.xAxis()) /*&& in_top && in_bottom && in_front && in_back*/) {
-	    	
-			// Intersect left
-			Debug.Log("Left intersect");
-
-			//return true;
+		if (intersectPlane(plank.position - plank.xAxis(), -plank.xAxis()) && in_top && in_bottom && in_front && in_back) {
+	    	c.collision = true;
 	  	}
-	  
-		if (sphere_intersects_plane(b.position + b.xAxis(), b.xAxis()) /*&& in_top && in_bottom && in_front && in_back*/) {
-			// Intersect Right
-			Debug.Log("Right intersect");
-
-			//return true;
+		if (intersectPlane(plank.position + plank.xAxis(), plank.xAxis()) && in_top && in_bottom && in_front && in_back) {
+			c.collision = true;
 	  	}
-	  
-		if (sphere_intersects_plane(b.position + b.zAxis(), b.zAxis()) /*&& in_top && in_bottom && in_left && in_right*/) {
-			// Intersect Front
-			Debug.Log("Front intersect");
-
-			//return true;
+		if (intersectPlane(plank.position + plank.zAxis(), plank.zAxis()) && in_top && in_bottom && in_left && in_right) {
+			c.collision = true;
 	  	}
-	  
-		if (sphere_intersects_plane(b.position - b.zAxis(), -b.zAxis()) /*&& in_top && in_bottom && in_left && in_right*/) {
-			// Intersect back
-			Debug.Log("Back intersect");
-
-			//return true;
+		if (intersectPlane(plank.position - plank.zAxis(), -plank.zAxis()) && in_top && in_bottom && in_left && in_right) {
+			c.collision = true;
 	  	}
-	  
-	  	return false;
+
+
+	  	c.normal = plank.yAxis().normalized; // TODO correct axis
+	  	c.distance = distanceToPlane(plank.position + plank.yAxis(), c.normal); // TODO
+
+		c.position = position - c.distance * c.normal;
+		Debug.DrawRay(c.position, c.normal * 5, Color.green, 100f, true);
+
+	  	return c;
 	}
 
-	public void DrawPlane(Vector3 position, Vector3 normal) {
+
+	/**
+	 * Draw a debug plane at <position> with normal <normal>
+	 */
+	public static void DrawPlane(Vector3 position, Vector3 normal) {
  
 		Vector3 v3;
 		if (normal.normalized != Vector3.forward && normal.normalized != Vector3.back) {
@@ -249,8 +277,6 @@ public class Ball : MonoBehaviour {
 		Vector3 corner1 = position + v3;
 		Vector3 corner3 = position - v3;
 			 
-		Debug.DrawLine(corner0, corner2, Color.green);
-		Debug.DrawLine(corner1, corner3, Color.green);
 		Debug.DrawLine(corner0, corner1, Color.green);
 		Debug.DrawLine(corner1, corner2, Color.green);
 		Debug.DrawLine(corner2, corner3, Color.green);

@@ -85,8 +85,7 @@ public abstract class PointController : MonoBehaviour {
 
 		for (int i = 0; i < points.Count; ++i) {
 			Point p = points[i];
-			List<Point> neighbours = p.GetNeighours();
-			foreach (Point n in neighbours) {
+			foreach (Point n in p.GetNeighours()) {
 				springforce (p, n);
 			}
 		}
@@ -104,6 +103,12 @@ public abstract class PointController : MonoBehaviour {
 
 		point.force += force;
 		neighbour.force -= force;
+	}
+
+	virtual public void collideWith(Ball ball) {
+		foreach (Point p in points) {
+			ball.collide (p);
+		}
 	}
 
 	public List<Point> getPoints() {

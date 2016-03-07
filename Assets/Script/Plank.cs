@@ -30,7 +30,7 @@ public class Plank : MonoBehaviour {
 	// Intertia (Ibody)	// Invers is (I^-1body) 1/xij from normal inertia matrix
 	private Matrix Ibody;
 	private Matrix IbodyInv;
-	private Matrix Iinv;
+	public Matrix Iinv;
 	public float mass = 10;
 	// Center of mass = position
 
@@ -128,9 +128,9 @@ public class Plank : MonoBehaviour {
 	public void calculateR() {
 
 		// get R from q
-		R[0,0] = (1 - 2 * q.y * q.y - 2 * q.z*q.z); R[0,1] = 2 * q.x * q.y - 2 * q.w * q.z;     R[0,2] = 2 * q.x * q.z + 2 * q.w * q.y;
-		R[1,0] = 2 * q.x * q.y + 2 * q.w * q.z;     R[1,1] = (1 - 2 * q.x * q.x - 2 * q.z*q.z); R[1,2] = 2 * q.y * q.z - 2 * q.w * q.x;
-		R[2,0] = 2 * q.x * q.z - 2 * q.w * q.y;     R[2,1] = 2 * q.y * q.z + 2 * q.w * q.x;     R[2,2] = (1 - 2 * q.x * q.x - 2 * q.y*q.y);
+		R[0,0] = (1 - 2 * q.y * q.y - 2 * q.z * q.z); 	R[0,1] = 2 * q.x * q.y - 2 * q.w * q.z;     	R[0,2] = 2 * q.x * q.z + 2 * q.w * q.y;
+		R[1,0] = 2 * q.x * q.y + 2 * q.w * q.z;     	R[1,1] = (1 - 2 * q.x * q.x - 2 * q.z * q.z); 	R[1,2] = 2 * q.y * q.z - 2 * q.w * q.x;
+		R[2,0] = 2 * q.x * q.z - 2 * q.w * q.y;    		R[2,1] = 2 * q.y * q.z + 2 * q.w * q.x;     	R[2,2] = (1 - 2 * q.x * q.x - 2 * q.y*q.y);
 	}
 
 	public void calculateIinv() {
@@ -193,6 +193,18 @@ public class Plank : MonoBehaviour {
 		point4.position.x = mp4[0, 0] + position.x;
 		point4.position.y = mp4[1, 0] + position.y;
 		point4.position.z = mp4[2, 0] + position.z;
+	}
+
+	public Vector3 xAxis() {
+		return new Vector3(R[0, 0], R[1, 0], R[2, 0]) * width/2;
+	}
+
+	public Vector3 yAxis() {
+		return new Vector3(R[0, 1], R[1, 1], R[2, 1]) * height/2;
+	}
+
+	public Vector3 zAxis() {
+		return new Vector3(R[0, 2], R[1, 2], R[2, 2]) * length/2;
 	}
 }
 

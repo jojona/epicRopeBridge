@@ -36,7 +36,7 @@ public class Rope : PointController {
 
 		// Adds links between internal points
 		for (int i = 0; i < amountOfPoints - 1; ++i) {
-			points [i].AddNeigbour(points [i + 1]);
+			points [i].AddNeigbour(points [i + 1], segLength);
 		}
 
 		// Sets anchor if so

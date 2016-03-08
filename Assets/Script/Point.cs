@@ -62,7 +62,7 @@ public class Point : MonoBehaviour {
 				showForceSize = showForce.magnitude;
 
 				if (n.force.magnitude > n.maxForce && Time.fixedTime > 10f) {
-					Debug.Log ("Break " + name + " | " + n.neighbour.name + " | Force=" + n.force.magnitude + " Max" + n.maxForce );
+					//Debug.Log ("Break " + name + " | " + n.neighbour.name + " | Force=" + n.force.magnitude + " Max" + n.maxForce );
 					n.broken = true;
 				}
 

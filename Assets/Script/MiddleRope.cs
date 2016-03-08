@@ -63,9 +63,9 @@ public class MiddleRope : PointController {
 	}
 
 	override public void collideWith(Ball ball) {
-		foreach (Point p in points) {
-			ball.collide (p);
-		}
+		//foreach (Point p in points) {
+		//	ball.collide (p);
+		//}
 		foreach (Plank plank in planks) {
 			ball.collide (plank);
 		}

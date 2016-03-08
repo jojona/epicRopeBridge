@@ -8,7 +8,7 @@ public class Ball : MonoBehaviour {
 	public InputHandler ih;
 
 	public Vector3 force = Vector3.zero;
-	private Vector3 position;
+	public Vector3 position;
 	private Vector3 lastPostion;
 	private Vector3 velocity = Vector3.zero;
 

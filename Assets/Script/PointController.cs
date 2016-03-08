@@ -115,9 +115,9 @@ public abstract class PointController : MonoBehaviour {
 	}
 
 	virtual public void collideWith(Ball ball) {
-		foreach (Point p in points) {
-			ball.collide (p);
-		}
+		//foreach (Point p in points) {
+		//	ball.collide (p);
+		//}
 	}
 
 	public List<Point> getPoints() {

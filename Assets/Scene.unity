@@ -343,6 +343,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 6
+--- !u!20 &329856548 stripped
+Camera:
+  m_PrefabParentObject: {fileID: 2025148, guid: e0e410cdb584869469a0bb449608748c,
+    type: 2}
+  m_PrefabInternal: {fileID: 1953796252}
 --- !u!1001 &340223979
 Prefab:
   m_ObjectHideFlags: 0
@@ -381,6 +386,10 @@ Prefab:
     - target: {fileID: 419260, guid: 137f88bfa6110dd4c8c365ec98798bee, type: 2}
       propertyPath: m_RootOrder
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 2050994, guid: 137f88bfa6110dd4c8c365ec98798bee, type: 2}
+      propertyPath: m_NormalizedViewPortRect.height
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 137f88bfa6110dd4c8c365ec98798bee, type: 2}
@@ -515,8 +524,13 @@ MonoBehaviour:
   canvas: {fileID: 921916575}
   ui: {fileID: 921916580}
   controls: {fileID: 1155954063}
+  cam: {fileID: 1797660820}
+  maincam: {fileID: 329856548}
+  ball: {fileID: 1354900911}
   windStrength: {x: 0, y: 0, z: -10}
   gravityStrength: {x: 0, y: -9.82, z: 0}
+  windmode: 0
+  showUI: 2
 --- !u!4 &557071584
 Transform:
   m_ObjectHideFlags: 0
@@ -712,7 +726,6 @@ MonoBehaviour:
   fps: {fileID: 275038273}
   wind: {fileID: 1068381875}
   updateIntervall: 0.5
-  showUI: 1
 --- !u!1 &1068381873
 GameObject:
   m_ObjectHideFlags: 0
@@ -1183,6 +1196,11 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1565759929}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!20 &1797660820 stripped
+Camera:
+  m_PrefabParentObject: {fileID: 2050994, guid: 137f88bfa6110dd4c8c365ec98798bee,
+    type: 2}
+  m_PrefabInternal: {fileID: 340223979}
 --- !u!1001 &1953796252
 Prefab:
   m_ObjectHideFlags: 0
@@ -1192,7 +1210,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 464904, guid: e0e410cdb584869469a0bb449608748c, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 100
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 464904, guid: e0e410cdb584869469a0bb449608748c, type: 2}
       propertyPath: m_LocalPosition.y
@@ -1268,7 +1286,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11463498, guid: e0e410cdb584869469a0bb449608748c, type: 2}
       propertyPath: gravity
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11463498, guid: e0e410cdb584869469a0bb449608748c, type: 2}
       propertyPath: penalySpringKonstant
@@ -1281,6 +1299,10 @@ Prefab:
     - target: {fileID: 11463498, guid: e0e410cdb584869469a0bb449608748c, type: 2}
       propertyPath: penaltySpringKonstant
       value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 180538, guid: e0e410cdb584869469a0bb449608748c, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e0e410cdb584869469a0bb449608748c, type: 2}
@@ -1394,11 +1416,27 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11456904, guid: 89961ebd9510d7149b8a5bdba531e092, type: 2}
       propertyPath: downRestForce
-      value: 4500
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11456904, guid: 89961ebd9510d7149b8a5bdba531e092, type: 2}
       propertyPath: downMaxForce
       value: 4501
+      objectReference: {fileID: 0}
+    - target: {fileID: 11456904, guid: 89961ebd9510d7149b8a5bdba531e092, type: 2}
+      propertyPath: triangluarRestForce
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11456904, guid: 89961ebd9510d7149b8a5bdba531e092, type: 2}
+      propertyPath: verticalRestForce
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11456904, guid: 89961ebd9510d7149b8a5bdba531e092, type: 2}
+      propertyPath: upRestForce
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11456904, guid: 89961ebd9510d7149b8a5bdba531e092, type: 2}
+      propertyPath: timestep
+      value: 0.008333334
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 89961ebd9510d7149b8a5bdba531e092, type: 2}

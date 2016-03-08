@@ -15,8 +15,6 @@ public class UI : MonoBehaviour {
 	int frames = 0;
 	float timeLeft = 0;
 
-	public bool showUI = true;
-
 	private Vector3 windVector;
 	private bool updateWind;
 

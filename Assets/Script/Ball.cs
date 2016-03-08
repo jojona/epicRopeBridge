@@ -32,6 +32,8 @@ public class Ball : MonoBehaviour {
 
 	private float radius = 2.5f;
 
+	public float penalySpringKonstant = 200f;
+
 	private struct Collision {
 		public bool collision;
 		public Vector3 normal;
@@ -139,22 +141,22 @@ public class Ball : MonoBehaviour {
 		}
 
 		lastPostion = position;
-		if (controlMode == 0) {
+		//if (controlMode == 0) {
 			velocity += force / mass * timestep;
 			force = Vector3.zero;
-		}
-		if (controlMode <= 1) {
+		//}
+		//if (controlMode <= 1) {
 			position += velocity * timestep;
-		}
-		if (controlMode == 2) {
-			velocity = (position - lastPostion) * timestep;
-		}
+		//}
+		//if (controlMode == 2) {
+		//	velocity = (position - lastPostion) * timestep;
+		//}
+		force = Vector3.zero;
 	}
 
 	public void collide(Point p) {
 		Vector3 distance = p.position - position;
 		if (distance.magnitude < 3) {
-			//Debug.Log("Collision with point " + p.name);
 			//Vector3 relativeVel = velocity - p.velocity;
 			Vector3 normal = (position - p.position).normalized;
 
@@ -172,6 +174,10 @@ public class Ball : MonoBehaviour {
 				float j = (-(1.0f + e) * relativeVel.magnitude) / ( (1.0f / mass) + (1.0f / p.mass) + (Vector3.Dot(normal, Vector3.Cross(2.0f/5 * mass * radius * radius * Vector3.Cross(ra, normal), ra))) + (Vector3.Dot(normal, Vector3.Cross(2.0f/5 * p.mass * 0.5f * 0.5f * Vector3.Cross(rb, normal), rb))) );
 				velocity -= j * normal/ mass;
 				p.velocity += j * normal / p.mass;
+
+				// Add penalty spring force
+				force += relativeVel.normalized * (distance.magnitude - radius) * penalySpringKonstant;
+				Debug.Log("Collision with point " + p.name + " , j=" + j);
 			}
 		}
 
@@ -218,8 +224,11 @@ public class Ball : MonoBehaviour {
 
 				velocity += -j * c.normal / mass;
 
-				position -= c.normal * (c.distance - radius); // TODO fix
+
+				// Add penalty spring force instead
+				//position -= c.normal * (c.distance - radius); // TODO fix
 			}
+			force += c.normal * (c.distance - radius) * penalySpringKonstant;
 		}
 	}
 		

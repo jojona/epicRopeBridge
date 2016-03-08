@@ -58,7 +58,7 @@ public class MiddleRope : PointController {
 
 	public void addPlank(Plank plank) {
 		planks.Add (plank);
-
+		plank.transform.parent = transform;
 		integrateList.Add (new IntegrateDataPlank(plank));
 	}
 

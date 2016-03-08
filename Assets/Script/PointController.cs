@@ -5,6 +5,8 @@ using System.Linq;
 
 public abstract class PointController : MonoBehaviour {
 
+	public static InputHandler ih;
+
 	public Point pointPrefab;
 	protected List<Point> points;
 	public List<IntegrateAbstract> integrateList = new List<IntegrateAbstract>();
@@ -64,8 +66,8 @@ public abstract class PointController : MonoBehaviour {
 	 * Clears old forces and sets all to zero.
 	 */
 	virtual public void clearForces() {
-		for (int i = 0; i < points.Count; ++i) {
-			points [i].force = Vector3.zero;
+		foreach(Point p in points) {
+			p.force = Vector3.zero;
 		}
 	}
 
@@ -73,9 +75,16 @@ public abstract class PointController : MonoBehaviour {
 	 * Applies gravity to all points.
 	 */
 	protected void gravity() {
-		for (int i = 0; i < points.Count; ++i) {
-			points[i].force += Vector3.down * 9.82f * points[i].mass;
+		foreach(Point p in points) {
+			p.force += ih.gravity * p.mass;
 		}
+	}
+
+	protected void wind() {
+		foreach(Point p in points) {
+			p.force += ih.wind + ih.wind.normalized * ih.wind.magnitude / 10f * (Mathf.Sin(Time.fixedTime));
+		}
+
 	}
 
 	/**
@@ -83,8 +92,7 @@ public abstract class PointController : MonoBehaviour {
 	 */
 	protected void springForces() {
 
-		for (int i = 0; i < points.Count; ++i) {
-			Point p = points[i];
+		foreach(Point p in points) {
 			foreach (Point n in p.GetNeighours()) {
 				springforce (p, n);
 			}

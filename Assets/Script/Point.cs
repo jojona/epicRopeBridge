@@ -5,15 +5,19 @@ using System.Linq;
 
 public class Point : MonoBehaviour {
 
+	private static Color COLOR = new Color (220f / 255f, 200f / 255f, 195f / 255f);
+
 	private struct Neighbour {
 		public Point neighbour;
 		public float segmentLength;
 		public float breakLength;
+		public float restLength;
 
-		public Neighbour(Point p, float s)  {
+		public Neighbour(Point p, float s, float restKonstant, float breakkonstant)  {
 			neighbour = p; 
 			segmentLength = s;
-			breakLength = s*1.4f;
+			restLength = restKonstant;
+			breakLength = breakkonstant;
 		}
 
 	}
@@ -37,25 +41,28 @@ public class Point : MonoBehaviour {
 			float g = n.segmentLength * 1.2f - (position - n.neighbour.position).magnitude;
 			float r = -g;
 			//*/
-			float r = ((position - n.neighbour.position).magnitude - 1.2f * n.segmentLength) / (n.breakLength - n.segmentLength);
-			float g = -r;
+			Color c = COLOR;
 
-			float param = 1f;
-			Color c = new Color(r * param,g * param, 0.0f);
+			if (n.restLength != 0) {
 
+				float r = ((position - n.neighbour.position).magnitude - n.restLength * n.segmentLength) / (n.breakLength * n.segmentLength - n.segmentLength);
+				float g = -r;
+
+				float param = 1f;
+				c = new Color(r * param,g * param, 0.0f);
+
+
+				//Debug.Log(255f / 0.5f*(Mathf.Abs((position - n.neighbour.position).magnitude) - n.segmentLength));
+			}
+			
 			Debug.DrawRay (position, n.neighbour.position-position, c, 0.01f);
-
-			//Debug.Log(255f / 0.5f*(Mathf.Abs((position - n.neighbour.position).magnitude) - n.segmentLength));
-
-			// 0 - 0.5
-
 
 
 		}
 	}
 
-	public void AddNeigbour(Point p, float segmentLength) {
-		neighbour.Add (new Neighbour(p, segmentLength));
+	public void AddNeigbour(Point p, float segmentLength, float restK, float breakK) {
+		neighbour.Add (new Neighbour(p, segmentLength, restK, breakK));
 	}
 
 	public IEnumerable<Point> GetNeighours() {

@@ -28,38 +28,41 @@ public class Spawner : MonoBehaviour {
 	public Vector3 anchorPoint4Down;
 
 	public float segLengthUpRopes = 1;
-	public float segLengthDownRopes = 0.8f;
+	public float segLengthDownRopes = 4f;
 	public float segLengthVerticalRopes = 1;
 
 	public float ropePointMass;
-	public int extraUp = 10;
-	public int extraDown = 1;
-	public int planksPerTriangle = 3;
+	public int extraUp = 4;
+	public int extraDown = 2;
+	public int planksPerTriangle = 2;
 	[Tooltip("Delbart med planksPerTriangle")]
-	public int numberOfPlanks = 21; // Delbart med planksPerTriangle
-	public int pointsPerPlank = 5;
+	public int numberOfPlanks = 12; // Delbart med planksPerTriangle
+	public int pointsPerPlank = 2;
 	public int plankSpacing = 1;
-	public int heightPoints = 15;
-	public int plankWidth = 5;
+	public int heightPoints = 7;
+	public int plankWidth = 10;
 
 	// The time between each frame
 	public float timestep = 1.0f / 60.0f;
 
 	// Rope properties (stiffness and dampening)
-	public float ropeStiffness = 800f;
-	public float middleRopeStiffness = 800f;
-	public float ropeDampening = 1f;
+	public float ropeStiffness = 500f;
+	public float middleRopeStiffness = 500f;
+	public float ropeDampening = 7f;
 
 	[Range(1, 2)]
 	[Tooltip("Euler 1, Runge kutta 2")]
-	public int integrationMethod = 1;
+	public int integrationMethod = 2;
 
-	public float triangularRestK = 1.2f;
-	public float triangularBreakK = 1.4f;
-	public float verticalRestK = 1f;
-	public float verticalBreakK = 1.2f;
-	public float longRopesRestK = 866f;
-	public float longRopesBreakK = 900f;
+	public float triangluarRestForce = 540f;
+	public float verticalRestForce = 100f;
+	public float upRestForce = 5400f;
+	public float downRestForce = 1f;
+
+	public float triangularMaxForce = 800f;
+	public float verticalMaxForce = 150f;
+	public float upMaxForce = 5500f;
+	public float downMaxForce = 4501f;
 
 	/**
 	 * Private fields.
@@ -99,14 +102,11 @@ public class Spawner : MonoBehaviour {
 		int baseAmount1 = numberOfPlanks * (pointsPerPlank + plankSpacing) - plankSpacing;
 		int baseAmount2 = numberOfPlanks * (2 + plankSpacing) - plankSpacing;
 
-		float restK = longRopesRestK;
-		float breakK = longRopesBreakK;
-
 		// The 4 main ropes
-		Rope r1 = spawnRope(anchorPoint1Up, anchorPoint2Up, "Upper right", extraUp * 2 + baseAmount1, true, segLengthUpRopes, true, restK, breakK);
-		Rope r2 = spawnRope(anchorPoint3Up, anchorPoint4Up, "Upper left", extraUp * 2 + baseAmount1, true, segLengthUpRopes, true, restK, breakK);
-		Rope r3 = spawnRope(anchorPoint1Down, anchorPoint2Down, "Down right", extraDown * 2 + baseAmount2, true, segLengthDownRopes, false, 0, 0);
-		Rope r4 = spawnRope(anchorPoint3Down, anchorPoint4Down, "Down left", extraDown * 2 + baseAmount2, true, segLengthDownRopes, false, 0, 0);
+		Rope r1 = spawnRope(anchorPoint1Up, anchorPoint2Up, "Upper right", extraUp * 2 + baseAmount1, true, segLengthUpRopes, true, upRestForce, upMaxForce);
+		Rope r2 = spawnRope(anchorPoint3Up, anchorPoint4Up, "Upper left", extraUp * 2 + baseAmount1, true, segLengthUpRopes, true, upRestForce, upMaxForce);
+		Rope r3 = spawnRope(anchorPoint1Down, anchorPoint2Down, "Down right", extraDown * 2 + baseAmount2, true, segLengthDownRopes, false, downRestForce, downMaxForce);
+		Rope r4 = spawnRope(anchorPoint3Down, anchorPoint4Down, "Down left", extraDown * 2 + baseAmount2, true, segLengthDownRopes, false, downRestForce, downMaxForce);
 
 		// Create the class containing all planks
 		MiddleRope r = (MiddleRope) Instantiate(middleRopePrefab, Vector3.zero, Quaternion.identity);
@@ -134,8 +134,6 @@ public class Spawner : MonoBehaviour {
 	}
 
 	void spawnTriangularRopes(Rope upper, Rope lower, float pointDensity) {
-		float breakK = triangularBreakK;
-		float restK = triangularRestK;
 
 		int upperPointsPerTriangle = (planksPerTriangle * (pointsPerPlank + plankSpacing)) - plankSpacing / 2;
 		for (int i = 0; i < numberOfPlanks / planksPerTriangle; i++) {
@@ -145,36 +143,34 @@ public class Spawner : MonoBehaviour {
 			int numberOfPoints = (int) (lengthOfRope * pointDensity);
 			Vector3 diff = (to.position - from.position) / (numberOfPoints + 1);
 			float segmentLength = segLengthVerticalRopes * 2f / 5f + 0.00f * Mathf.Abs(i - numberOfPlanks/planksPerTriangle/2);
-			Rope rx = spawnRope(from.position + diff, to.position, "Triangular " + (i + 1) + " ", numberOfPoints, false, segmentLength, true, restK, breakK);
-			rx.getPoint(0).AddNeigbour(from, segmentLength, restK, breakK);
-			rx.getPoints ().Last ().AddNeigbour (to, segmentLength, restK, breakK);
+			Rope rx = spawnRope(from.position + diff, to.position, "Triangular " + (i + 1) + " ", numberOfPoints, false, segmentLength, true, triangluarRestForce, triangularMaxForce);
+			rx.getPoint(0).AddNeighbour(from, segmentLength, triangluarRestForce, triangularMaxForce);
+			rx.getPoints ().Last ().AddNeighbour (to, segmentLength, triangluarRestForce, triangularMaxForce);
 			
 			from = upper.getPoint (extraUp + upperPointsPerTriangle * i + upperPointsPerTriangle / 2);
 			to = lower.getPoint (extraDown + (i + 1) * (planksPerTriangle * (2 + plankSpacing)) - plankSpacing / 2 - 1);
 			diff = (to.position - from.position) / (numberOfPoints + 1);
 			segmentLength = segLengthVerticalRopes * 2f / 5f + 0.00f * (numberOfPlanks/planksPerTriangle/2 - Mathf.Abs(i - numberOfPlanks/planksPerTriangle/2));
-			Rope ry = spawnRope(from.position + diff, to.position, "Triangular " + (i + 1) + " ", numberOfPoints, false, segmentLength, true, restK, breakK);
-			ry.getPoint(0).AddNeigbour(from, segmentLength, restK, breakK);
-			ry.getPoints ().Last ().AddNeigbour (to, segmentLength, restK, breakK);
+			Rope ry = spawnRope(from.position + diff, to.position, "Triangular " + (i + 1) + " ", numberOfPoints, false, segmentLength, true, triangluarRestForce, triangularMaxForce);
+			ry.getPoint(0).AddNeighbour(from, segmentLength, triangluarRestForce, triangularMaxForce);
+			ry.getPoints ().Last ().AddNeighbour (to, segmentLength, triangluarRestForce, triangularMaxForce);
 		}
 	}
 
 	void spawnVerticalRopes(Rope up, Rope down) {
-		float breakK = verticalBreakK;
-		float restK = verticalRestK;
 
 		Vector3 dir1 = down.getPoint (extraDown - 1).position - up.getPoint (extraUp - 2).position;
-		Rope rVerticalFirst = spawnRope(up.getPoint (extraUp - 2).position + dir1 / (heightPoints + 1), down.getPoint (extraDown - 1).position - dir1 / (heightPoints + 1), "Vertical rope", heightPoints + 1, false, segLengthVerticalRopes, true, restK, breakK);
-		up.getPoint (extraUp - 2).AddNeigbour(rVerticalFirst.getPoint(0), up.segmentLength, restK, breakK);
-		down.getPoint (extraDown - 1).AddNeigbour(rVerticalFirst.getPoint(heightPoints), down.segmentLength, restK, breakK);
+		Rope rVerticalFirst = spawnRope(up.getPoint (extraUp - 2).position + dir1 / (heightPoints + 1), down.getPoint (extraDown - 1).position - dir1 / (heightPoints + 1), "Vertical rope", heightPoints + 1, false, segLengthVerticalRopes, true, verticalRestForce, verticalMaxForce);
+		up.getPoint (extraUp - 2).AddNeighbour(rVerticalFirst.getPoint(0), up.segmentLength, verticalRestForce, verticalMaxForce);
+		down.getPoint (extraDown - 1).AddNeighbour(rVerticalFirst.getPoint(heightPoints), down.segmentLength, verticalRestForce, verticalMaxForce);
 
 		Vector3 dir2 = down.getPoint (down.length() - extraDown + 1).position - up.getPoint (up.length() - extraUp + 1).position;
-		Rope rVerticalSecond = spawnRope(up.getPoint (up.length() - extraUp + 1).position + dir2 / (heightPoints + 1), down.getPoint (down.length() - extraDown + 1).position - dir1 / (heightPoints + 1), "Vertical rope", heightPoints + 1, false, segLengthVerticalRopes, true, restK, breakK);
-		up.getPoint (up.length() - extraUp + 1).AddNeigbour(rVerticalSecond.getPoint(0), up.segmentLength, restK, breakK);
-		down.getPoint (down.length() - extraDown).AddNeigbour(rVerticalSecond.getPoint(heightPoints), down.segmentLength, restK, breakK);
+		Rope rVerticalSecond = spawnRope(up.getPoint (up.length() - extraUp + 1).position + dir2 / (heightPoints + 1), down.getPoint (down.length() - extraDown + 1).position - dir1 / (heightPoints + 1), "Vertical rope", heightPoints + 1, false, segLengthVerticalRopes, true, verticalRestForce, verticalMaxForce);
+		up.getPoint (up.length() - extraUp + 1).AddNeighbour(rVerticalSecond.getPoint(0), up.segmentLength, verticalRestForce, verticalMaxForce);
+		down.getPoint (down.length() - extraDown).AddNeighbour(rVerticalSecond.getPoint(heightPoints), down.segmentLength, verticalRestForce, verticalMaxForce);
 	}
 
-	Rope spawnRope(Vector3 from, Vector3 to, string name, int amount, bool fixt, float segLength, bool upper, float restK, float breakK) {
+	Rope spawnRope(Vector3 from, Vector3 to, string name, int amount, bool fixt, float segLength, bool upper, float restF, float maxF) {
 		Rope r1 = (Rope) Instantiate(ropePrefab, Vector3.zero, Quaternion.identity);
 		r1.init(
 			from,                                    
@@ -186,8 +182,8 @@ public class Spawner : MonoBehaviour {
 			ropeDampening,
 			ropePointMass,
 			segLength,
-			restK,
-			breakK
+			restF,
+			maxF
 		);
 		ropes.Add(r1);
 		return r1;

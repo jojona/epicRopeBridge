@@ -5,6 +5,8 @@ using System.Linq;
 
 public class Ball : MonoBehaviour {
 
+	public InputHandler ih;
+
 	public Vector3 force = Vector3.zero;
 	private Vector3 position;
 	private Vector3 lastPostion;
@@ -20,19 +22,19 @@ public class Ball : MonoBehaviour {
 	public Transform backwall;
 
 	[Range(1, 100)]
-	public int speed = 10;
+	public int speed = 1;
 	[Range(1, 100)]
-	public int upSpeed = 15;
+	public int upSpeed = 10;
 
 	[Tooltip("Force 0, Velocity 1, position 2")]
 	[Range(0, 2)]
-	public int controlMode = 0;
+	public int controlMode = 1;
 
 	public bool gravity = true;
 
 	private float radius = 2.5f;
 
-	public float penalySpringKonstant = 200f;
+	public float penaltySpringKonstant = 200f;
 
 	private struct Collision {
 		public bool collision;
@@ -50,7 +52,6 @@ public class Ball : MonoBehaviour {
 
 	void Update() {
 		if (controlMode == 0) {
-			if (gravity) force += Vector3.down * 9.82f * Time.deltaTime * mass;
 
 			if (Input.GetKey ("up") || Input.GetKey ("w")) {
 				force += Vector3.right * speed * 10 * Time.deltaTime * mass;
@@ -68,11 +69,9 @@ public class Ball : MonoBehaviour {
 				force += Vector3.up * upSpeed * 10 * Time.deltaTime * mass;
 			}
 			if (Input.GetKey ("x") || Input.GetKey("e")) {
-				force += Vector3.down * upSpeed * Time.deltaTime * mass;
+				force += Vector3.down * 10 *upSpeed * Time.deltaTime * mass;
 			}
 		} else if (controlMode == 1) {
-
-			if (gravity) velocity += Vector3.down * 9.82f * Time.deltaTime;
 
 			if (Input.GetKey ("up") || Input.GetKey ("w")) {
 				velocity += Vector3.right * 10 * speed * Time.deltaTime;
@@ -90,7 +89,7 @@ public class Ball : MonoBehaviour {
 				velocity += Vector3.up * 10 * upSpeed * Time.deltaTime;
 			}
 			if (Input.GetKey ("x") || Input.GetKey("e")) {
-				velocity += Vector3.down * upSpeed * Time.deltaTime;
+				velocity += Vector3.down * 10 * upSpeed * Time.deltaTime;
 			}
 		} else if (controlMode == 2) {
 			if (Input.GetKey ("up") || Input.GetKey ("w")) {
@@ -109,7 +108,7 @@ public class Ball : MonoBehaviour {
 				position += Vector3.up * upSpeed * Time.deltaTime;
 			}
 			if (Input.GetKey ("x") || Input.GetKey("e")) {
-				position += Vector3.down * upSpeed * Time.deltaTime;
+				position += Vector3.down * 10 * upSpeed * Time.deltaTime;
 			}
 		}
 	}
@@ -121,6 +120,18 @@ public class Ball : MonoBehaviour {
 
 	// Update is called once per frame
 	public void simulate (float timestep) {
+		lastPostion = position;
+
+		if (gravity) force += ih.gravity * mass;
+
+		collideBoundary();
+
+		velocity += force / mass * timestep;
+		position += velocity * timestep;
+		force = Vector3.zero;
+	}
+
+	public void collideBoundary() {
 		if (!behindPlane(downwall.position, Vector3.up) && Vector3.Dot(velocity, Vector3.up) < 0) {
 			velocity += Vector3.Dot(-velocity, Vector3.up) * Vector3.up;
 		}
@@ -139,22 +150,10 @@ public class Ball : MonoBehaviour {
 		if (!behindPlane(backwall.position, Vector3.back) && Vector3.Dot(velocity, Vector3.back) < 0) {
 			velocity += Vector3.Dot(-velocity, Vector3.back) * Vector3.back;
 		}
-
-		lastPostion = position;
-		//if (controlMode == 0) {
-			velocity += force / mass * timestep;
-			force = Vector3.zero;
-		//}
-		//if (controlMode <= 1) {
-			position += velocity * timestep;
-		//}
-		//if (controlMode == 2) {
-		//	velocity = (position - lastPostion) * timestep;
-		//}
-		force = Vector3.zero;
 	}
 
 	public void collide(Point p) {
+		return;
 		Vector3 distance = p.position - position;
 		if (distance.magnitude < 3) {
 			//Vector3 relativeVel = velocity - p.velocity;
@@ -165,7 +164,7 @@ public class Ball : MonoBehaviour {
 			//Debug.Break();
 			//Debug.DrawRay(p.position, relativeVel, Color.green, 0.1f, true);
 
-			if (Vector3.Dot(relativeVel, normal) <= 0) {
+			if (Vector3.Dot(relativeVel, normal) >= 0) {
 
 				Vector3 ra = -normal * radius;
 				Vector3 rb = normal * 0.5f;
@@ -175,10 +174,9 @@ public class Ball : MonoBehaviour {
 				velocity -= j * normal/ mass;
 				p.velocity += j * normal / p.mass;
 
-				// Add penalty spring force
-				force += relativeVel.normalized * (distance.magnitude - radius) * penalySpringKonstant;
-				Debug.Log("Collision with point " + p.name + " , j=" + j);
 			}
+			// Add penalty spring force
+			force += relativeVel.normalized * (distance.magnitude - 3f) * penaltySpringKonstant;
 		}
 
 	}
@@ -228,7 +226,7 @@ public class Ball : MonoBehaviour {
 				// Add penalty spring force instead
 				//position -= c.normal * (c.distance - radius); // TODO fix
 			}
-			force += c.normal * (c.distance - radius) * penalySpringKonstant;
+			force += c.normal * (c.distance - radius) * penaltySpringKonstant;
 		}
 	}
 		

@@ -21,7 +21,7 @@ public class Rope : PointController {
 	/**
 	 * Inits this rope.
 	 */
-	public void init(Vector3 start, Vector3 end, bool anchor, int amountOfPoints, string name, float stiffness, float dampening, float pointMass, float segLength, float restK, float breakKonstant) {
+	public void init(Vector3 start, Vector3 end, bool anchor, int amountOfPoints, string name, float stiffness, float dampening, float pointMass, float segLength, float restForce, float maxForce) {
 		init(stiffness, dampening, segLength);
 		this.name = name;
 		// Inits points list, sets posiiton and direction
@@ -36,7 +36,7 @@ public class Rope : PointController {
 
 		// Adds links between internal points
 		for (int i = 0; i < amountOfPoints - 1; ++i) {
-			points [i].AddNeigbour(points [i + 1], segLength, restK, breakKonstant);
+			points [i].AddNeighbour(points [i + 1], segLength, restForce, maxForce);
 		}
 
 		// Sets anchor if so

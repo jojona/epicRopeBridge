@@ -82,7 +82,7 @@ public abstract class PointController : MonoBehaviour {
 
 	protected void wind() {
 		foreach(Point p in points) {
-			p.force += ih.wind + ih.wind.normalized * ih.wind.magnitude / 10f * (Mathf.Sin(Time.fixedTime));
+			p.force += ih.wind + ih.wind / 10f * (Mathf.Sin(Time.fixedTime/2));
 		}
 
 	}
@@ -93,7 +93,7 @@ public abstract class PointController : MonoBehaviour {
 	protected void springForces() {
 
 		foreach(Point p in points) {
-			foreach (Point n in p.GetNeighours()) {
+			foreach (Point.Neighbour n in p.GetNeighbours()) {
 				springforce (p, n);
 			}
 		}
@@ -102,15 +102,16 @@ public abstract class PointController : MonoBehaviour {
 	/**
 	 * Applies spring forces to two points p and n.
 	 */
-	protected void springforce(Point point, Point neighbour) {
+	protected void springforce(Point point, Point.Neighbour neighbour) {
 		Vector3 force = Vector3.zero;
-		Vector3 distance = neighbour.position - point.position;
+		Vector3 distance = neighbour.neighbour.position - point.position;
 
 		force = ropeStiffness * (distance.magnitude - segmentLength) * (distance / distance.magnitude);
-		force -= ropeDampening * (point.velocity - neighbour.velocity);
+		force -= ropeDampening * (point.velocity - neighbour.neighbour.velocity);
 
 		point.force += force;
-		neighbour.force -= force;
+		neighbour.neighbour.force -= force;
+		neighbour.force = force;
 	}
 
 	virtual public void collideWith(Ball ball) {

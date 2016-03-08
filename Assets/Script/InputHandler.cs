@@ -33,7 +33,20 @@ public class InputHandler : MonoBehaviour {
 		toggleWind ();
 		toggleUI ();
 	}
-	
+
+	void FixedUpdate() {
+		if(Input.GetMouseButton(2)) {
+			cam.gameObject.transform.RotateAround (center, Vector3.up, .5f);
+		}
+
+		if (Input.GetMouseButton (0)) {
+			maincam.gameObject.transform.RotateAround (ball.position, Vector3.up, .5f);
+		}
+		if (Input.GetMouseButton (1)) {
+			maincam.gameObject.transform.RotateAround (ball.position, Vector3.up, -.5f);
+		}
+	}
+
 	// Update is called once per frame
 	void Update () {
 
@@ -55,18 +68,6 @@ public class InputHandler : MonoBehaviour {
 			}
 
 		}
-
-		if(Input.GetMouseButton(2)) {
-			cam.gameObject.transform.RotateAround (center, Vector3.up, 1f);
-		}
-
-		if (Input.GetMouseButton (0)) {
-			maincam.gameObject.transform.RotateAround (ball.position, Vector3.up, 2f);
-		}
-		if (Input.GetMouseButton (1)) {
-			maincam.gameObject.transform.RotateAround (ball.position, Vector3.up, -2f);
-		}
-	
 	}
 
 	private void toggleUI() {

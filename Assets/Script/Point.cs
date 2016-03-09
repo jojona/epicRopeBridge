@@ -28,7 +28,8 @@ public class Point : MonoBehaviour {
 	public Vector3 position = Vector3.zero;
 	public Vector3 velocity = Vector3.zero;
 	public Vector3 force = Vector3.zero;
-	public float mass = 10000f;
+	[System.NonSerialized]
+	public float mass;
 
 	public Vector3 statePos = Vector3.zero;
 	public Vector3 stateVel = Vector3.zero;
@@ -39,6 +40,8 @@ public class Point : MonoBehaviour {
 	public Vector3 showForce;
 	public float showForceSize;
 
+	private bool showPointForce = false;
+
 	void Start() {
 	}
 
@@ -46,30 +49,60 @@ public class Point : MonoBehaviour {
 	// Update is called once per frame
 	void LateUpdate () {
 		transform.position = position;
-		foreach (Neighbour n in neighbours) {
-			Color c = COLOR;
-
-			if (n.restForce != 0) {
-
-				//float r = ((position - n.neighbour.position).magnitude - n.restForce * n.segmentLength) / (n.maxForce * n.segmentLength - n.segmentLength); // TODO fix
-				float r = (n.force.magnitude - n.restForce) / (n.maxForce - n.restForce);
-				float g = -r;
-
-				float param = 1f;
-				c = new Color(r * param,g * param, 0.0f);
-
-				showForce = n.force;
-				showForceSize = showForce.magnitude;
-
-				if (n.force.magnitude > n.maxForce && Time.fixedTime > 10f) {
-					//Debug.Log ("Break " + name + " | " + n.neighbour.name + " | Force=" + n.force.magnitude + " Max" + n.maxForce );
-					n.broken = true;
+		
+		// Show spring forces and graviy force vectors on Point named "Rope: Upper left 25"
+		if (showPointForce) {
+			if (name == "Rope: Upper left25") {
+				foreach (Neighbour n in neighbours) {
+					if (n.neighbour.name == "Rope: Upper left26") {
+						Debug.DrawLine (position, position + n.force / 100, Color.red, 0.01f, true);
+					}
 				}
-
-				//Debug.Log(255f / 0.5f*(Mathf.Abs((position - n.neighbour.position).magnitude) - n.segmentLength));
+				Debug.DrawLine (position, position + Vector3.down * 9.82f / 10, Color.red, 0.01f, true);
 			}
-			
-			Debug.DrawRay (position, n.neighbour.position-position, c, 0.01f);
+			if (name == "Rope: Upper left24") {
+				foreach (Neighbour n in neighbours) {
+					if (n.neighbour.name == "Rope: Upper left25") {
+						Debug.DrawLine (n.neighbour.position, n.neighbour.position - n.force / 100, Color.red, 0.01f, true);
+					}
+				}
+			}
+			if (name == "Rope: Triangular X 4 8") {
+				foreach (Neighbour n in neighbours) {
+					if (n.neighbour.name == "Rope: Upper left25") {
+						Debug.DrawLine (n.neighbour.position, n.neighbour.position - n.force / 100, Color.red, 0.01f, true);
+					}
+				}
+			}
+			if (name == "Rope: Triangular Y 4 0") {
+				foreach (Neighbour n in neighbours) {
+					if (n.neighbour.name == "Rope: Upper left25") {
+						Debug.DrawLine (n.neighbour.position, n.neighbour.position - n.force / 100, Color.red, 0.01f, true);
+					}
+				}
+			}
+		} else {
+
+			foreach (Neighbour n in neighbours) {
+				Color c = COLOR;
+
+				if (n.restForce != 0) {
+					float r = (n.force.magnitude - n.restForce) / (n.maxForce - n.restForce);
+					float g = -r;
+
+					float param = 1f;
+					c = new Color(r * param,g * param, 0.0f);
+
+					showForce = n.force;
+					showForceSize = showForce.magnitude;
+
+					if (n.force.magnitude > n.maxForce && Time.fixedTime > 10f) {
+						n.broken = true;
+					}
+				}
+				
+				Debug.DrawRay (position, n.neighbour.position-position, c, 0.01f);
+			}
 		}
 
 

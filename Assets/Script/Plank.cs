@@ -41,11 +41,6 @@ public class Plank : MonoBehaviour {
 	public Vector3 stateP;
 	public Vector3 stateL;
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-
 	public void init(Point p1, Point p2, Point p3, Point p4, float widthT) {
 		position = p1.position + (p3.position - p1.position) / 2 + (p2.position - p1.position) / 2;
 		p1.name += " P1";
@@ -208,7 +203,7 @@ public class Plank : MonoBehaviour {
 	}
 }
 
-// TODO http://www.cc.gatech.edu/classes/AY2012/cs4496_spring/slides/RigidSim.pdf p 53
+// http://www.cc.gatech.edu/classes/AY2012/cs4496_spring/slides/RigidSim.pdf p 53
 // http://www.cs.cmu.edu/~baraff/sigcourse/notesd1.pdf
 // http://web.engr.illinois.edu/~yyz/teaching/cs598lect/RigidBodyImpl.pdf
 // http://ocw.mit.edu/courses/aeronautics-and-astronautics/16-07-dynamics-fall-2009/lecture-notes/MIT16_07F09_Lec25.pdf

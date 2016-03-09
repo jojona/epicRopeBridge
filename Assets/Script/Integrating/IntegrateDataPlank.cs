@@ -74,7 +74,7 @@ public class IntegrateDataPlank : IntegrateAbstract{
 		d = evalResult;
 	}
 
-	public override void tryDerivate(float timestep) { //TODO
+	public override void tryDerivate(float timestep) {
 		
 		p.position += evalResult.deltaX * timestep;
 
@@ -90,7 +90,7 @@ public class IntegrateDataPlank : IntegrateAbstract{
 		p.normalizeQuaternion();
 		p.calculateR();
 		p.pointPositions();
-		//p.calculateIinv();
+		p.calculateIinv();
 	}
 
 	public override void saveDerivate() {
@@ -123,8 +123,7 @@ public class IntegrateDataPlank : IntegrateAbstract{
 		p.normalizeQuaternion();
 		p.calculateR();
 		p.pointPositions();
-
-		//p.calculateIinv();
+		p.calculateIinv();
 	}
 
 	public override void reset() {

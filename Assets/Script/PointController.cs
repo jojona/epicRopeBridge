@@ -12,7 +12,7 @@ public abstract class PointController : MonoBehaviour {
 	public List<IntegrateAbstract> integrateList = new List<IntegrateAbstract>();
 
 	protected float ropeStiffness;
-	protected float ropeDampening;
+	protected float ropeDamping;
 	public float segmentLength;
 
 	public abstract void simulationStep ();
@@ -31,7 +31,6 @@ public abstract class PointController : MonoBehaviour {
 		IntegrateDataPoint ip = new IntegrateDataPoint(p);
 		integrateList.Add(ip);
 		p.integrate = ip;
-
 		return p;
 	}
 
@@ -40,7 +39,7 @@ public abstract class PointController : MonoBehaviour {
 	 * Create the point at given position with a name.
 	 */
 	protected Point createPoint(Vector3 position, string name, float mass) {
-		Point p = createPoint (position, 1f);
+		Point p = createPoint (position, mass);
 		p.name = name;
 		return p;
 	}
@@ -54,9 +53,9 @@ public abstract class PointController : MonoBehaviour {
 		return p;
 	}
 
-	protected void init(float stiffness, float dampening, float segmentLength) {
+	protected void init(float stiffness, float damping, float segmentLength) {
 		ropeStiffness = stiffness;
-		ropeDampening = dampening;
+		ropeDamping = damping;
 		this.segmentLength = segmentLength;
 		points = new List<Point> ();
 		integrateList = new List<IntegrateAbstract>();
@@ -91,7 +90,6 @@ public abstract class PointController : MonoBehaviour {
 	 * Applies spring forces to all points by walking through all points and making them affect their neighbours.
 	 */
 	protected void springForces() {
-
 		foreach(Point p in points) {
 			foreach (Point.Neighbour n in p.GetNeighbours()) {
 				springforce (p, n);
@@ -107,7 +105,7 @@ public abstract class PointController : MonoBehaviour {
 		Vector3 distance = neighbour.neighbour.position - point.position;
 
 		force = ropeStiffness * (distance.magnitude - segmentLength) * (distance / distance.magnitude);
-		force -= ropeDampening * (point.velocity - neighbour.neighbour.velocity);
+		force -= ropeDamping * (point.velocity - neighbour.neighbour.velocity);
 
 		point.force += force;
 		neighbour.neighbour.force -= force;

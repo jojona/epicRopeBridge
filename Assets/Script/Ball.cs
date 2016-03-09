@@ -131,6 +131,9 @@ public class Ball : MonoBehaviour {
 		force = Vector3.zero;
 	}
 
+	/*
+	 * Collision with boundary planes. The collision is completely inelastic.
+	 */
 	public void collideBoundary() {
 		if (!behindPlane(downwall.position, Vector3.up) && Vector3.Dot(velocity, Vector3.up) < 0) {
 			velocity += Vector3.Dot(-velocity, Vector3.up) * Vector3.up;
@@ -152,17 +155,17 @@ public class Ball : MonoBehaviour {
 		}
 	}
 
+	/**
+	 * Collision between the ball and a point
+	 * Unused
+	 */
 	public void collide(Point p) {
-		return;
 		Vector3 distance = p.position - position;
 		if (distance.magnitude < 3) {
 			//Vector3 relativeVel = velocity - p.velocity;
 			Vector3 normal = (position - p.position).normalized;
 
 			Vector3 relativeVel = (velocity - p.velocity).magnitude * normal;
-			
-			//Debug.Break();
-			//Debug.DrawRay(p.position, relativeVel, Color.green, 0.1f, true);
 
 			if (Vector3.Dot(relativeVel, normal) >= 0) {
 
@@ -175,25 +178,26 @@ public class Ball : MonoBehaviour {
 				p.velocity += j * normal / p.mass;
 
 			}
-			// Add penalty spring force
+			// Add penalty spring force to the ball
 			force += relativeVel.normalized * (distance.magnitude - 3f) * penaltySpringKonstant;
 		}
 
 	}
 
+	/**
+	 * Collision between the ball and a plank
+	 */
 	public void collide(Plank plank) {
 		// Bounding sphere
 		Vector3 distance = plank.position - position;
 		if (distance.magnitude > 17) {
 			return;
 		}
-		
-		// OLD Collision c = sphere_intersects_box(plank);
+
 		Collision c = boxCollision(plank);
 
-		if (c.collision) {	// Planks are thin enough so ball cannot be completly inside a plank
-			//Debug.Log ("Collision with plank " + plank.name);
-
+		if (c.collision) {	
+			// Planks are thin enough so ball cannot be completly inside a plank
 			Vector3 pointVelocity = plank.P / plank.mass + Vector3.Cross(plank.w, (c.position - plank.position));
 
 			float relativeVel = Vector3.Dot((velocity - pointVelocity), c.normal);
@@ -223,9 +227,8 @@ public class Ball : MonoBehaviour {
 				velocity += -j * c.normal / mass;
 
 
-				// Add penalty spring force instead
-				//position -= c.normal * (c.distance - radius); // TODO fix
 			}
+			// Penalty spring force
 			force += c.normal * (c.distance - radius) * penaltySpringKonstant;
 		}
 	}
@@ -244,14 +247,15 @@ public class Ball : MonoBehaviour {
 
 
 	Collision boxCollision(Plank plank) {
+
+		// Collision inspiration http://theorangeduck.com/page/correct-box-sphere-intersection
+
 		float rightDistance = distanceToPlane(plank.position + plank.xAxis(), plank.xAxis().normalized);
 		float leftDistance = distanceToPlane(plank.position - plank.xAxis(), -plank.xAxis().normalized);
 		float frontDistance = distanceToPlane(plank.position + plank.zAxis(), plank.zAxis().normalized);
 		float backDistance = distanceToPlane(plank.position - plank.zAxis(), -plank.zAxis().normalized);
 		float topDistance = distanceToPlane(plank.position + plank.yAxis(), plank.yAxis().normalized);
 		float bottomDistance = distanceToPlane(plank.position - plank.yAxis(), -plank.yAxis().normalized);
-
-		// Note: Behind if distance > radius;
 
 		Collision c = new Collision();
 
@@ -274,18 +278,16 @@ public class Ball : MonoBehaviour {
 		if (rightDistance < radius && leftDistance < radius && topDistance < radius && bottomDistance < radius) {
 			if (Mathf.Abs(rightDistance) <= radius || Mathf.Abs(leftDistance) <= radius) {
 				if (Vector3.Dot(lastPostion - position, plank.zAxis()) <= 0) {
-					if (rightDistance < c.distance) {
+					if (Ball comes from the right) { // TODO
 						c.normal = plank.zAxis().normalized;
 						c.distance = frontDistance;
 						c.collision = true;
-						Debug.Log("!updown collision");
 					}
 				} else {
-					if (leftDistance < c.distance) {
+					if (Ball comes from the left) { // TODO 
 						c.normal = -plank.zAxis().normalized;
 						c.distance = backDistance;
 						c.collision = true;
-						Debug.Log("!updown collision");
 					}
 				}
 			}
@@ -294,18 +296,17 @@ public class Ball : MonoBehaviour {
 		if (frontDistance < radius && backDistance < radius && topDistance < radius && bottomDistance < radius) {
 			if (Mathf.Abs(frontDistance) <= radius || Mathf.Abs(backDistance) <= radius) {
 				if (Vector3.Dot(lastPostion - position, plank.xAxis()) <= 0) {
-					if (frontDistance < c.distance) {
+					if (Ball comes from front) { // TODO
 						c.normal = plank.xAxis().normalized;
 						c.distance = topDistance;
 						c.collision = true;
 						Debug.Log("!updown collision");
 					}
 				} else {
-					if (backDistance < c.distance) {
+					if (Ball comes from the back) { // TODO
 						c.normal = -plank.xAxis().normalized;
 						c.distance = bottomDistance;
 						c.collision = true;
-						Debug.Log("!updown collision");
 					}
 				}
 			}
@@ -313,56 +314,10 @@ public class Ball : MonoBehaviour {
 		//*/
 
 		c.position = position - c.distance * c.normal;
-
-		//if (c.collision) {
-		//	Debug.Break();
-		//	Debug.DrawRay(c.position, Vector3.up, Color.red, 1f, true);
-		//}
 		return c;
 
 
 	}
-
-	Collision sphere_intersects_box(Plank plank) {
-		// http://theorangeduck.com/page/correct-box-sphere-intersection
-		bool in_right  = !behindPlane(plank.position + plank.xAxis(), plank.xAxis().normalized);
-		bool in_left   = !behindPlane(plank.position - plank.xAxis(), -plank.xAxis().normalized);
-		bool in_front  = !behindPlane(plank.position + plank.zAxis(), plank.zAxis().normalized);
-		bool in_back   = !behindPlane(plank.position - plank.zAxis(), -plank.zAxis().normalized);
-		bool in_top    = !behindPlane(plank.position + plank.yAxis(), plank.yAxis().normalized);
-		bool in_bottom = !behindPlane(plank.position - plank.yAxis(), -plank.yAxis().normalized);
-
-		Collision c = new Collision();
-
-		if (intersectPlane(plank.position + plank.yAxis(), plank.yAxis()) && in_left && in_right && in_front && in_back) {
-			c.collision = true;
-	 	}
-		if (intersectPlane(plank.position - plank.yAxis(), -plank.yAxis()) && in_left && in_right && in_front && in_back) {
-			c.collision = true;
-	  	}
-		if (intersectPlane(plank.position - plank.xAxis(), -plank.xAxis()) && in_top && in_bottom && in_front && in_back) {
-	    	c.collision = true;
-	  	}
-		if (intersectPlane(plank.position + plank.xAxis(), plank.xAxis()) && in_top && in_bottom && in_front && in_back) {
-			c.collision = true;
-	  	}
-		if (intersectPlane(plank.position + plank.zAxis(), plank.zAxis()) && in_top && in_bottom && in_left && in_right) {
-			c.collision = true;
-	  	}
-		if (intersectPlane(plank.position - plank.zAxis(), -plank.zAxis()) && in_top && in_bottom && in_left && in_right) {
-			c.collision = true;
-	  	}
-
-
-	  	c.normal = plank.yAxis().normalized; // TODO correct axis
-	  	c.distance = distanceToPlane(plank.position + plank.yAxis(), c.normal); // TODO
-
-		c.position = position - c.distance * c.normal;
-		Debug.DrawRay(c.position, c.normal * 5, Color.green, 100f, true);
-
-	  	return c;
-	}
-
 
 	/**
 	 * Draw a debug plane at <position> with normal <normal>

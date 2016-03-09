@@ -4,7 +4,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-
+/**
+ * Test class for rotating an object 
+ * Unused
+ */
 public class Box : MonoBehaviour {
 
 	public Vector3 p1;
@@ -12,9 +15,9 @@ public class Box : MonoBehaviour {
 	public Vector3 p2;
 	public Vector3 force2;
 
-	private float length = 3; // z
 	private float width = 3; // x
 	private float height = 3; // y
+	private float length = 3; // z
 
 	// Y(t)
 	public Vector3 position;

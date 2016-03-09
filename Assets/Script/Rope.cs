@@ -21,8 +21,8 @@ public class Rope : PointController {
 	/**
 	 * Inits this rope.
 	 */
-	public void init(Vector3 start, Vector3 end, bool anchor, int amountOfPoints, string name, float stiffness, float dampening, float pointMass, float segLength, float restForce, float maxForce) {
-		init(stiffness, dampening, segLength);
+	public void init(Vector3 start, Vector3 end, bool anchor, int amountOfPoints, string name, float stiffness, float damping, float pointMass, float segLength, float restForce, float maxForce) {
+		init(stiffness, damping, segLength);
 		this.name = name;
 		// Inits points list, sets posiiton and direction
 		Vector3 position = start;

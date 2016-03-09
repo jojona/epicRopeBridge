@@ -393,7 +393,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 123008, guid: 137f88bfa6110dd4c8c365ec98798bee, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 137f88bfa6110dd4c8c365ec98798bee, type: 2}
@@ -531,7 +531,7 @@ MonoBehaviour:
   cam: {fileID: 1797660820}
   maincam: {fileID: 329856548}
   ball: {fileID: 1354900911}
-  windStrength: {x: 1000, y: 0, z: -1000}
+  windStrength: {x: 0, y: 0, z: -10}
   gravityStrength: {x: 0, y: -9.82, z: 0}
   windmode: 0
   showUI: 2
@@ -1314,7 +1314,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 2025148, guid: e0e410cdb584869469a0bb449608748c, type: 2}
       propertyPath: m_NormalizedViewPortRect.y
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2025148, guid: e0e410cdb584869469a0bb449608748c, type: 2}
       propertyPath: m_NormalizedViewPortRect.height
@@ -1404,11 +1404,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11456904, guid: 89961ebd9510d7149b8a5bdba531e092, type: 2}
       propertyPath: ropeStiffness
-      value: 500
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 11456904, guid: 89961ebd9510d7149b8a5bdba531e092, type: 2}
       propertyPath: middleRopeStiffness
-      value: 500
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 11456904, guid: 89961ebd9510d7149b8a5bdba531e092, type: 2}
       propertyPath: longRopesRestK
@@ -1432,7 +1432,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11456904, guid: 89961ebd9510d7149b8a5bdba531e092, type: 2}
       propertyPath: downRestForce
-      value: 0
+      value: 4500
       objectReference: {fileID: 0}
     - target: {fileID: 11456904, guid: 89961ebd9510d7149b8a5bdba531e092, type: 2}
       propertyPath: downMaxForce
@@ -1440,15 +1440,15 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11456904, guid: 89961ebd9510d7149b8a5bdba531e092, type: 2}
       propertyPath: triangluarRestForce
-      value: 0
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 11456904, guid: 89961ebd9510d7149b8a5bdba531e092, type: 2}
       propertyPath: verticalRestForce
-      value: 0
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 11456904, guid: 89961ebd9510d7149b8a5bdba531e092, type: 2}
       propertyPath: upRestForce
-      value: 0
+      value: 4500
       objectReference: {fileID: 0}
     - target: {fileID: 11456904, guid: 89961ebd9510d7149b8a5bdba531e092, type: 2}
       propertyPath: timestep
@@ -1460,7 +1460,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11456904, guid: 89961ebd9510d7149b8a5bdba531e092, type: 2}
       propertyPath: ropePointMass
-      value: 1000000
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11456904, guid: 89961ebd9510d7149b8a5bdba531e092, type: 2}
+      propertyPath: segLengthVerticalRopes
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 89961ebd9510d7149b8a5bdba531e092, type: 2}

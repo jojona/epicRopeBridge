@@ -44,6 +44,9 @@ public abstract class PointController : MonoBehaviour {
 		return p;
 	}
 
+	/**
+	 * Creates a points to put as a corner in a plank.
+	 */
 	protected Point createCorner(Vector3 position, string name) {
 		Point p = (Point)Instantiate (pointPrefab, position, Quaternion.identity);
 		p.position = position;

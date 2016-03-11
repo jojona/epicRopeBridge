@@ -534,7 +534,7 @@ MonoBehaviour:
   windStrength: {x: 0, y: 0, z: -10}
   gravityStrength: {x: 0, y: -9.82, z: 0}
   windmode: 0
-  showUI: 2
+  showUI: 0
 --- !u!4 &557071584
 Transform:
   m_ObjectHideFlags: 0
@@ -930,7 +930,11 @@ MonoBehaviour:
 
     Toggle UI F2
 
-    Toggle Gravity G'
+    Toggle Gravity G
+
+    Rotate upper camera Left & Right mouse button
+
+    Rotate bottom camera Middle mouse button'
 --- !u!222 &1155954064
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -951,9 +955,9 @@ RectTransform:
   m_RootOrder: 2
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 14, y: -92}
-  m_SizeDelta: {x: 187, y: 170}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -186, y: -170}
+  m_SizeDelta: {x: 400, y: 200}
+  m_Pivot: {x: 0, y: 0}
 --- !u!1 &1337132299
 GameObject:
   m_ObjectHideFlags: 0
@@ -1278,7 +1282,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11463498, guid: e0e410cdb584869469a0bb449608748c, type: 2}
       propertyPath: controlMode
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11463498, guid: e0e410cdb584869469a0bb449608748c, type: 2}
       propertyPath: speed

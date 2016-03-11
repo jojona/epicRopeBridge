@@ -144,16 +144,16 @@ public class Spawner : MonoBehaviour {
 			Vector3 diff = (to.position - from.position) / (numberOfPoints + 1);
 			float segmentLength = segLengthVerticalRopes * 2f / 5f + 0.00f * Mathf.Abs(i - numberOfPlanks/planksPerTriangle/2);
 			Rope rx = spawnRope(from.position + diff, to.position, "Triangular X " + (i + 1) + " ", numberOfPoints, false, segmentLength, triangluarRestForce, triangularMaxForce);
-			rx.getPoint(0).AddNeighbour(from, segmentLength, triangluarRestForce, triangularMaxForce);
-			rx.getPoints ().Last ().AddNeighbour (to, segmentLength, triangluarRestForce, triangularMaxForce);
+			rx.getPoint(0).AddNeighbour(from, triangluarRestForce, triangularMaxForce);
+			rx.getPoints ().Last ().AddNeighbour (to, triangluarRestForce, triangularMaxForce);
 			
 			from = upper.getPoint (extraUp + upperPointsPerTriangle * i + upperPointsPerTriangle / 2);
 			to = lower.getPoint (extraDown + (i + 1) * (planksPerTriangle * (2 + plankSpacing)) - plankSpacing / 2 - 1);
 			diff = (to.position - from.position) / (numberOfPoints + 1);
 			segmentLength = segLengthVerticalRopes * 2f / 5f + 0.00f * (numberOfPlanks/planksPerTriangle/2 - Mathf.Abs(i - numberOfPlanks/planksPerTriangle/2));
 			Rope ry = spawnRope(from.position + diff, to.position, "Triangular Y " + (i + 1) + " ", numberOfPoints, false, segmentLength, triangluarRestForce, triangularMaxForce);
-			ry.getPoint(0).AddNeighbour(from, segmentLength, triangluarRestForce, triangularMaxForce);
-			ry.getPoints ().Last ().AddNeighbour (to, segmentLength, triangluarRestForce, triangularMaxForce);
+			ry.getPoint(0).AddNeighbour(from, triangluarRestForce, triangularMaxForce);
+			ry.getPoints ().Last ().AddNeighbour (to, triangluarRestForce, triangularMaxForce);
 		}
 	}
 
@@ -161,13 +161,13 @@ public class Spawner : MonoBehaviour {
 
 		Vector3 dir1 = down.getPoint (extraDown - 1).position - up.getPoint (extraUp - 2).position;
 		Rope rVerticalFirst = spawnRope(up.getPoint (extraUp - 2).position + dir1 / (heightPoints + 1), down.getPoint (extraDown - 1).position - dir1 / (heightPoints + 1), "Vertical rope", heightPoints + 1, false, segLengthVerticalRopes, verticalRestForce, verticalMaxForce);
-		up.getPoint (extraUp - 2).AddNeighbour(rVerticalFirst.getPoint(0), up.segmentLength, verticalRestForce, verticalMaxForce);
-		down.getPoint (extraDown - 1).AddNeighbour(rVerticalFirst.getPoint(heightPoints), down.segmentLength, verticalRestForce, verticalMaxForce);
+		up.getPoint (extraUp - 2).AddNeighbour(rVerticalFirst.getPoint(0), verticalRestForce, verticalMaxForce);
+		down.getPoint (extraDown - 1).AddNeighbour(rVerticalFirst.getPoint(heightPoints), verticalRestForce, verticalMaxForce);
 
 		Vector3 dir2 = down.getPoint (down.length() - extraDown + 1).position - up.getPoint (up.length() - extraUp + 1).position;
 		Rope rVerticalSecond = spawnRope(up.getPoint (up.length() - extraUp + 1).position + dir2 / (heightPoints + 1), down.getPoint (down.length() - extraDown + 1).position - dir1 / (heightPoints + 1), "Vertical rope", heightPoints + 1, false, segLengthVerticalRopes, verticalRestForce, verticalMaxForce);
-		up.getPoint (up.length() - extraUp + 1).AddNeighbour(rVerticalSecond.getPoint(0), up.segmentLength, verticalRestForce, verticalMaxForce);
-		down.getPoint (down.length() - extraDown).AddNeighbour(rVerticalSecond.getPoint(heightPoints), down.segmentLength, verticalRestForce, verticalMaxForce);
+		up.getPoint (up.length() - extraUp + 1).AddNeighbour(rVerticalSecond.getPoint(0), verticalRestForce, verticalMaxForce);
+		down.getPoint (down.length() - extraDown).AddNeighbour(rVerticalSecond.getPoint(heightPoints), verticalRestForce, verticalMaxForce);
 	}
 
 	Rope spawnRope(Vector3 from, Vector3 to, string name, int amount, bool fixt, float segLength, float restF, float maxF) {

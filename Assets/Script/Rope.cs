@@ -4,11 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class Rope : PointController {
-	// Start point for rope
-	private Vector3 startPoint;
-
-	// End point for rope
-	private Vector3 endPoint;
 
 	// Anchor points
 	private List<Point> anchors = new List<Point>();
@@ -36,7 +31,7 @@ public class Rope : PointController {
 
 		// Adds links between internal points
 		for (int i = 0; i < amountOfPoints - 1; ++i) {
-			points [i].AddNeighbour(points [i + 1], segLength, restForce, maxForce);
+			points [i].AddNeighbour(points [i + 1], restForce, maxForce);
 		}
 
 		// Sets anchor if so

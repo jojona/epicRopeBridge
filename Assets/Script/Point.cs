@@ -9,7 +9,6 @@ public class Point : MonoBehaviour {
 
 	public class Neighbour {
 		public Point neighbour;
-		public float segmentLength;
 
 		public float restForce;
 		public float maxForce;
@@ -17,9 +16,8 @@ public class Point : MonoBehaviour {
 
 		public bool broken = false;
 
-		public Neighbour(Point p, float s, float restF, float maxF)  {
+		public Neighbour(Point p, float restF, float maxF)  {
 			neighbour = p; 
-			segmentLength = s;
 			restForce = restF;
 			maxForce = maxF;
 		}
@@ -114,8 +112,8 @@ public class Point : MonoBehaviour {
 		}
 	}
 
-	public void AddNeighbour(Point p, float segmentLength, float restF, float maxF) {
-		neighbours.Add (new Neighbour(p, segmentLength, restF, maxF));
+	public void AddNeighbour(Point p, float restF, float maxF) {
+		neighbours.Add (new Neighbour(p, restF, maxF));
 	}
 
 	public List<Neighbour> GetNeighbours() {

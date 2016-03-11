@@ -6,13 +6,13 @@ using System.Linq;
 public class Ball : MonoBehaviour {
 
 	public InputHandler ih;
-
-	public Vector3 force = Vector3.zero;
 	public Vector3 position;
+	public int mass;
+
+	[System.NonSerialized]
+	public Vector3 force = Vector3.zero;
 	private Vector3 lastPostion;
 	private Vector3 velocity = Vector3.zero;
-
-	public int mass;
 
 	public Transform downwall;
 	public Transform rightwall;
@@ -23,12 +23,12 @@ public class Ball : MonoBehaviour {
 
 	[Range(1, 100)]
 	public int speed = 1;
-	[Range(1, 100)]
+	[Range(10, 100)]
 	public int upSpeed = 10;
 
-	[Tooltip("Force 0, Velocity 1, position 2")]
-	[Range(0, 2)]
-	public int controlMode = 1;
+	[Tooltip("Force 0, Velocity 1")]
+	[Range(0, 1)]
+	public int controlMode = 0;
 
 	public bool gravity = true;
 
@@ -54,22 +54,22 @@ public class Ball : MonoBehaviour {
 		if (controlMode == 0) {
 
 			if (Input.GetKey ("up") || Input.GetKey ("w")) {
-				force += Vector3.right * speed * 10 * Time.deltaTime * mass;
+				force += Vector3.right * speed * 1000 * Time.deltaTime * mass;
 			}
 			if (Input.GetKey ("down") || Input.GetKey ("s")) {
-				force += Vector3.left * speed * 10 * Time.deltaTime * mass;
+				force += Vector3.left * speed * 1000 * Time.deltaTime * mass;
 			}
 			if (Input.GetKey ("left") || Input.GetKey ("a")) {
-				force += Vector3.forward * speed * 10 * Time.deltaTime * mass;
+				force += Vector3.forward * speed * 1000 * Time.deltaTime * mass;
 			}
 			if (Input.GetKey ("right") || Input.GetKey ("d")) {
-				force += Vector3.back * speed * Time.deltaTime * mass;
+				force += Vector3.back * speed * 1000 * Time.deltaTime * mass;
 			}
 			if (Input.GetKey ("space") || Input.GetKey ("z") || Input.GetKey ("left shift") || Input.GetKey ("q") ) {
-				force += Vector3.up * upSpeed * 10 * Time.deltaTime * mass;
+				force += Vector3.up * upSpeed * 1000 * Time.deltaTime * mass;
 			}
 			if (Input.GetKey ("x") || Input.GetKey("e")) {
-				force += Vector3.down * 10 *upSpeed * Time.deltaTime * mass;
+				force += Vector3.down * 1000 *upSpeed * Time.deltaTime * mass;
 			}
 		} else if (controlMode == 1) {
 
@@ -90,25 +90,6 @@ public class Ball : MonoBehaviour {
 			}
 			if (Input.GetKey ("x") || Input.GetKey("e")) {
 				velocity += Vector3.down * 10 * upSpeed * Time.deltaTime;
-			}
-		} else if (controlMode == 2) {
-			if (Input.GetKey ("up") || Input.GetKey ("w")) {
-				position += Vector3.right * speed * Time.deltaTime;
-			}
-			if (Input.GetKey ("down") || Input.GetKey ("s")) {
-				position += Vector3.left * speed * Time.deltaTime;
-			}
-			if (Input.GetKey ("left") || Input.GetKey ("a")) {
-				position += Vector3.forward * speed * Time.deltaTime;
-			}
-			if (Input.GetKey ("right") || Input.GetKey ("d")) {
-				position += Vector3.back * speed * Time.deltaTime;
-			}
-			if (Input.GetKey ("space") || Input.GetKey ("z") || Input.GetKey ("left shift") || Input.GetKey ("q") ) {
-				position += Vector3.up * upSpeed * Time.deltaTime;
-			}
-			if (Input.GetKey ("x") || Input.GetKey("e")) {
-				position += Vector3.down * 10 * upSpeed * Time.deltaTime;
 			}
 		}
 	}
@@ -263,7 +244,7 @@ public class Ball : MonoBehaviour {
 		// Top Bottom
 		if (rightDistance < radius && leftDistance < radius && frontDistance < radius && backDistance < radius) {
 			if (Mathf.Abs(topDistance) <= radius || Mathf.Abs(bottomDistance) <= radius) {
-				if (Vector3.Dot(lastPostion - position, plank.yAxis()) >= 0) {
+				if (Vector3.Dot(velocity, plank.yAxis()) <= 0) {
 					c.normal = plank.yAxis().normalized;
 					c.distance = topDistance;
 					c.collision = true;

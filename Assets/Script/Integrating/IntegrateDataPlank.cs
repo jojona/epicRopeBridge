@@ -48,7 +48,7 @@ public class IntegrateDataPlank : IntegrateAbstract{
 		
 		p.calculateW();
 
-		p.position += p.P / p.mass * timestep;
+		//p.position += p.P / p.mass * timestep;
 		Quaternion dq = (new Quaternion (p.w.x * 1 / 2, p.w.y * 1 / 2, p.w.z * 1 / 2, 0)) * p.q;
 		p.q.x += dq.x * timestep;
 		p.q.y += dq.y * timestep;
@@ -74,7 +74,7 @@ public class IntegrateDataPlank : IntegrateAbstract{
 		d = evalResult;
 	}
 
-	public override void tryDerivate(float timestep) { //TODO
+	public override void tryDerivate(float timestep) {
 		
 		p.position += evalResult.deltaX * timestep;
 
@@ -90,7 +90,7 @@ public class IntegrateDataPlank : IntegrateAbstract{
 		p.normalizeQuaternion();
 		p.calculateR();
 		p.pointPositions();
-		//p.calculateIinv();
+		p.calculateIinv();
 	}
 
 	public override void saveDerivate() {
@@ -123,7 +123,7 @@ public class IntegrateDataPlank : IntegrateAbstract{
 		p.normalizeQuaternion();
 		p.calculateR();
 		p.pointPositions();
-		//p.calculateIinv();
+		p.calculateIinv();
 	}
 
 	public override void reset() {

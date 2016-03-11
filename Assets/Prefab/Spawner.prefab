@@ -7,7 +7,7 @@ GameObject:
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 4
   m_Component:
-  - 4: {fileID: 480616}
+  - 4: {fileID: 427412}
   - 114: {fileID: 11456904}
   m_Layer: 0
   m_Name: Spawner
@@ -16,7 +16,7 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &480616
+--- !u!4 &427412
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -44,13 +44,38 @@ MonoBehaviour:
   ropePrefab: {fileID: 11498972, guid: 1f24c9d6719c8a04fb34132c23ab139c, type: 2}
   boxPrefab: {fileID: 11476684, guid: 217f067ade20e9f46b2846588f15f6e2, type: 2}
   middleRopePrefab: {fileID: 11416536, guid: 2ffaae99f52be954a9bd2057177c2b19, type: 2}
-  anchorPointStart: {x: 0, y: 0, z: 0}
-  anchorPointEnd: {x: 50, y: 0, z: 0}
-  amountOfPointsPerRope: 20
-  timestep: 0.016666668
-  ropeStiffness: 1000
-  middleRopeStiffness: 800
-  ropeDampening: 10
+  ball: {fileID: 0}
+  anchorPoint1Up: {x: 0, y: -10, z: 20}
+  anchorPoint1Down: {x: 15, y: -30, z: 20}
+  anchorPoint2Up: {x: 200, y: -10, z: 20}
+  anchorPoint2Down: {x: 185, y: -30, z: 20}
+  anchorPoint3Up: {x: 0, y: -10, z: 0}
+  anchorPoint3Down: {x: 15, y: -30, z: 0}
+  anchorPoint4Up: {x: 200, y: -10, z: 0}
+  anchorPoint4Down: {x: 185, y: -30, z: 0}
+  segLengthUpRopes: 0.005
+  segLengthDownRopes: 1
+  segLengthVerticalRopes: 4
+  ropePointMass: 1
+  extraUp: 4
+  extraDown: 2
+  planksPerTriangle: 1
+  numberOfPlanks: 10
+  pointsPerPlank: 2
+  plankSpacing: 1
+  heightPoints: 7
+  plankWidth: 10
+  timestep: 0.008333334
+  ropeStiffness: 500
+  middleRopeStiffness: 500
+  ropeDampening: 7
+  integrationMethod: 2
+  spawnSmall: 1
+  spawnNormal: 1
+  spawnBox: 0
+  spawnRopes: 1
+  spawnMini: 0
+  lap: 0
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

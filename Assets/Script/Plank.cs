@@ -30,8 +30,8 @@ public class Plank : MonoBehaviour {
 	// Intertia (Ibody)	// Invers is (I^-1body) 1/xij from normal inertia matrix
 	private Matrix Ibody;
 	private Matrix IbodyInv;
-	private Matrix Iinv;
-	public float mass = 100;
+	public Matrix Iinv;
+	public float mass = 10;
 	// Center of mass = position
 
 	public Quaternion dq;
@@ -41,12 +41,12 @@ public class Plank : MonoBehaviour {
 	public Vector3 stateP;
 	public Vector3 stateL;
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-
-	public void init(Point p1, Point p2, Point p3, Point p4) {
+	public void init(Point p1, Point p2, Point p3, Point p4, float widthT) {
+		position = p1.position + (p3.position - p1.position) / 2 + (p2.position - p1.position) / 2;
+		p1.name += " P1";
+		p2.name += " P2";
+		p3.name += " P3";
+		p4.name += " P4";
 
 		point1 = p1;
 		point2 = p2;
@@ -58,16 +58,18 @@ public class Plank : MonoBehaviour {
 		point3.mass = mass / 4;
 		point4.mass = mass / 4;
 
-		length = 2 * (point1.position - point2.position).magnitude;
-		point1.position.x -= length / 4;
-		point2.position.x += length / 4;
-		point3.position.x -= length / 4;
-		point4.position.x += length / 4;
-		width = (point3.position - point1.position).magnitude;
+		//length = width;
+		point1.position.x = position.x - widthT / 2;
+		point2.position.x = position.x + widthT / 2;
+		point3.position.x = position.x - widthT / 2;
+		point4.position.x = position.x + widthT / 2;
+
+		width = (point2.position - point1.position).magnitude;
+		length = (point3.position - point1.position).magnitude;
 		transform.localScale = new Vector3(width, height, length);
 		transform.position = position;
 
-		// Calculate intertia
+		// Calculate inertia
 		Ibody = new Matrix (3, 3);
 		Ibody [0, 0] = (height * height + length * length) * mass / 12;
 		Ibody [1, 1] = (width * width + length * length) * mass / 12;
@@ -76,7 +78,6 @@ public class Plank : MonoBehaviour {
 
 		q = transform.rotation;
 		calculateR();
-		pointPositions();
 		calculateIinv();
 	}
 
@@ -122,9 +123,9 @@ public class Plank : MonoBehaviour {
 	public void calculateR() {
 
 		// get R from q
-		R[0,0] = (1 - 2 * q.y * q.y - 2 * q.z*q.z); R[0,1] = 2 * q.x * q.y - 2 * q.w * q.z; R[0,2] = 2 * q.x * q.z + 2 * q.w * q.y;
-		R[1,0] = 2 * q.x * q.y + 2 * q.w * q.z; R[0,1] = (1 - 2 * q.x * q.x - 2 * q.z*q.z); R[1,2] = 2 * q.y * q.z - 2 * q.w * q.x;
-		R[2,0] = 2 * q.x * q.z - 2 * q.w * q.y; R[2,1] = 2 * q.y * q.z + 2 * q.w * q.x; R[2,2] = (1 - 2 * q.x * q.x - 2 * q.y*q.y);
+		R[0,0] = (1 - 2 * q.y * q.y - 2 * q.z * q.z); 	R[0,1] = 2 * q.x * q.y - 2 * q.w * q.z;     	R[0,2] = 2 * q.x * q.z + 2 * q.w * q.y;
+		R[1,0] = 2 * q.x * q.y + 2 * q.w * q.z;     	R[1,1] = (1 - 2 * q.x * q.x - 2 * q.z * q.z); 	R[1,2] = 2 * q.y * q.z - 2 * q.w * q.x;
+		R[2,0] = 2 * q.x * q.z - 2 * q.w * q.y;    		R[2,1] = 2 * q.y * q.z + 2 * q.w * q.x;     	R[2,2] = (1 - 2 * q.x * q.x - 2 * q.y*q.y);
 	}
 
 	public void calculateIinv() {
@@ -163,10 +164,10 @@ public class Plank : MonoBehaviour {
 
 	public void pointPositions() {
 		// Calculate point position from R
-		Matrix mp1 = new Matrix(3, 1); mp1[0, 0] = - width/2; mp1[2, 0] = - length/2;
-		Matrix mp2 = new Matrix(3, 1); mp2[0, 0] = - width/2; mp2[2, 0] = + length/2;
-		Matrix mp3 = new Matrix(3, 1); mp3[0, 0] = + width/2; mp3[2, 0] = - length/2;
-		Matrix mp4 = new Matrix(3, 1); mp4[0, 0] = + width/2; mp4[2, 0] = + length/2;
+		Matrix mp1 = new Matrix(3, 1); mp1[0, 0] = - width/2; mp1[2, 0] = + length/2;
+		Matrix mp2 = new Matrix(3, 1); mp2[0, 0] = + width/2; mp2[2, 0] = + length/2;
+		Matrix mp3 = new Matrix(3, 1); mp3[0, 0] = - width/2; mp3[2, 0] = - length/2;
+		Matrix mp4 = new Matrix(3, 1); mp4[0, 0] = + width/2; mp4[2, 0] = - length/2;
 
 		mp1 = R * mp1;
 		point1.position.x = mp1[0, 0] + position.x;
@@ -177,7 +178,7 @@ public class Plank : MonoBehaviour {
 		point2.position.x = mp2[0, 0] + position.x;
 		point2.position.y = mp2[1, 0] + position.y;
 		point2.position.z = mp2[2, 0] + position.z;
-		
+
 		mp3 = R * mp3;
 		point3.position.x = mp3[0, 0] + position.x;
 		point3.position.y = mp3[1, 0] + position.y;
@@ -188,9 +189,21 @@ public class Plank : MonoBehaviour {
 		point4.position.y = mp4[1, 0] + position.y;
 		point4.position.z = mp4[2, 0] + position.z;
 	}
+
+	public Vector3 xAxis() {
+		return new Vector3(R[0, 0], R[1, 0], R[2, 0]) * width/2;
+	}
+
+	public Vector3 yAxis() {
+		return new Vector3(R[0, 1], R[1, 1], R[2, 1]) * height/2;
+	}
+
+	public Vector3 zAxis() {
+		return new Vector3(R[0, 2], R[1, 2], R[2, 2]) * length/2;
+	}
 }
 
-// TODO http://www.cc.gatech.edu/classes/AY2012/cs4496_spring/slides/RigidSim.pdf p 53
+// http://www.cc.gatech.edu/classes/AY2012/cs4496_spring/slides/RigidSim.pdf p 53
 // http://www.cs.cmu.edu/~baraff/sigcourse/notesd1.pdf
 // http://web.engr.illinois.edu/~yyz/teaching/cs598lect/RigidBodyImpl.pdf
 // http://ocw.mit.edu/courses/aeronautics-and-astronautics/16-07-dynamics-fall-2009/lecture-notes/MIT16_07F09_Lec25.pdf
